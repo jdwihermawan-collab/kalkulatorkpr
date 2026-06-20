@@ -1,0 +1,22 @@
+Update 2.9
+
+UI pada pilihan bank di perbarui lebih elegan
+
+tambahan tombol on off untuk angka bunga KPR
+
+
+Update 2.10
+
+Menambahkan Detail calon customer
+
+Update 2.11
+
+Fix bug bank tersimpan tidak tampil di mode hp
+
+Update 2.12
+
+Fix Tabel hasil hitung hanya akan tampil saat tombol hitung di tekan
+
+Update 2.13
+
+Fix Hitungan Syariah
