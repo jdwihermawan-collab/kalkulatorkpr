@@ -1489,6 +1489,8 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 .stat-box-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; font-weight: 600; }
 .stat-box-value { font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700; color: var(--navy); }
 .stat-box-value.green { color: var(--green); }
+.stat-box-sub { font-size: 10px; color: var(--text3); margin-top: 4px; font-weight: 500; display: none; }
+.stat-box-sub.show { display: block; }
 
 /* Tabel amortisasi */
 .table-section { margin-top: 8px; }
@@ -1860,6 +1862,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 }
 .othercost-item-main { display: flex; align-items: center; gap: 10px; }
 .othercost-item-label { font-size: 14px; font-weight: 600; color: var(--text); }
+.othercost-toggle-group { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .othercost-free-toggle { display: flex; align-items: center; gap: 8px; }
 .othercost-free-toggle-text {
   font-size: 11px;
@@ -1868,6 +1871,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   font-weight: 700;
   color: var(--text3);
 }
+.othercost-include-toggle .othercost-free-toggle-text { color: var(--text3); }
 .othercost-preview {
   font-size: 12px;
   color: var(--text3);
@@ -1881,6 +1885,18 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   color: var(--green);
   background: rgba(22,163,74,0.1);
   border: 1px solid rgba(22,163,74,0.25);
+  border-radius: 6px;
+  padding: 1px 6px;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+.othercost-include-tag {
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(46,107,230,0.1);
+  border: 1px solid rgba(46,107,230,0.25);
   border-radius: 6px;
   padding: 1px 6px;
   margin-left: 4px;
@@ -2464,13 +2480,22 @@ body.admin-mode .admin-only { display: revert !important; }
             </span>
             <span class="othercost-item-label">Hitung Admin KPR</span>
           </label>
-          <label class="pdf-toggle-label othercost-free-toggle">
-            <span class="pdf-toggle-switch">
-              <input type="checkbox" id="oc-adminkpr-free" onchange="onOtherCostToggle()">
-              <span class="pdf-toggle-slider"></span>
-            </span>
-            <span class="othercost-free-toggle-text">Free</span>
-          </label>
+          <div class="othercost-toggle-group">
+            <label class="pdf-toggle-label othercost-free-toggle" title="Admin KPR digratiskan, tidak masuk perhitungan biaya.">
+              <span class="pdf-toggle-switch">
+                <input type="checkbox" id="oc-adminkpr-free" onchange="onAdminKprMutexToggle('free')">
+                <span class="pdf-toggle-slider"></span>
+              </span>
+              <span class="othercost-free-toggle-text">Free</span>
+            </label>
+            <label class="pdf-toggle-label othercost-free-toggle othercost-include-toggle" title="Admin KPR dimasukkan ke Plafon Pinjaman, tidak dibayar tunai di awal.">
+              <span class="pdf-toggle-switch">
+                <input type="checkbox" id="oc-adminkpr-include" onchange="onAdminKprMutexToggle('include')">
+                <span class="pdf-toggle-slider"></span>
+              </span>
+              <span class="othercost-free-toggle-text">Include</span>
+            </label>
+          </div>
         </div>
         <div class="othercost-body" id="oc-adminkpr-body">
           <div class="othercost-preset-row" id="oc-adminkpr-preset-row">
@@ -2533,6 +2558,7 @@ body.admin-mode .admin-only { display: revert !important; }
       <div class="stat-box">
         <div class="stat-box-label">Pokok Pinjaman</div>
         <div class="stat-box-value" id="res-pokok">—</div>
+        <div class="stat-box-sub" id="res-pokok-sub"></div>
       </div>
       <div class="stat-box">
         <div class="stat-box-label" id="res-mode-label">Mode Bunga</div>
@@ -4305,6 +4331,17 @@ function fmtShort(n) {
   return fmt(n);
 }
 
+// Format baris "Plafon Kredit"/"Pokok Pinjaman" di layar simulasi, Salin Teks,
+// WA, dan PDF. Jika Admin KPR di-include ke Plafon Pinjaman, tampilkan rincian
+// "Plafon Total (Plafon Awal + Admin KPR Include)"; jika tidak, tampilkan nominal biasa.
+function formatPlafonKreditLine(s) {
+  if (!s) return '';
+  if (s.adminKprInclude && s.adminKprAmount > 0) {
+    return `${fmt(s.pokok)} (${fmt(s.plafonAwal)} + ${fmt(s.adminKprAmount)} Include)`;
+  }
+  return fmt(s.pokok);
+}
+
 // ════════════════════════════════════════════════════
 // ─── BIAYA LAIN-LAIN: BPHTB & AJB/BBN ────────────────
 // ════════════════════════════════════════════════════
@@ -4316,7 +4353,7 @@ const AJB_BBN_PRESET_VALUES = { '5000000': 5000000, '6000000': 6000000 };
 let otherCosts = {
   bphtb:    { enabled: false, amount: 0, free: false },
   ajbBbn:   { enabled: false, amount: 0, free: false, preset: '5000000', custom: 0 },
-  adminKpr: { enabled: false, amount: 0, free: false, preset: '5', customPct: 0 }
+  adminKpr: { enabled: false, amount: 0, free: false, include: false, preset: '5', customPct: 0 }
 };
 
 // ─── localStorage CRUD: Biaya Lain-Lain ─────────────
@@ -4339,7 +4376,12 @@ function loadOtherCosts() {
     }
     if (parsed.adminKpr) {
       otherCosts.adminKpr.enabled   = !!parsed.adminKpr.enabled;
-      otherCosts.adminKpr.free      = !!parsed.adminKpr.free;
+      // Toggle "Free" & "Include" Admin KPR SENGAJA TIDAK dipulihkan dari localStorage.
+      // Keduanya harus selalu default OFF setiap kali halaman dimuat/refresh, dan hanya
+      // aktif jika ditekan manual — supaya tidak ada promo/skema yang "kebawa" tanpa sadar
+      // dari sesi simulasi customer sebelumnya.
+      otherCosts.adminKpr.free      = false;
+      otherCosts.adminKpr.include   = false;
       otherCosts.adminKpr.preset    = ['5','6','custom'].includes(parsed.adminKpr.preset) ? parsed.adminKpr.preset : '5';
       otherCosts.adminKpr.customPct = Math.max(0, parseFloat(parsed.adminKpr.customPct) || 0);
     }
@@ -4365,6 +4407,7 @@ function applyOtherCostsToUI() {
   document.getElementById('oc-ajb-free').checked      = otherCosts.ajbBbn.free;
   document.getElementById('oc-adminkpr-enabled').checked = otherCosts.adminKpr.enabled;
   document.getElementById('oc-adminkpr-free').checked    = otherCosts.adminKpr.free;
+  document.getElementById('oc-adminkpr-include').checked = otherCosts.adminKpr.include;
 
   document.querySelectorAll('#oc-ajb-preset-row .othercost-preset-chip').forEach(chip => {
     chip.classList.toggle('active', chip.dataset.val === otherCosts.ajbBbn.preset);
@@ -4396,6 +4439,7 @@ function onOtherCostToggle() {
   otherCosts.ajbBbn.custom  = parseRp(document.getElementById('oc-ajb-custom'));
   otherCosts.adminKpr.enabled   = document.getElementById('oc-adminkpr-enabled').checked;
   otherCosts.adminKpr.free      = document.getElementById('oc-adminkpr-free').checked;
+  otherCosts.adminKpr.include   = document.getElementById('oc-adminkpr-include').checked;
   otherCosts.adminKpr.customPct = parseFloat(document.getElementById('oc-adminkpr-custom-pct').value) || 0;
 
   document.getElementById('oc-ajb-body').classList.toggle('show', otherCosts.ajbBbn.enabled);
@@ -4403,6 +4447,20 @@ function onOtherCostToggle() {
 
   saveOtherCostsToStorage();
   renderOtherCosts();
+}
+
+// Toggle "Free" dan "Include" pada Admin KPR bersifat mutex (saling mengunci):
+// Mengaktifkan salah satu otomatis mematikan yang lain. Keduanya boleh
+// sama-sama nonaktif (artinya Admin KPR dibayar cash di awal seperti biasa).
+function onAdminKprMutexToggle(which) {
+  const freeEl    = document.getElementById('oc-adminkpr-free');
+  const includeEl = document.getElementById('oc-adminkpr-include');
+  if (which === 'free' && freeEl.checked) {
+    includeEl.checked = false;
+  } else if (which === 'include' && includeEl.checked) {
+    freeEl.checked = false;
+  }
+  onOtherCostToggle();
 }
 
 function setAjbPreset(val) {
@@ -4457,10 +4515,15 @@ function calculateOtherCosts() {
     ? AJB_BBN_PRESET_VALUES[otherCosts.ajbBbn.preset]
     : Math.max(0, otherCosts.ajbBbn.custom || 0);
 
-  // Admin KPR = Plafon × persentase
-  otherCosts.adminKpr.amount = (otherCosts.adminKpr.enabled && !otherCosts.adminKpr.free)
+  // Admin KPR = Plafon Awal × persentase. Nominal ini tetap dihitung apa adanya
+  // baik untuk skema dibayar tunai di awal MAUPUN skema "Include" ke Plafon Pinjaman —
+  // yang membedakan hanya BAGAIMANA nominal ini diperlakukan di langkah selanjutnya.
+  otherCosts.adminKpr.amount = otherCosts.adminKpr.enabled
     ? calculateAdminKpr(plafon)
-    : (otherCosts.adminKpr.enabled ? calculateAdminKpr(plafon) : 0);
+    : 0;
+
+  // Guard mutex tambahan: Include hanya valid jika Admin KPR aktif & Free tidak aktif
+  const adminKprInclude = !!(otherCosts.adminKpr.enabled && otherCosts.adminKpr.include && !otherCosts.adminKpr.free);
 
   const items = [];
   let totalOtherCost = 0;
@@ -4477,12 +4540,30 @@ function calculateOtherCosts() {
     if (otherCosts.ajbBbn.free) totalBenefit += otherCosts.ajbBbn.amount;
   }
   if (otherCosts.adminKpr.enabled) {
-    items.push({ key: 'adminKpr', label: 'Admin KPR', amount: otherCosts.adminKpr.amount, free: otherCosts.adminKpr.free });
-    totalOtherCost += otherCosts.adminKpr.amount;
+    // Jika "Include" aktif: nominal yang DITAMPILKAN & ikut dijumlahkan ke Biaya Lain-Lain
+    // menjadi Rp 0, karena nominalnya dialihkan ke Plafon Pinjaman (bukan dibayar tunai di awal).
+    const displayAmount = adminKprInclude ? 0 : otherCosts.adminKpr.amount;
+    items.push({
+      key: 'adminKpr',
+      label: 'Admin KPR',
+      amount: displayAmount,
+      free: otherCosts.adminKpr.free,
+      include: adminKprInclude,
+      rawAmount: otherCosts.adminKpr.amount
+    });
+    totalOtherCost += displayAmount;
     if (otherCosts.adminKpr.free) totalBenefit += otherCosts.adminKpr.amount;
   }
 
-  return { items, totalOtherCost, totalBenefit, plafon };
+  return {
+    items,
+    totalOtherCost,
+    totalBenefit,
+    plafon,
+    adminKprInclude,
+    adminKprRaw: otherCosts.adminKpr.amount,
+    plafonTotal: plafon + (adminKprInclude ? otherCosts.adminKpr.amount : 0)
+  };
 }
 
 // ─── Render: form preview + card hasil simulasi ────
@@ -4516,7 +4597,8 @@ function renderOtherCosts() {
     const plafonVal = calc.plafon || 0;
     if (plafonVal > 0) {
       adminKprPreviewEl.innerHTML = `Estimasi: <b>${fmt(otherCosts.adminKpr.amount)}</b> (Plafon × ${pctLabel}%)` +
-        (otherCosts.adminKpr.free ? '<span class="othercost-free-tag">FREE</span>' : '');
+        (otherCosts.adminKpr.free ? '<span class="othercost-free-tag">FREE</span>' : '') +
+        (otherCosts.adminKpr.include ? '<span class="othercost-include-tag">Include Plafon</span>' : '');
     } else {
       adminKprPreviewEl.textContent = `Admin KPR = Plafon × ${pctLabel}%`;
     }
@@ -4559,7 +4641,8 @@ function renderOtherCosts() {
     const r = rate1 / 12;
 
     function hitungCicilanDp(newDp) {
-      const newPokok = s.harga - newDp;
+      const newPlafonAwal = s.harga - newDp;
+      const newPokok = newPlafonAwal + (calc.adminKprInclude ? calc.adminKprRaw : 0);
       if (newPokok <= 0) return 0;
       if (r === 0) return newPokok / n;
       return newPokok * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
@@ -4592,7 +4675,7 @@ function renderOtherCosts() {
   body.innerHTML = calc.items.map(it => `
     <div class="othercost-row">
       <span class="oc-label">${it.label}</span>
-      <span class="oc-value">${fmt(it.amount)}${it.free ? ' <span class="othercost-free-tag">FREE</span>' : ''}</span>
+      <span class="oc-value">${fmt(it.amount)}${it.free ? ' <span class="othercost-free-tag">FREE</span>' : ''}${it.include ? ' <span class="othercost-include-tag">Include Plafon</span>' : ''}</span>
     </div>
   `).join('') + `
     <div class="othercost-divider"></div>
@@ -4600,6 +4683,7 @@ function renderOtherCosts() {
     <div class="othercost-benefit-row"><span>🎁 Anda Hemat Sebesar</span><span>${fmt(calc.totalBenefit)}</span></div>
     <div class="othercost-divider"></div>
     <div style="font-size:11px;color:#888;margin:4px 0 2px 0;">* Biaya di bawah belum termasuk Uang Muka (DP) sebesar <b>${fmt(dpVal)}</b>. Total dana awal yang perlu disiapkan = Biaya Lain-Lain + DP.</div>
+    ${calc.adminKprInclude ? `<div style="font-size:11px;color:#888;margin:2px 0 2px 0;">- Besaran Admin KPR dapat berbeda pada setiap pengajuan. Karena nominalnya turut ditambahkan ke plafon kredit, estimasi angsuran aktual berpotensi bergeser puluhan hingga ratusan ribu rupiah dari simulasi ini.</div>` : ''}
     <div class="othercost-total-row" style="color:var(--accent);"><span>💳 Dana yang Perlu Disiapkan di Awal</span><span>${fmt(totalDanaAwal)}</span></div>
     <div style="font-size:11px;color:#888;margin:2px 0 0 0;">DP: ${fmt(dpVal)} + Biaya Lain-Lain: ${fmt(biayaNetto)}</div>
   ` + rekomendasiHtml;
@@ -4622,13 +4706,16 @@ function generateOtherCostsWhatsapp(calc) {
 
   const lines = ['', '*BIAYA LAIN-LAIN*', ''];
   calc.items.forEach(it => {
-    lines.push(waRow(it.label, `${fmt(it.amount)}${it.free ? ' (FREE)' : ''}`));
+    lines.push(waRow(it.label, `${fmt(it.amount)}${it.free ? ' (FREE)' : ''}${it.include ? ' (Include Plafon)' : ''}`));
   });
   lines.push('');
   lines.push(waRow('Total Biaya Lain-Lain', fmt(calc.totalOtherCost)));
   lines.push(waRow('Anda Hemat Sebesar (Promo)', fmt(calc.totalBenefit)));
   lines.push('');
   lines.push('* Biaya di bawah belum termasuk Uang Muka (DP) sebesar ' + fmt(dpVal) + '. Total dana awal = Biaya Lain-Lain + DP.');
+  if (calc.adminKprInclude) {
+    lines.push('- Besaran Admin KPR dapat berbeda pada setiap pengajuan. Karena nominalnya turut ditambahkan ke plafon kredit, estimasi angsuran aktual berpotensi bergeser puluhan hingga ratusan ribu rupiah dari simulasi ini.');
+  }
   lines.push(waRow('Dana yang Perlu Disiapkan di Awal', fmt(totalDanaAwal)));
   lines.push('  (DP: ' + fmt(dpVal) + ' + Biaya Lain-Lain: ' + fmt(biayaNetto) + ')');
 
@@ -4640,7 +4727,8 @@ function generateOtherCostsWhatsapp(calc) {
     const n = tenor * 12;
     const r = rate1 / 12;
     function hitungCicilanDpWa(newDp) {
-      const newPokok = s.harga - newDp;
+      const newPlafonAwal = s.harga - newDp;
+      const newPokok = newPlafonAwal + (calc.adminKprInclude ? calc.adminKprRaw : 0);
       if (newPokok <= 0) return 0;
       if (r === 0) return newPokok / n;
       return newPokok * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
@@ -4709,8 +4797,8 @@ function generateOtherCostsPDF(doc, calc, y, marginL, marginR, navy, textGray) {
   // ── Tabel item biaya ─────────────────────────────────────
   const rows = calc.items.map(it => [
     it.label,
-    fmt(it.amount) + (it.free ? ' (FREE)' : ''),
-    it.free ? 'FREE' : '-'
+    fmt(it.amount) + (it.include ? ' (Include Plafon)' : (it.free ? ' (FREE)' : '')),
+    it.include ? 'Include Plafon' : (it.free ? 'FREE' : '-')
   ]);
   doc.autoTable({
     startY: y + 2,
@@ -4757,17 +4845,51 @@ function generateOtherCostsPDF(doc, calc, y, marginL, marginR, navy, textGray) {
   doc.line(marginL, y, marginL + contentW, y);
   y += 4;
 
-  // ── Catatan kecil DP ────────────────────────────────────
+  // ── Catatan kecil DP — ditulis sebagai POIN-POIN TERPISAH (bukan 1 paragraf
+  //    panjang yang sekadar word-wrap), supaya setiap catatan terbaca jelas
+  //    sebagai poin tersendiri di PDF. ──
   doc.setFont('helvetica', 'italic');
   doc.setFontSize(7.5);
-  doc.setTextColor(130, 100, 40);
-  const catatanTxt = `Catatan: Nominal di atas belum termasuk Uang Muka (DP) sebesar ${fmt(dpVal)}. Dana yang harus disiapkan di awal = Biaya Lain-Lain + DP.`;
-  const catatanLines = doc.splitTextToSize(catatanTxt, contentW);
-  doc.text(catatanLines, marginL, y);
-  y += catatanLines.length * 3.8 + 3;
+
+  const catatanPoints = [
+    `Catatan: Nominal di atas belum termasuk Uang Muka (DP) sebesar ${fmt(dpVal)}. Dana yang harus disiapkan di awal = Biaya Lain-Lain + DP.`
+  ];
+  if (calc.adminKprInclude) {
+    catatanPoints.push(`Besaran Admin KPR dapat berbeda pada setiap pengajuan. Karena nominalnya turut ditambahkan ke plafon kredit, estimasi angsuran aktual berpotensi bergeser puluhan hingga ratusan ribu rupiah dari simulasi ini.`);
+  }
+
+  const catatanLineH  = 3.8;
+  const catatanGapPt  = 1.4; // jeda antar poin agar terlihat sebagai poin terpisah
+  // Poin pertama tanpa bullet (sudah diawali kata "Catatan:"), poin berikutnya diberi bullet "-"
+  const catatanGroups = catatanPoints.map((txt, idx) => doc.splitTextToSize((idx === 0 ? '' : '- ') + txt, contentW));
+  const catatanBlockH = catatanGroups.reduce((h, g) => h + g.length * catatanLineH, 0)
+                       + (catatanGroups.length - 1) * catatanGapPt;
 
   // ── Kotak highlight: Dana yang Perlu Disiapkan di Awal ──
   const boxH1 = 14;
+
+  // ── ATURAN BARU: cek ruang untuk SELURUH blok "catatan + kotak highlight"
+  //    SEKALIGUS (bukan per elemen), supaya kotak ini tidak pernah terpaksa
+  //    mepet/overlap dengan footer "Halaman X dari Y" di bagian bawah halaman.
+  //    Jika ruang tidak cukup, seluruh blok dipindah utuh ke halaman baru.
+  //    Aturan lama (tabel tidak boleh terpotong) tetap dipertahankan di
+  //    bagian lain fungsi ini (lihat "Cek ruang" pada tabel item & tabel
+  //    Rekomendasi Cerdas di bawah) — tidak diubah. ──
+  const blockNeeded = catatanBlockH + 3 + boxH1;
+  if (y + blockNeeded > pageH - marginBot) {
+    doc.addPage();
+    y = 16;
+  }
+
+  doc.setTextColor(130, 100, 40);
+  let catatanY = y;
+  catatanGroups.forEach((g, idx) => {
+    doc.text(g, marginL, catatanY);
+    catatanY += g.length * catatanLineH;
+    if (idx < catatanGroups.length - 1) catatanY += catatanGapPt;
+  });
+  y = catatanY + 3;
+
   doc.setFillColor(235, 241, 253);
   doc.setDrawColor(accent[0], accent[1], accent[2]);
   doc.setLineWidth(0.5);
@@ -4798,7 +4920,8 @@ function generateOtherCostsPDF(doc, calc, y, marginL, marginR, navy, textGray) {
     const r = rate1 / 12;
 
     function _hitDp(newDp) {
-      const p = s.harga - newDp;
+      const newPlafonAwal = s.harga - newDp;
+      const p = newPlafonAwal + (calc.adminKprInclude ? calc.adminKprRaw : 0);
       if (p <= 0) return 0;
       if (r === 0) return p / n;
       return p * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
@@ -4938,8 +5061,24 @@ function hitung(scrollTarget) {
   }
   errEl.style.display = 'none';
 
-  const pokok = harga - dp;
-  lastSimulasi = { harga, dp, pokok, tenor, mode: bungaMode, bankName: '', programName: '', modeLabel: '', akad: 'konvensional', periods: [], floatingDisclaimer: '' };
+  const plafonAwal = harga - dp;
+
+  // Hitung ulang Biaya Lain-Lain (termasuk nominal Admin KPR) berdasarkan Harga & DP
+  // terbaru SEBELUM menentukan Pokok Pinjaman yang dipakai untuk rumus angsuran —
+  // supaya skema "Include Plafon" bisa menambahkan nominal Admin KPR ke Plafon Pinjaman.
+  calculateOtherCosts();
+  const adminKprInclude = !!(otherCosts.adminKpr.enabled && otherCosts.adminKpr.include && !otherCosts.adminKpr.free);
+  const adminKprAmount  = otherCosts.adminKpr.amount || 0;
+
+  // Pokok Pinjaman (Plafon Kredit) = Plafon Awal, ditambah nominal Admin KPR
+  // HANYA jika toggle "Include" aktif (Admin KPR dialihkan ke plafon, bukan dibayar tunai di awal).
+  const pokok = plafonAwal + (adminKprInclude ? adminKprAmount : 0);
+
+  lastSimulasi = {
+    harga, dp, pokok, tenor,
+    plafonAwal, adminKprAmount, adminKprInclude,
+    mode: bungaMode, bankName: '', programName: '', modeLabel: '', akad: 'konvensional', periods: [], floatingDisclaimer: ''
+  };
   if (bungaMode === 'fix') {
     hitungFix(pokok, dp, tenor);
   } else if (bungaMode === 'bank') {
@@ -5102,6 +5241,19 @@ function renderStats(dp, pokok, tenor) {
   document.getElementById('res-dp').textContent = fmtShort(dp);
   document.getElementById('res-pokok').textContent = fmtShort(pokok);
   document.getElementById('res-tenor').textContent = tenor + ' tahun';
+
+  // Sub-keterangan breakdown Plafon Kredit jika Admin KPR di-include ke plafon
+  const pokokSubEl = document.getElementById('res-pokok-sub');
+  if (pokokSubEl) {
+    const s = lastSimulasi;
+    if (s && s.adminKprInclude && s.adminKprAmount > 0) {
+      pokokSubEl.textContent = `${fmtShort(s.plafonAwal)} + ${fmtShort(s.adminKprAmount)} Include`;
+      pokokSubEl.classList.add('show');
+    } else {
+      pokokSubEl.textContent = '';
+      pokokSubEl.classList.remove('show');
+    }
+  }
 }
 
 function renderTable() {
@@ -5188,7 +5340,7 @@ function buildWaMessage() {
   // Info properti
   lines.push(row('Harga Properti', fmt(s.harga)));
   lines.push(row('Uang Muka',      fmt(s.dp)));
-  lines.push(row('Pokok Pinjaman', fmt(s.pokok)));
+  lines.push(row('Pokok Pinjaman', formatPlafonKreditLine(s)));
   if (s.bankName)    lines.push(row('Bank',        s.bankName));
   if (s.programName) lines.push(row('Program KPR', s.programName));
   lines.push(row('Tenor', `${s.tenor} Tahun`));
@@ -5522,7 +5674,7 @@ async function generatePDF() {
     const detailRows = [
       ['Harga Rumah', fmt(s.harga)],
       ['Uang Muka (DP)', `${fmt(s.dp)} (${dpPercent.toFixed(1)}%)`],
-      ['Plafon Kredit', fmt(s.pokok)],
+      ['Plafon Kredit', formatPlafonKreditLine(s)],
       ['Tenor', `${s.tenor} Tahun / ${s.tenor * 12} Bulan`],
     ];
     if (s.bankName) detailRows.push(['Nama Bank', s.bankName]);
