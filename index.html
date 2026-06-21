@@ -4,11 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kalkulator KPR — Simulasi Cicilan Rumah</title>
-<link rel="icon" type="image/x-icon" href="src/img/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="src/img/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="src/img/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="src/img/favicon-192x192.png">
-<link rel="apple-touch-icon" sizes="180x180" href="src/img/apple-touch-icon.png">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192x192.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -1135,11 +1134,12 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
 /* ── ASUMSI FLOATING ── */
 .floating-assumption-box {
-  margin-top: 16px;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
   background: rgba(217,119,6,0.05);
   border: 1.5px solid rgba(217,119,6,0.25);
   border-radius: 12px;
-  padding: 16px;
+  padding: 1.25rem;
   display: none;
 }
 .floating-assumption-box.show { display: block; }
@@ -1175,40 +1175,43 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
 /* ── DISCLAIMER FLOATING DI HASIL ── */
 .floating-disclaimer {
-  margin-top: 14px;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
   font-size: 12px;
   line-height: 1.6;
   color: #92400e;
   background: rgba(217,119,6,0.07);
   border: 1px solid rgba(217,119,6,0.2);
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 1.25rem;
   display: none;
 }
 .floating-disclaimer.show { display: block; }
 
 /* ── CATATAN AKAD SYARIAH DI HASIL ── */
 .syariah-note {
-  margin-top: 14px;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
   font-size: 12px;
   line-height: 1.6;
   color: #0f7a52;
   background: rgba(15,122,82,0.07);
   border: 1px solid rgba(15,122,82,0.2);
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 1.25rem;
   display: none;
 }
 .syariah-note.show { display: block; }
 .syariah-efektif-note {
-  margin-top: 14px;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
   font-size: 12px;
   line-height: 1.6;
   color: #1a6b3c;
   background: rgba(26,107,60,0.07);
   border: 1px solid rgba(26,107,60,0.2);
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 1.25rem;
   display: none;
 }
 .syariah-efektif-note.show { display: block; }
@@ -1293,6 +1296,37 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   border-radius: 8px;
   padding: 10px 14px;
 }
+
+/* ── MODAL: PDF Berhasil Dibuat (share ke WhatsApp Customer) ── */
+.pdf-success-modal-box { max-width: 440px; text-align: left; }
+.pdf-success-icon {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: rgba(22,163,74,0.1);
+  color: var(--green);
+  font-size: 26px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+.pdf-success-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--text2);
+  margin: 0 0 10px 0;
+}
+.pdf-success-warning {
+  display: none;
+  color: #b45309;
+  font-size: 13px;
+  margin-top: 4px;
+  background: rgba(217,119,6,0.08);
+  border: 1px solid rgba(217,119,6,0.18);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+#btn-share-pdf-wa { background: var(--green); }
+#btn-share-pdf-wa:hover { background: #128a3e; }
 
 /* ── PERIODE TYPE TOGGLE (Fix/Floating) di dalam modal ── */
 .periode-type-toggle { display: flex; gap: 4px; background: var(--off); border: 1.5px solid var(--gray); border-radius: 8px; padding: 3px; }
@@ -1966,6 +2000,23 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 .admin-bar button.logout { border-color: rgba(220,38,38,0.5); color: #fca5a5; }
 .admin-bar button.logout:hover { background: rgba(220,38,38,0.18); }
 
+/* ── LOGO NAVBAR (admin-bar) — clean & responsif ── */
+.admin-bar-icon {
+  height: 26px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+  object-position: left center;
+  margin-right: auto;
+  flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .admin-bar-icon { height: 22px; max-width: 110px; }
+}
+@media (max-width: 480px) {
+  .admin-bar-icon { height: 18px; max-width: 90px; }
+}
+
 /* Modal Login */
 .login-modal-overlay {
   display: none;
@@ -2088,6 +2139,8 @@ body.admin-mode .admin-only { display: revert !important; }
      ADMIN BAR — sticky di atas halaman
      ══════════════════════════════════════════════════════════ -->
 <div class="admin-bar" id="admin-bar">
+  <!-- Brand icon -->
+  <img src="logo.png" alt="Logo" class="admin-bar-icon">
   <!-- Status: belum login -->
   <div class="admin-bar-status" id="admin-status-guest">
     <div class="admin-bar-dot"></div>
@@ -2156,37 +2209,63 @@ body.admin-mode .admin-only { display: revert !important; }
 <div class="main-wrap">
 
   <!-- CARD: Data Calon Customer (Opsional) -->
-  <div class="card customer-card">
-    <div class="card-header">
-      <div class="card-icon">🧾</div>
-      <div class="card-title-wrap">
-        <div class="card-title">Data Calon Customer</div>
-        <div class="card-title-optional-tag">Opsional</div>
+  <div class="card customer-card collapsible-card" id="customerCard">
+    <div class="card-header" onclick="toggleCustomerForm()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="card-icon">🧾</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Data Calon Customer</div>
+          <div class="card-title-optional-tag" style="background: var(--gray); color: var(--text3); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Opsional</div>
+        </div>
       </div>
+      <div class="toggle-chevron" id="customerChevron" style="font-size: 16px; color: var(--text3); transition: transform 0.3s ease; transform: rotate(0deg);">▼</div>
     </div>
 
-    <div class="grid">
-      <div class="field">
-        <label>Nama Customer</label>
-        <input type="text" id="cust-nama" placeholder="Contoh: Budi Santoso" autocomplete="off">
-      </div>
-      <div class="field">
-        <label>Nama Perumahan</label>
-        <input type="text" id="cust-perumahan" placeholder="Contoh: Green Amalia" autocomplete="off">
-      </div>
-      <div class="field">
-        <label>Tipe &amp; Luas Tanah</label>
-        <input type="text" id="cust-tipe" placeholder="Contoh: Tipe 36/72" autocomplete="off">
-      </div>
-      <div class="field">
-        <label>Blok / Unit</label>
-        <input type="text" id="cust-blok" placeholder="Contoh: Blok C2 No. 14" autocomplete="off">
+    <div class="collapsible-content" id="customerCardBody" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, opacity 0.3s ease; opacity: 0; padding-top: 0;">
+      <div style="padding-top: 20px;">
+        <div class="grid">
+          <div class="field full">
+            <label>Nama Customer</label>
+            <input type="text" id="cust-nama" placeholder="Contoh: Budi Santoso" autocomplete="off">
+          </div>
+          <div class="field full">
+            <label>Nomor WhatsApp Customer</label>
+            <input type="text" id="cust-wa" inputmode="tel" placeholder="Contoh: 081234567890" autocomplete="off">
+          </div>
+          <div class="field">
+            <label>Nama Perumahan</label>
+            <input type="text" id="cust-perumahan" placeholder="Contoh: Green Amalia" autocomplete="off">
+          </div>
+          <div class="field">
+            <label>Tipe &amp; Luas Tanah</label>
+            <input type="text" id="cust-tipe" placeholder="Contoh: Tipe 36/72" autocomplete="off">
+          </div>
+          <div class="field full">
+            <label>Blok / Unit</label>
+            <input type="text" id="cust-blok" placeholder="Contoh: Blok C2 No. 14" autocomplete="off">
+          </div>
+          
+          <!-- SEPARATOR DATA MARKETING -->
+          <div class="field full" style="border-top: 1px dashed var(--gray2); margin: 10px 0 5px 0; padding-top: 15px;">
+            <span style="font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--navy); font-weight: 700; display: flex; align-items: center; gap: 6px;">
+              👔 Data Marketing (Internal)
+            </span>
+          </div>
+          
+          <div class="field">
+            <label>Nama Marketing</label>
+            <input type="text" id="mkt-nama" placeholder="Contoh: Ahmad Marketing" autocomplete="off" oninput="this.value = this.value.replace(/\b\w/g, c => c.toUpperCase())">
+          </div>
+          <div class="field">
+            <label>Nomor WhatsApp Marketing</label>
+            <input type="text" id="mkt-wa" inputmode="tel" placeholder="Contoh: 0812XXXXXXXX" autocomplete="off">
+          </div>
+        </div>
+
+        <p class="info-tip" style="margin-top: 16px;">💡 Jika diisi, data ini akan otomatis tampil di bagian paling atas PDF dan pesan WhatsApp.</p>
       </div>
     </div>
-
-    <p class="info-tip">💡 Jika diisi, data ini akan otomatis tampil di bagian paling atas PDF dan pesan WhatsApp.</p>
   </div>
-
   <!-- FORM CARD -->
   <div class="card">
     <div class="card-header">
@@ -2477,8 +2556,8 @@ body.admin-mode .admin-only { display: revert !important; }
         </label>
       </div>
       <div class="share-btn-row">
-        <button type="button" class="btn-share btn-share-copy" onclick="copySimulasiWA()">📋 Salin Simulasi WA</button>
-        <button type="button" class="btn-share btn-share-wa" onclick="bukaWhatsApp()">📱 Buka WhatsApp</button>
+        <button type="button" class="btn-share btn-share-copy" id="btn-salin-teks" onclick="salinTeksSimulasi()">📋 Salin Teks</button>
+        <button type="button" class="btn-share btn-share-wa" id="btn-bagikan" onclick="bagikanSimulasi()">📤 Bagikan ke WA</button>
         <button type="button" class="btn-share btn-share-pdf" id="btn-generate-pdf" onclick="generatePDF()">📄 Download PDF Simulasi</button>
       </div>
     </div>
@@ -2622,6 +2701,27 @@ body.admin-mode .admin-only { display: revert !important; }
     <div class="modal-actions">
       <button class="btn-modal-cancel" onclick="closeProgramModal()">Batal</button>
       <button class="btn-modal-save" onclick="saveProgram()">💾 Simpan Program</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: PDF BERHASIL DIBUAT — share ke WhatsApp Customer -->
+<div class="modal-overlay" id="pdf-success-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="pdf-success-modal-title">
+  <div class="modal-box pdf-success-modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="pdf-success-modal-title">PDF Berhasil Dibuat</div>
+      <button class="modal-close" onclick="closePdfSuccessModal()" title="Tutup" aria-label="Tutup modal">×</button>
+    </div>
+
+    <div class="pdf-success-icon">✅</div>
+
+    <p class="pdf-success-text">Simulasi berhasil dibuat dalam format PDF.</p>
+    <p class="pdf-success-text" id="pdf-success-question">Apakah Anda ingin membagikan hasil simulasi ini ke WhatsApp Customer?</p>
+    <p class="pdf-success-warning" id="pdf-success-no-number">⚠ Nomor WhatsApp Customer belum diisi.</p>
+
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closePdfSuccessModal()">Tutup</button>
+      <button class="btn-modal-save" id="btn-share-pdf-wa" onclick="shareGeneratedPdfToCustomer()">📲 Bagikan ke WhatsApp</button>
     </div>
   </div>
 </div>
@@ -3079,13 +3179,14 @@ function getCustomerData() {
     perumahan: val('cust-perumahan'),
     tipe:      val('cust-tipe'),
     blok:      val('cust-blok'),
+    whatsapp:  val('cust-wa'),
   };
 }
 
 // true jika minimal salah satu field data customer terisi
 function hasCustomerData(data) {
   const d = data || getCustomerData();
-  return !!(d.nama || d.perumahan || d.tipe || d.blok);
+  return !!(d.nama || d.perumahan || d.tipe || d.blok || d.whatsapp);
 }
 
 // ─── Dropdown Bank ────────────────────────────────
@@ -4787,6 +4888,7 @@ function buildWaMessage() {
     if (cust.perumahan) lines.push(row('Nama Perumahan',    toTitleCase(cust.perumahan)));
     if (cust.tipe)      lines.push(row('Tipe & Luas Tanah', toTitleCase(cust.tipe)));
     if (cust.blok)      lines.push(row('Blok/Unit',         toTitleCase(cust.blok)));
+    if (cust.whatsapp)  lines.push(row('No. WhatsApp',      cust.whatsapp));
     lines.push('');
   }
 
@@ -4851,27 +4953,36 @@ function buildWaMessage() {
   return lines.join('\n');
 }
 
-function fallbackCopyText(text) {
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.top = '0';
-  ta.style.left = '-9999px';
-  ta.style.opacity = '0';
-  document.body.appendChild(ta);
-  ta.focus();
-  ta.select();
-  let ok = false;
-  try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
-  document.body.removeChild(ta);
-  return ok;
+/**
+ * isMobileOrTablet()
+ * Deteksi sederhana berbasis user agent untuk membedakan HP/Tablet vs PC/Desktop.
+ * Dipakai supaya tombol "Bagikan ke WA" berperilaku beda:
+ * - HP & Tablet → native share sheet (navigator.share)
+ * - PC/Desktop  → langsung buka wa.me (WhatsApp Web/App)
+ * Catatan: deteksi UA tidak 100% akurat untuk semua kasus, tapi cukup andal
+ * untuk membedakan kelas device di sini (lebih baik dari sekadar cek
+ * `navigator.share` saja, karena beberapa browser desktop terbaru juga
+ * mendukung navigator.share padahal kita ingin perilaku desktop di sana).
+ */
+function isMobileOrTablet() {
+  const ua = navigator.userAgent || navigator.vendor || '';
+  // iPad modern (iOS 13+) kadang melaporkan UA seperti desktop Safari, makanya
+  // ditambah cek maxTouchPoints sebagai sinyal tambahan untuk tablet layar sentuh.
+  const isIpadOS = /Macintosh/i.test(ua) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1;
+  return /Android|iPhone|iPad|iPod|Mobile|Tablet|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua) || isIpadOS;
 }
 
-async function copySimulasiWA() {
+/**
+ * salinTeksSimulasi()
+ * Tombol "Salin Teks" — selalu tersedia di semua device (HP, tablet, PC).
+ * Menyalin teks simulasi (buildWaMessage()) ke clipboard.
+ */
+async function salinTeksSimulasi() {
   if (!lastSimulasi || !lastSimulasi.periods.length) {
     showToast('⚠ Hitung simulasi terlebih dahulu', true);
     return;
   }
+
   const text = buildWaMessage();
   let success = false;
 
@@ -4893,14 +5004,67 @@ async function copySimulasiWA() {
   }
 }
 
-function bukaWhatsApp() {
+/**
+ * bagikanSimulasi()
+ * Tombol "Bagikan ke WA" — satu sumber teks (buildWaMessage()), tapi perilakunya
+ * dibedakan menurut jenis device:
+ *
+ * - HP & Tablet (isMobileOrTablet() true) DAN navigator.share tersedia:
+ *   panggil native share sheet OS (navigator.share). Browser yang akan
+ *   menampilkan daftar aplikasi (WhatsApp, WhatsApp Business, Telegram, dst),
+ *   jadi pengguna bebas pilih mau dibagikan ke mana.
+ * - PC/Desktop (atau HP/tablet browser lama tanpa navigator.share):
+ *   langsung buka link wa.me (WhatsApp Web/App), seperti tombol "Buka WhatsApp"
+ *   versi sebelumnya — tanpa modal tambahan.
+ */
+async function bagikanSimulasi() {
   if (!lastSimulasi || !lastSimulasi.periods.length) {
     showToast('⚠ Hitung simulasi terlebih dahulu', true);
     return;
   }
+
   const text = buildWaMessage();
+
+  // ── HP/Tablet dengan Web Share API → native share sheet OS ──
+  if (isMobileOrTablet() && navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Simulasi KPR',
+        text: text
+      });
+      // Tidak perlu toast "berhasil": share sheet OS sudah memberi feedback
+      // visualnya sendiri (mis. animasi sheet tertutup setelah user memilih app).
+    } catch (err) {
+      // AbortError terjadi kalau user menutup/membatalkan share sheet —
+      // ini bukan error sungguhan, jadi diam saja (jangan tampilkan toast error).
+      if (err && err.name !== 'AbortError') {
+        console.error('navigator.share gagal:', err);
+        showToast('Gagal membuka menu bagikan. Coba lagi.', 'error', 'Bagikan Gagal');
+      }
+    }
+    return;
+  }
+
+  // ── PC/Desktop (atau fallback jika navigator.share tidak tersedia) ──
+  // Langsung buka WhatsApp Web/App dengan teks simulasi terisi otomatis.
   const url = 'https://wa.me/?text=' + encodeURIComponent(text);
   window.open(url, '_blank');
+}
+
+function fallbackCopyText(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.top = '0';
+  ta.style.left = '-9999px';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+  document.body.removeChild(ta);
+  return ok;
 }
 
 // ════════════════════════════════════════════════════
@@ -4924,14 +5088,15 @@ function formatTanggalPDF() {
 }
 
 // Render QR code ke dataURL PNG menggunakan div tersembunyi (qrcodejs butuh elemen DOM)
-function getWhatsAppQrDataUrl() {
+function getWhatsAppQrDataUrl(waNumber) {
   // BUG-017: More stable QR approach using polling/retry instead of fixed timeout
   return new Promise((resolve) => {
     const box = document.getElementById('qrcode-render-box');
     box.innerHTML = ''; // reset render sebelumnya
+    const finalNumber = waNumber || WA_NUMBER_PDF;
     try {
       new QRCode(box, {
-        text: `https://wa.me/${WA_NUMBER_PDF}`,
+        text: `https://wa.me/${finalNumber}`,
         width: 220,
         height: 220,
         colorDark: '#0d1f3c',
@@ -5036,6 +5201,7 @@ async function generatePDF() {
       if (custData.perumahan) custRows.push(['Nama Perumahan', toTitleCase(custData.perumahan)]);
       if (custData.tipe)      custRows.push(['Tipe & Luas Tanah', toTitleCase(custData.tipe)]);
       if (custData.blok)      custRows.push(['Blok/Unit', toTitleCase(custData.blok)]);
+      if (custData.whatsapp)  custRows.push(['Nomor WhatsApp Customer', custData.whatsapp]);
 
       doc.autoTable({
         startY: y + 2,
@@ -5223,7 +5389,31 @@ async function generatePDF() {
     // ── SECTION: QR Code WhatsApp + Kontak ──
     if (y > 245) { doc.addPage(); y = 16; }
 
-    const qrDataUrl = await getWhatsAppQrDataUrl();
+    // Logika Dinamis Data Marketing untuk PDF & QR Code
+    let currentMktNama = 'CS Podo Rukun Jaya Properti';
+    let currentMktWaDisplay = '0813-2527-7775';
+    let currentMktWaNumber = '6281325277775';
+
+    const mktNamaEl = document.getElementById('mkt-nama');
+    const mktWaEl = document.getElementById('mkt-wa');
+    if (mktNamaEl && mktNamaEl.value.trim() !== '') {
+      // Membuat setiap kata pada inputan nama marketing diakhiri/diawali huruf besar (Title Case)
+      currentMktNama = mktNamaEl.value.trim().toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+    }
+    if (mktWaEl && mktWaEl.value.trim() !== '') {
+      let rawWa = mktWaEl.value.trim().replace(/[^0-9]/g, '');
+      // Memisahkan nomor setiap 4 angka menggunakan tanda hubung agar mudah dihafal (Contoh: 0812-3456-7890)
+      currentMktWaDisplay = rawWa.replace(/(\d{4})(?=\d)/g, '$1-');
+      if (rawWa.startsWith('0')) {
+        currentMktWaNumber = '62' + rawWa.substring(1);
+      } else if (rawWa.startsWith('62')) {
+        currentMktWaNumber = rawWa;
+      } else {
+        currentMktWaNumber = '62' + rawWa;
+      }
+    }
+
+    const qrDataUrl = await getWhatsAppQrDataUrl(currentMktWaNumber);
 
     const boxY = y;
     const qrSize = 26;
@@ -5241,15 +5431,16 @@ async function generatePDF() {
     doc.setTextColor(navy[0], navy[1], navy[2]);
     doc.text('Konsultasi Simulasi KPR Ini', textX, boxY + 11);
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
+    // Mengubah ukuran nama marketing menjadi sedikit lebih besar dan semi-bold/bold agar tetap clean & elegant
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
     doc.setTextColor(textGray[0], textGray[1], textGray[2]);
-    doc.text('CS Podo Rukun Jaya Properti', textX, boxY + 17);
+    doc.text(currentMktNama, textX, boxY + 17);
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.setTextColor(green[0], green[1], green[2]);
-    doc.text('WhatsApp: 0813-2527-7775', textX, boxY + 23);
+    doc.text('WhatsApp: ' + currentMktWaDisplay, textX, boxY + 23);
 
     doc.setFont('helvetica', 'italic');
     doc.setFontSize(7.5);
@@ -5332,6 +5523,7 @@ async function generatePDF() {
     const fileName = rawFileName.replace(/[<>:"/\\|?*\x00-\x1F]/g, '');
     doc.save(fileName);
     showToast('File PDF simulasi KPR berhasil dibuat dan diunduh.', 'success', 'PDF Berhasil Diunduh');
+    openPdfSuccessModal(custData);
   } catch (err) {
     console.error('Gagal generate PDF:', err);
     showToast('Gagal membuat PDF. Pastikan simulasi sudah dihitung dan coba lagi.', 'error', 'Buat PDF Gagal');
@@ -5341,6 +5533,147 @@ async function generatePDF() {
   }
 }
 
+
+/**
+ * normalizeWaNumber()
+ * Normalisasi nomor WhatsApp customer sebelum dipakai membuka WhatsApp:
+ * - 081234567890   → 6281234567890
+ * - +6281234567890 → 6281234567890
+ * - 6281234567890  → tetap
+ * Menghilangkan spasi dan seluruh karakter selain angka.
+ */
+function normalizeWaNumber(raw) {
+  if (!raw) return '';
+  let digits = String(raw).replace(/[^\d]/g, '');
+  if (!digits) return '';
+  if (digits.startsWith('0')) {
+    digits = '62' + digits.slice(1);
+  }
+  return digits;
+}
+
+/**
+ * buildCustomerWaMessage()
+ * Pesan WhatsApp otomatis yang ditujukan langsung ke Customer (berbeda dari
+ * buildWaMessage() yang dipakai tombol "Bagikan ke WA" / "Salin Teks" untuk
+ * keperluan internal marketing). Dipanggil dari popup "PDF Berhasil Dibuat".
+ */
+function buildCustomerWaMessage(custData) {
+  if (!lastSimulasi) return '';
+  const s = lastSimulasi;
+  const cust = custData || getCustomerData();
+  const namaCustomer = cust.nama ? toTitleCase(cust.nama) : '';
+  const sep = '━━━━━━━━━━━━━━━';
+
+  // Ambil data nama marketing jika ada
+  const mktNamaEl = document.getElementById('mkt-nama');
+  let namaMarketing = '';
+  if (mktNamaEl && mktNamaEl.value.trim() !== '') {
+    namaMarketing = mktNamaEl.value.trim().toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+  }
+
+  const lines = [];
+  lines.push(`Halo Bapak/Ibu ${namaCustomer || 'Pelanggan'},`);
+  lines.push('');
+  lines.push('Terima kasih telah mempercayakan rencana kepemilikan hunian Anda kepada *PT. Podo Rukun Jaya Properti.*');
+  lines.push('');
+  lines.push('Dokumen PDF untuk rincian Estimasi Perhitungan KPR Anda telah berhasil kami terbitkan.');
+  lines.push('');
+  lines.push(sep);
+  lines.push('🏠 DATA RENCANA PROPERTI');
+  lines.push(sep);
+  lines.push(`Perumahan : ${cust.perumahan ? toTitleCase(cust.perumahan) : '-'}`);
+  lines.push(`Tipe / Luas : ${cust.tipe ? toTitleCase(cust.tipe) : '-'}`);
+  lines.push(`Blok / Unit : ${cust.blok ? toTitleCase(cust.blok) : '-'}`);
+  lines.push(sep);
+  lines.push('');
+  lines.push('👉 SILAKAN UNDUH & BUKA FILE DOKUMEN PDF yang kami lampirkan bersama pesan ini untuk melihat laporan simulasi angsuran lengkap Anda secara detail, rapi, dan transparan.');
+  lines.push('');
+  lines.push('⚠️ Penting: Perhitungan di dalam simulasi ini bersifat estimasi atau gambaran awal. Suku bunga, skema program, dan nominal angka kepastian mutlak tetap berada di pihak bank penyedia KPR.');
+  lines.push('');
+  lines.push('Apabila Bapak/Ibu memerlukan simulasi alternatif dengan nominal DP berbeda, skema perbandingan program bank lain, atau konsultasi kelayakan berkas KPR secara gratis, silakan hubungi kami kapan saja.');
+  lines.push('');
+  lines.push('Salam Hangat & Terima Kasih.');
+  lines.push('*PT. Podo Rukun Jaya Properti*');
+  if (namaMarketing) {
+    lines.push(`*${namaMarketing}*`);
+  }
+
+  return lines.join('\n');
+}
+
+function openWhatsAppToCustomer(rawNumber, message) {
+  const phone = normalizeWaNumber(rawNumber);
+  if (!phone) return;
+  const encodedText = encodeURIComponent(message || '');
+  const ua = navigator.userAgent || navigator.vendor || '';
+  const isAndroid = /Android/i.test(ua);
+
+  if (isMobileOrTablet()) {
+    if (isAndroid) {
+      // Android: intent URL tanpa "package" spesifik agar sistem operasi
+      // menampilkan chooser di antara seluruh aplikasi yang menangani skema
+      // whatsapp: (WhatsApp & WhatsApp Business), bukan langsung wa.me.
+      window.location.href = `intent://send?phone=${phone}&text=${encodedText}#Intent;scheme=whatsapp;end`;
+    } else {
+      // iOS & perangkat mobile/tablet lain: gunakan custom URL scheme WhatsApp.
+      window.location.href = `whatsapp://send?phone=${phone}&text=${encodedText}`;
+    }
+  } else {
+    // PC/Desktop/laptop — fallback ke WhatsApp Web/App via wa.me.
+    window.open(`https://wa.me/${phone}?text=${encodedText}`, '_blank');
+  }
+}
+
+/**
+ * openPdfSuccessModal()
+ * Popup yang tampil setiap kali Generate PDF selesai. Tombol "Bagikan ke
+ * WhatsApp" hanya ditampilkan jika Nomor WhatsApp Customer sudah diisi.
+ */
+function openPdfSuccessModal(custData) {
+  const overlay = document.getElementById('pdf-success-modal-overlay');
+  if (!overlay) return;
+
+  const data = custData || getCustomerData();
+  const hasWa = !!(data.whatsapp && data.whatsapp.trim());
+
+  const questionEl = document.getElementById('pdf-success-question');
+  const noNumberEl = document.getElementById('pdf-success-no-number');
+  const shareBtn = document.getElementById('btn-share-pdf-wa');
+
+  if (questionEl) questionEl.style.display = hasWa ? '' : 'none';
+  if (noNumberEl) noNumberEl.style.display = hasWa ? 'none' : 'block';
+  if (shareBtn) shareBtn.style.display = hasWa ? '' : 'none';
+
+  overlay.classList.add('show');
+}
+
+function closePdfSuccessModal() {
+  const overlay = document.getElementById('pdf-success-modal-overlay');
+  if (overlay) overlay.classList.remove('show');
+}
+
+/**
+ * shareGeneratedPdfToCustomer()
+ * Tombol "Bagikan ke WhatsApp" pada popup PDF Berhasil Dibuat.
+ */
+function shareGeneratedPdfToCustomer() {
+  const cust = getCustomerData();
+  if (!cust.whatsapp) {
+    closePdfSuccessModal();
+    return;
+  }
+
+  const message = buildCustomerWaMessage(cust);
+  closePdfSuccessModal();
+  openWhatsAppToCustomer(cust.whatsapp, message);
+
+  showToast(
+    'WhatsApp berhasil dibuka. Jangan lupa melampirkan file PDF simulasi yang baru saja dibuat.',
+    'info',
+    'WhatsApp Terbuka'
+  );
+}
 
 let waToastTimer = null;
 
@@ -5385,7 +5718,37 @@ function showToast(pesan, tipe, judul) {
 }
 
 // ─── Inisialisasi ─────────────────────────────────
+// ── FUNGSI LOCAL STORAGE UNTUK DATA MARKETING ──
+function saveMarketingData() {
+  const mktNama = document.getElementById('mkt-nama')?.value || '';
+  const mktWa = document.getElementById('mkt-wa')?.value || '';
+  localStorage.setItem('podo_mkt_nama', mktNama);
+  localStorage.setItem('podo_mkt_wa', mktWa);
+}
+
+function loadMarketingData() {
+  const savedNama = localStorage.getItem('podo_mkt_nama');
+  const savedWa = localStorage.getItem('podo_mkt_wa');
+  
+  const mktNamaEl = document.getElementById('mkt-nama');
+  const mktWaEl = document.getElementById('mkt-wa');
+  
+  if (savedNama && mktNamaEl) {
+    mktNamaEl.value = savedNama;
+  }
+  if (savedWa && mktWaEl) {
+    mktWaEl.value = savedWa;
+  }
+}
+
 (async () => {
+  // Muat data marketing dari penyimpanan lokal
+  loadMarketingData();
+  
+  // Pasang event listener agar setiap ketikan otomatis tersimpan ke localStorage
+  document.getElementById('mkt-nama')?.addEventListener('input', saveMarketingData);
+  document.getElementById('mkt-wa')?.addEventListener('input', saveMarketingData);
+
   // Muat biaya tambahan (tetap dari localStorage — data ini bersifat lokal per pengguna)
   loadOtherCosts();
   applyOtherCostsToUI();
@@ -5401,5 +5764,29 @@ function showToast(pesan, tipe, judul) {
 })();
 
 </script>
+
+<script>
+function toggleCustomerForm() {
+  const content = document.getElementById('customerCardBody');
+  const chevron = document.getElementById('customerChevron');
+  
+  if (content.style.maxHeight === '0px' || content.style.maxHeight === '') {
+    content.style.maxHeight = content.scrollHeight + 'px';
+    content.style.opacity = '1';
+    chevron.style.transform = 'rotate(180deg)';
+  } else {
+    content.style.maxHeight = '0px';
+    content.style.opacity = '0';
+    chevron.style.transform = 'rotate(0deg)';
+  }
+}
+// Pastikan inisialisasi awal dalam keadaan tertutup dengan benar
+document.addEventListener("DOMContentLoaded", () => {
+  const content = document.getElementById('customerCardBody');
+  content.style.maxHeight = '0px';
+  content.style.opacity = '0';
+});
+</script>
+
 </body>
 </html>
