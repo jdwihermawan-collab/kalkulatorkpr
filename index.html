@@ -1911,7 +1911,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   display: none;
 }
 
-/* ── BIAYA TAMBAHAN: card hasil simulasi (BIAYA LAIN-LAIN) ── */
+/* ── BIAYA LAIN-LAIN: card hasil simulasi (BIAYA LAIN-LAIN) ── */
 .othercost-card {
   margin: 4px 0 20px;
   background: var(--off);
@@ -2395,9 +2395,9 @@ body.admin-mode .admin-only { display: revert !important; }
       </div>
     </div>
 
-    <!-- Biaya Tambahan: BPHTB & AJB/BBN -->
+    <!-- Biaya Lain-Lain: BPHTB & AJB/BBN -->
     <div class="othercost-input-section">
-      <div class="othercost-input-title">💰 Biaya Tambahan</div>
+      <div class="othercost-input-title">💰 Biaya Lain-Lain</div>
 
       <!-- BPHTB -->
       <div class="othercost-item">
@@ -2599,10 +2599,10 @@ body.admin-mode .admin-only { display: revert !important; }
       <button class="show-more-btn" id="show-more-btn" onclick="toggleTable()">Tampilkan semua tahun ▾</button>
     </div>
 
-    <!-- Biaya Tambahan (BPHTB & AJB/BBN) — selalu di bawah Tabel Amortisasi -->
+    <!-- Biaya Lain-Lain (BPHTB & AJB/BBN) — selalu di bawah Tabel Amortisasi -->
     <div class="res-divider" id="othercost-result-divider" style="display:none;"></div>
     <div class="othercost-card" id="othercost-result-card" style="display:none;">
-      <div class="othercost-card-title">💰 Biaya Tambahan</div>
+      <div class="othercost-card-title">💰 Biaya Lain-Lain</div>
       <div id="othercost-result-body"></div>
     </div>
   </div>
@@ -2754,6 +2754,56 @@ let programModalFloatingValue = FLOATING_RATE_DEFAULT; // nilai floatingRate yan
 let programModalAkad = 'konvensional'; // 'konvensional' (anuitas/efektif) atau 'syariah' (flat/margin) atau 'syariah-efektif' (anuitas tapi margin syariah) — akad yang sedang dipilih di modal program
 const PROGRAM_SEARCH_THRESHOLD = 10; // search box muncul jika jumlah program > 10
 
+// ─── localStorage: Harga Properti & DP ───────────────────────
+const HARGA_DP_STORAGE_KEY = 'podo_harga_dp';
+
+function saveHargaDp() {
+  try {
+    const data = {
+      harga   : document.getElementById('harga')?.value || '',
+      dpMode  : dpMode,
+      dpNom   : document.getElementById('dp-nom')?.value || '',
+      dpSlider: document.getElementById('dp-slider')?.value || '20',
+    };
+    localStorage.setItem(HARGA_DP_STORAGE_KEY, JSON.stringify(data));
+  } catch(e) { /* silent — storage mungkin penuh atau disabled */ }
+}
+
+function loadHargaDp() {
+  try {
+    const raw = localStorage.getItem(HARGA_DP_STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+
+    // Isi harga properti
+    if (data.harga) {
+      const hargaEl = document.getElementById('harga');
+      if (hargaEl) {
+        hargaEl.value = data.harga;
+        // Trigger BPHTB auto-update
+        renderOtherCosts();
+      }
+    }
+
+    // Pulihkan mode DP (nominal/persentase) lalu isi nilainya
+    const mode = data.dpMode || 'nom';
+    setDpMode(mode);
+
+    if (mode === 'pct') {
+      const slider = document.getElementById('dp-slider');
+      if (slider && data.dpSlider) {
+        slider.value = data.dpSlider;
+        document.getElementById('dp-val').textContent = data.dpSlider + '%';
+      }
+    } else {
+      const dpNomEl = document.getElementById('dp-nom');
+      if (dpNomEl && data.dpNom) {
+        dpNomEl.value = data.dpNom;
+      }
+    }
+  } catch(e) { /* data korup — abaikan saja */ }
+}
+
 // ─── Format Rupiah ────────────────────────────────
 function formatRp(el) {
   const pos = el.selectionStart;
@@ -2767,9 +2817,13 @@ function formatRp(el) {
   if (el.id === 'harga' || el.id === 'dp-nom') {
     if (bungaMode === 'bank') renderProgramGrid();
   }
-  // Biaya Tambahan: BPHTB mengikuti Harga Properti secara otomatis
+  // Biaya Lain-Lain: BPHTB mengikuti Harga Properti secara otomatis
   if (el.id === 'harga') {
     renderOtherCosts();
+  }
+  // Auto-simpan harga & DP ke localStorage setiap ada perubahan
+  if (el.id === 'harga' || el.id === 'dp-nom') {
+    saveHargaDp();
   }
 }
 function parseRp(el) {
@@ -2786,11 +2840,15 @@ function setDpMode(m) {
   const nomWrap = document.getElementById('dp-nom-wrap');
   pctWrap.style.display = m==='pct' ? 'flex' : 'none';
   nomWrap.style.display = m==='nom' ? 'block' : 'none';
+  // Simpan mode DP yang dipilih
+  saveHargaDp();
 }
 function syncSlider() {
   document.getElementById('dp-val').textContent = document.getElementById('dp-slider').value + '%';
   // BUG-019: refresh card estimates when DP slider changes
   if (bungaMode === 'bank') renderProgramGrid();
+  // Simpan nilai slider DP
+  saveHargaDp();
 }
 
 // ─── Tenor Sync ───────────────────────────────────
@@ -3596,8 +3654,8 @@ function selectProgramCard(bankId, programId) {
   // supaya user tidak melihat hasil simulasi dari program yang sudah tidak relevan.
   hideResultCard();
 
-  // Tetap scroll ke seksi "Biaya Tambahan" (BPHTB/AJB-BBN/Admin KPR) supaya
-  // user diarahkan mengisi/cek biaya tambahan dulu sebelum klik "Hitung Cicilan".
+  // Tetap scroll ke seksi "Biaya Lain-Lain" (BPHTB/AJB-BBN/Admin KPR) supaya
+  // user diarahkan mengisi/cek biaya lain-lain dulu sebelum klik "Hitung Cicilan".
   // Pakai sedikit delay agar DOM dari renderProgramGrid() sempat selesai re-render
   // sebelum browser menghitung posisi scroll (mencegah salah target di mobile).
   setTimeout(() => {
@@ -4248,7 +4306,7 @@ function fmtShort(n) {
 }
 
 // ════════════════════════════════════════════════════
-// ─── BIAYA TAMBAHAN: BPHTB & AJB/BBN ────────────────
+// ─── BIAYA LAIN-LAIN: BPHTB & AJB/BBN ────────────────
 // ════════════════════════════════════════════════════
 const OTHERCOST_STORAGE_KEY = 'otherCosts';
 const AJB_BBN_DEFAULT = 5000000;
@@ -4261,7 +4319,7 @@ let otherCosts = {
   adminKpr: { enabled: false, amount: 0, free: false, preset: '5', customPct: 0 }
 };
 
-// ─── localStorage CRUD: Biaya Tambahan ─────────────
+// ─── localStorage CRUD: Biaya Lain-Lain ─────────────
 function loadOtherCosts() {
   try {
     const raw = localStorage.getItem(OTHERCOST_STORAGE_KEY);
@@ -4294,7 +4352,7 @@ function saveOtherCostsToStorage() {
   try {
     localStorage.setItem(OTHERCOST_STORAGE_KEY, JSON.stringify(otherCosts));
   } catch (e) {
-    showToast('Gagal menyimpan preferensi Biaya Tambahan ke browser.', 'error', 'Simpan Gagal');
+    showToast('Gagal menyimpan preferensi Biaya Lain-Lain ke browser.', 'error', 'Simpan Gagal');
     console.error('saveOtherCostsToStorage error:', e);
   }
 }
@@ -4329,7 +4387,7 @@ function applyOtherCostsToUI() {
   document.getElementById('oc-adminkpr-body').classList.toggle('show', otherCosts.adminKpr.enabled);
 }
 
-// Dipanggil setiap kali ada perubahan pada checkbox/preset/custom Biaya Tambahan
+// Dipanggil setiap kali ada perubahan pada checkbox/preset/custom Biaya Lain-Lain
 function onOtherCostToggle() {
   otherCosts.bphtb.enabled  = document.getElementById('oc-bphtb-enabled').checked;
   otherCosts.bphtb.free     = document.getElementById('oc-bphtb-free').checked;
@@ -4471,7 +4529,7 @@ function renderOtherCosts() {
     adminCustomErrEl.style.display = (otherCosts.adminKpr.enabled && isAdminCustomEmpty) ? 'block' : 'none';
   }
 
-  // Card "BIAYA TAMBAHAN" di hasil simulasi (posisi: paling bawah, di bawah Tabel Amortisasi)
+  // Card "BIAYA LAIN-LAIN" di hasil simulasi (posisi: paling bawah, di bawah Tabel Amortisasi)
   const card = document.getElementById('othercost-result-card');
   const body = document.getElementById('othercost-result-body');
   const divider = document.getElementById('othercost-result-divider');
@@ -4487,6 +4545,50 @@ function renderOtherCosts() {
   card.style.display = 'block';
   if (divider) divider.style.display = 'block';
   const biayaNetto = Math.max(0, calc.totalOtherCost - calc.totalBenefit);
+  const s = lastSimulasi;
+  const dpVal = (s && s.dp) ? s.dp : 0;
+  const totalDanaAwal = biayaNetto + dpVal;
+
+  // Hitung rekomendasi DP cerdas (selisih cicilan periode pertama)
+  let rekomendasiHtml = '';
+  if (s && s.periods && s.periods.length > 0 && s.pokok > 0) {
+    const cicilanAwal = s.periods[0].cicilan;
+    const rate1 = s.periods[0].rate / 100; // rate per tahun
+    const tenor = s.tenor;
+    const n = tenor * 12;
+    const r = rate1 / 12;
+
+    function hitungCicilanDp(newDp) {
+      const newPokok = s.harga - newDp;
+      if (newPokok <= 0) return 0;
+      if (r === 0) return newPokok / n;
+      return newPokok * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
+    }
+
+    const tambah10jt = 10000000;
+    const tambah30jt = 30000000;
+    const cicilanDp10 = hitungCicilanDp(dpVal + tambah10jt);
+    const cicilanDp30 = hitungCicilanDp(dpVal + tambah30jt);
+    const selisih10 = cicilanAwal - cicilanDp10;
+    const selisih30 = cicilanAwal - cicilanDp30;
+
+    rekomendasiHtml = `
+    <div class="othercost-rekomendasi-card" style="margin-top:14px; background:linear-gradient(135deg,#f0f7ff,#e8f4ec); border:1.5px solid #a8d5b5; border-radius:10px; padding:14px 14px 10px 14px;">
+      <div style="font-size:13px;font-weight:700;color:#1a5c2e;margin-bottom:8px;">💡 Rekomendasi Cerdas Alternatif DP</div>
+      <div style="font-size:11.5px;color:#444;margin-bottom:8px;">Dengan menambah DP, angsuran bulanan Anda bisa lebih ringan:</div>
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="background:#fff;border-radius:7px;padding:9px 11px;border:1px solid #c8e6c9;">
+          <div style="font-size:12px;font-weight:600;color:#2e6b46;">➕ DP Tambah <b>Rp10 Juta</b> → DP = ${fmt(dpVal + tambah10jt)}</div>
+          <div style="font-size:11.5px;color:#555;margin-top:3px;">Angsuran Tahun 1: <b style="color:#1a5c2e;">${fmt(cicilanDp10)}/bulan</b> &nbsp;|&nbsp; <span style="color:var(--accent);font-weight:700;">Hemat ${fmt(Math.round(selisih10))}/bulan</span></div>
+        </div>
+        <div style="background:#fff;border-radius:7px;padding:9px 11px;border:1px solid #c8e6c9;">
+          <div style="font-size:12px;font-weight:600;color:#2e6b46;">➕ DP Tambah <b>Rp30 Juta</b> → DP = ${fmt(dpVal + tambah30jt)}</div>
+          <div style="font-size:11.5px;color:#555;margin-top:3px;">Angsuran Tahun 1: <b style="color:#1a5c2e;">${fmt(cicilanDp30)}/bulan</b> &nbsp;|&nbsp; <span style="color:var(--accent);font-weight:700;">Hemat ${fmt(Math.round(selisih30))}/bulan</span></div>
+        </div>
+      </div>
+    </div>`;
+  }
+
   body.innerHTML = calc.items.map(it => `
     <div class="othercost-row">
       <span class="oc-label">${it.label}</span>
@@ -4494,11 +4596,13 @@ function renderOtherCosts() {
     </div>
   `).join('') + `
     <div class="othercost-divider"></div>
-    <div class="othercost-total-row"><span>Total Biaya Tambahan</span><span>${fmt(calc.totalOtherCost)}</span></div>
-    <div class="othercost-benefit-row"><span>Total Benefit</span><span>${fmt(calc.totalBenefit)}</span></div>
+    <div class="othercost-total-row"><span>Total Biaya Lain-Lain</span><span>${fmt(calc.totalOtherCost)}</span></div>
+    <div class="othercost-benefit-row"><span>🎁 Anda Hemat Sebesar</span><span>${fmt(calc.totalBenefit)}</span></div>
     <div class="othercost-divider"></div>
-    <div class="othercost-total-row" style="color:var(--accent);"><span>💳 Biaya yang Perlu Disiapkan</span><span>${fmt(biayaNetto)}</span></div>
-  `;
+    <div style="font-size:11px;color:#888;margin:4px 0 2px 0;">* Biaya di bawah belum termasuk Uang Muka (DP) sebesar <b>${fmt(dpVal)}</b>. Total dana awal yang perlu disiapkan = Biaya Lain-Lain + DP.</div>
+    <div class="othercost-total-row" style="color:var(--accent);"><span>💳 Dana yang Perlu Disiapkan di Awal</span><span>${fmt(totalDanaAwal)}</span></div>
+    <div style="font-size:11px;color:#888;margin:2px 0 0 0;">DP: ${fmt(dpVal)} + Biaya Lain-Lain: ${fmt(biayaNetto)}</div>
+  ` + rekomendasiHtml;
 
   return calc;
 }
@@ -4512,79 +4616,264 @@ function waRow(label, value) {
 function generateOtherCostsWhatsapp(calc) {
   if (!calc || !calc.items.length) return [];
   const biayaNetto = Math.max(0, calc.totalOtherCost - calc.totalBenefit);
-  const lines = ['', '*BIAYA TAMBAHAN*', ''];
+  const s = lastSimulasi;
+  const dpVal = (s && s.dp) ? s.dp : 0;
+  const totalDanaAwal = biayaNetto + dpVal;
+
+  const lines = ['', '*BIAYA LAIN-LAIN*', ''];
   calc.items.forEach(it => {
     lines.push(waRow(it.label, `${fmt(it.amount)}${it.free ? ' (FREE)' : ''}`));
   });
   lines.push('');
-  lines.push(waRow('Total Biaya Tambahan', fmt(calc.totalOtherCost)));
-  lines.push(waRow('Total Benefit', fmt(calc.totalBenefit)));
-  lines.push(waRow('Biaya yang Perlu Disiapkan', fmt(biayaNetto)));
+  lines.push(waRow('Total Biaya Lain-Lain', fmt(calc.totalOtherCost)));
+  lines.push(waRow('Anda Hemat Sebesar (Promo)', fmt(calc.totalBenefit)));
+  lines.push('');
+  lines.push('* Biaya di bawah belum termasuk Uang Muka (DP) sebesar ' + fmt(dpVal) + '. Total dana awal = Biaya Lain-Lain + DP.');
+  lines.push(waRow('Dana yang Perlu Disiapkan di Awal', fmt(totalDanaAwal)));
+  lines.push('  (DP: ' + fmt(dpVal) + ' + Biaya Lain-Lain: ' + fmt(biayaNetto) + ')');
+
+  // Rekomendasi Cerdas DP
+  if (s && s.periods && s.periods.length > 0 && s.pokok > 0) {
+    const cicilanAwal = s.periods[0].cicilan;
+    const rate1 = s.periods[0].rate / 100;
+    const tenor = s.tenor;
+    const n = tenor * 12;
+    const r = rate1 / 12;
+    function hitungCicilanDpWa(newDp) {
+      const newPokok = s.harga - newDp;
+      if (newPokok <= 0) return 0;
+      if (r === 0) return newPokok / n;
+      return newPokok * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
+    }
+    const tambah10jt = 10000000;
+    const tambah30jt = 30000000;
+    const cicilanDp10 = hitungCicilanDpWa(dpVal + tambah10jt);
+    const cicilanDp30 = hitungCicilanDpWa(dpVal + tambah30jt);
+    const selisih10 = Math.round(cicilanAwal - cicilanDp10);
+    const selisih30 = Math.round(cicilanAwal - cicilanDp30);
+
+    lines.push('');
+    lines.push('*REKOMENDASI CERDAS ALTERNATIF DP*');
+    lines.push('');
+    lines.push('Dengan menambah DP, angsuran bulanan Anda bisa lebih ringan:');
+    lines.push('');
+    lines.push(`➕ DP Tambah Rp10 Juta → DP = ${fmt(dpVal + tambah10jt)}`);
+    lines.push(`   Angsuran Tahun 1: ${fmt(cicilanDp10)}/bulan | Hemat ${fmt(selisih10)}/bulan`);
+    lines.push('');
+    lines.push(`➕ DP Tambah Rp30 Juta → DP = ${fmt(dpVal + tambah30jt)}`);
+    lines.push(`   Angsuran Tahun 1: ${fmt(cicilanDp30)}/bulan | Hemat ${fmt(selisih30)}/bulan`);
+  }
+
   return lines;
 }
 
 function generateOtherCostsCopy(calc) {
   // Tombol "Salin Simulasi WA" memakai teks yang sama dengan tombol WhatsApp
-  // (satu sumber pesan), jadi format Biaya Tambahan juga sama untuk keduanya.
+  // (satu sumber pesan), jadi format Biaya Lain-Lain juga sama untuk keduanya.
   return generateOtherCostsWhatsapp(calc);
 }
 
-// ─── Generator section PDF "Biaya Tambahan" ────────
+// ─── Generator section PDF "Biaya Lain-Lain" ────────
 function generateOtherCostsPDF(doc, calc, y, marginL, marginR, navy, textGray) {
   if (!calc || !calc.items.length) return y;
 
-  const biayaNetto = Math.max(0, calc.totalOtherCost - calc.totalBenefit);
-  const accent = [46, 107, 230];
+  const biayaNetto   = Math.max(0, calc.totalOtherCost - calc.totalBenefit);
+  const accent       = [46, 107, 230];
+  const green        = [22, 163, 74];
+  const darkGreen    = [20, 83, 45];
+  const lightGreen   = [240, 253, 244];
+  const borderGreen  = [187, 227, 201];
+  const pageW        = doc.internal.pageSize.getWidth();
+  const contentW     = pageW - marginL - marginR;
+  const s            = lastSimulasi;
+  const dpVal        = (s && s.dp) ? s.dp : 0;
+  const totalDanaAwal = biayaNetto + dpVal;
 
+  // ── Cek ruang: minimal butuh judul (7mm) + header tabel (8mm) + 1 baris (7mm) = ~22mm
+  //    Jika tidak cukup, pindah ke halaman baru agar tabel tidak terpotong di awal ──
+  const pageH      = doc.internal.pageSize.getHeight();
+  const marginBot  = 20; // margin bawah aman
+  const minSpace   = 28; // ruang minimum sebelum mulai seksi Biaya Lain-Lain
+  if (y + minSpace > pageH - marginBot) {
+    doc.addPage();
+    y = 16;
+  }
+
+  // ── Judul seksi ──────────────────────────────────────────
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.setTextColor(navy[0], navy[1], navy[2]);
-  doc.text('Biaya Tambahan', marginL, y);
+  doc.text('Biaya Lain-Lain', marginL, y);
   y += 2;
 
+  // ── Tabel item biaya ─────────────────────────────────────
   const rows = calc.items.map(it => [
     it.label,
     fmt(it.amount) + (it.free ? ' (FREE)' : ''),
     it.free ? 'FREE' : '-'
   ]);
-
   doc.autoTable({
     startY: y + 2,
-    margin: { left: marginL, right: marginR },
+    margin: { left: marginL, right: marginR, top: 24 },
     theme: 'grid',
     headStyles: { fillColor: navy, textColor: 255, fontSize: 9.5, fontStyle: 'bold' },
-    bodyStyles: { fontSize: 9.5, textColor: [30,35,50] },
-    columnStyles: { 2: { halign: 'center', fontStyle: 'bold' } },
+    bodyStyles: { fontSize: 9.5, textColor: [30, 35, 50] },
+    columnStyles: { 2: { halign: 'center', fontStyle: 'bold', cellWidth: 22 } },
     head: [['Keterangan', 'Nominal', 'Status']],
     body: rows,
+    // Jika tabel terpaksa pindah halaman di tengah, tampilkan judul ulang di halaman baru
+    didDrawPage: function(data) {
+      if (data.pageNumber > 1) {
+        // Tulis judul "Biaya Lain-Lain (Lanjutan)" di halaman baru, di atas margin tabel
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(navy[0], navy[1], navy[2]);
+        doc.text('Biaya Lain-Lain (Lanjutan)', marginL, data.settings.margin.top - 6);
+      }
+    },
   });
-  y = doc.lastAutoTable.finalY + 5;
+  y = doc.lastAutoTable.finalY + 4;
 
-  // Total Biaya Tambahan
+  // ── Baris ringkasan: Total + Promo (dua kolom rata) ──────
+  const col2X = marginL + contentW * 0.52;
+
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9.5);
+  doc.setFontSize(9);
   doc.setTextColor(navy[0], navy[1], navy[2]);
-  doc.text(`Total Biaya Tambahan : ${fmt(calc.totalOtherCost)}`, marginL, y);
-  y += 5.5;
+  doc.text('Total Biaya Lain-Lain', marginL, y);
+  doc.text(fmt(calc.totalOtherCost), col2X, y);
+  y += 5;
 
-  // Total Benefit
-  doc.setTextColor(22, 163, 74);
-  doc.text(`Total Benefit : ${fmt(calc.totalBenefit)}`, marginL, y);
-  y += 5.5;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(green[0], green[1], green[2]);
+  doc.text('Anda Hemat Sebesar (Promo)', marginL, y);
+  doc.text(fmt(calc.totalBenefit), col2X, y);
+  y += 4;
 
-  // Biaya yang Perlu Disiapkan — bold, accent biru, kotak highlight
-  const pageW = doc.internal.pageSize.getWidth();
-  const contentW = pageW - marginL - marginR;
+  // Garis tipis pemisah
+  doc.setDrawColor(210, 215, 225);
+  doc.setLineWidth(0.3);
+  doc.line(marginL, y, marginL + contentW, y);
+  y += 4;
+
+  // ── Catatan kecil DP ────────────────────────────────────
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(7.5);
+  doc.setTextColor(130, 100, 40);
+  const catatanTxt = `Catatan: Nominal di atas belum termasuk Uang Muka (DP) sebesar ${fmt(dpVal)}. Dana yang harus disiapkan di awal = Biaya Lain-Lain + DP.`;
+  const catatanLines = doc.splitTextToSize(catatanTxt, contentW);
+  doc.text(catatanLines, marginL, y);
+  y += catatanLines.length * 3.8 + 3;
+
+  // ── Kotak highlight: Dana yang Perlu Disiapkan di Awal ──
+  const boxH1 = 14;
   doc.setFillColor(235, 241, 253);
   doc.setDrawColor(accent[0], accent[1], accent[2]);
-  doc.setLineWidth(0.4);
-  doc.roundedRect(marginL, y - 3.5, contentW, 9, 2, 2, 'FD');
+  doc.setLineWidth(0.5);
+  doc.roundedRect(marginL, y, contentW, boxH1, 2, 2, 'FD');
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setTextColor(accent[0], accent[1], accent[2]);
-  doc.text(`Biaya yang Perlu Disiapkan : ${fmt(biayaNetto)}`, marginL + 4, y + 2.5);
-  y += 13;
+  doc.text('Dana yang Perlu Disiapkan di Awal', marginL + 4, y + 5);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.text(fmt(totalDanaAwal), marginL + 4, y + 11);
+
+  // Sub-label kanan: rincian DP + biaya
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(90, 100, 130);
+  const subRight = `DP ${fmt(dpVal)}  +  Biaya Lain-Lain ${fmt(biayaNetto)}`;
+  doc.text(subRight, marginL + contentW - 4, y + 11, { align: 'right' });
+  y += boxH1 + 7;
+
+  // ── Rekomendasi Cerdas Alternatif DP ─────────────────────
+  if (s && s.periods && s.periods.length > 0 && s.pokok > 0) {
+    const cicilanAwal = s.periods[0].cicilan;
+    const rate1 = s.periods[0].rate / 100;
+    const n = s.tenor * 12;
+    const r = rate1 / 12;
+
+    function _hitDp(newDp) {
+      const p = s.harga - newDp;
+      if (p <= 0) return 0;
+      if (r === 0) return p / n;
+      return p * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
+    }
+
+    const tambah10 = 10000000;
+    const tambah30 = 30000000;
+    const cicilan10 = _hitDp(dpVal + tambah10);
+    const cicilan30 = _hitDp(dpVal + tambah30);
+    const hemat10   = Math.round(cicilanAwal - cicilan10);
+    const hemat30   = Math.round(cicilanAwal - cicilan30);
+
+    // Cek cukup ruang, jika tidak pindah halaman
+    if (y + 52 > doc.internal.pageSize.getHeight() - 20) {
+      doc.addPage();
+      y = 16;
+    }
+
+    // Judul rekomendasi — tanpa emoji, pakai tanda bintang ASCII
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(darkGreen[0], darkGreen[1], darkGreen[2]);
+    doc.text('* Rekomendasi Cerdas: Alternatif Penambahan DP', marginL, y);
+    y += 4;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(70, 75, 85);
+    doc.text('Dengan menambah uang muka, angsuran bulanan Anda akan lebih ringan:', marginL, y);
+    y += 5;
+
+    // ── Kartu rekomenasi menggunakan autoTable (lebih rapi & PDF-safe) ──
+    doc.autoTable({
+      startY: y,
+      margin: { left: marginL, right: marginR },
+      theme: 'grid',
+      headStyles: {
+        fillColor: darkGreen,
+        textColor: 255,
+        fontSize: 9,
+        fontStyle: 'bold',
+        halign: 'center',
+      },
+      bodyStyles: { fontSize: 9, textColor: [30, 35, 50], cellPadding: 3 },
+      columnStyles: {
+        0: { fontStyle: 'bold', textColor: [20, 83, 45] },
+        1: { halign: 'right' },
+        2: { halign: 'right', fontStyle: 'bold', textColor: [46, 107, 230] },
+        3: { halign: 'right', fontStyle: 'bold', textColor: [22, 163, 74] },
+      },
+      head: [['Skenario DP', 'DP Baru', 'Angsuran Tahun 1', 'Penghematan/Bln']],
+      body: [
+        [
+          'Tambah Rp 10.000.000',
+          fmt(dpVal + tambah10),
+          fmt(cicilan10) + '/bln',
+          'Hemat ' + fmt(hemat10),
+        ],
+        [
+          'Tambah Rp 30.000.000',
+          fmt(dpVal + tambah30),
+          fmt(cicilan30) + '/bln',
+          'Hemat ' + fmt(hemat30),
+        ],
+      ],
+    });
+    y = doc.lastAutoTable.finalY + 5;
+
+    // Footnote rekomendasi
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(7.5);
+    doc.setTextColor(120, 120, 130);
+    doc.text('Penghematan dihitung berdasarkan selisih angsuran periode pertama dengan DP saat ini.', marginL, y);
+    y += 6;
+  }
 
   doc.setTextColor(textGray[0], textGray[1], textGray[2]);
   return y;
@@ -4610,7 +4899,7 @@ function hitungDebounced() {
   _hitungDebounceTimer = setTimeout(() => { hitung(); }, 300);
 }
 // scrollTarget: 'result' (default) → scroll ke kartu hasil
-//               'othercost'        → scroll ke seksi Biaya Tambahan (dipakai saat pilih program bank)
+//               'othercost'        → scroll ke seksi Biaya Lain-Lain (dipakai saat pilih program bank)
 function hitung(scrollTarget) {
   const harga = parseRp(document.getElementById('harga'));
   const tenor = parseInt(document.getElementById('tenor-input').value);
@@ -4663,7 +4952,7 @@ function hitung(scrollTarget) {
   rc.classList.add('show');
 
   if (scrollTarget === 'othercost') {
-    // Scroll ke seksi Biaya Tambahan agar user mengisi/mengecek biaya dulu sebelum lihat hasil
+    // Scroll ke seksi Biaya Lain-Lain agar user mengisi/mengecek biaya dulu sebelum lihat hasil
     const ocSection = document.querySelector('.othercost-input-section');
     if (ocSection) {
       ocSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -4941,7 +5230,7 @@ function buildWaMessage() {
     lines.push('Simulasi ini menggunakan akad syariah dengan margin flat (bukan bunga/riba). Margin dihitung tetap dari sisa pokok di awal setiap periode, bukan bunga efektif/anuitas seperti bank konvensional.');
   }
 
-  // Biaya Tambahan — auto-update, selalu dihitung ulang
+  // Biaya Lain-Lain — auto-update, selalu dihitung ulang
   const calc = calculateOtherCosts();
   lines.push(...generateOtherCostsWhatsapp(calc));
 
@@ -5347,7 +5636,7 @@ async function generatePDF() {
       y = doc.lastAutoTable.finalY + 6;
     }
 
-    // ── SECTION: Biaya Tambahan (BPHTB & AJB/BBN) — auto-update, dihitung ulang saat generate.
+    // ── SECTION: Biaya Lain-Lain (BPHTB & AJB/BBN) — auto-update, dihitung ulang saat generate.
     // Posisi: setelah Ringkasan Simulasi Utama, SEBELUM Tabel Amortisasi. ──
     y = generateOtherCostsPDF(doc, calculateOtherCosts(), y, marginL, marginR, navy, textGray);
 
@@ -5749,7 +6038,10 @@ function loadMarketingData() {
   document.getElementById('mkt-nama')?.addEventListener('input', saveMarketingData);
   document.getElementById('mkt-wa')?.addEventListener('input', saveMarketingData);
 
-  // Muat biaya tambahan (tetap dari localStorage — data ini bersifat lokal per pengguna)
+  // Muat harga properti & DP dari localStorage (sesi sebelumnya)
+  loadHargaDp();
+
+  // Muat biaya lain-lain (tetap dari localStorage — data ini bersifat lokal per pengguna)
   loadOtherCosts();
   applyOtherCostsToUI();
   renderOtherCosts();
