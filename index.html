@@ -1969,6 +1969,23 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 .admin-bar button.logout { border-color: rgba(220,38,38,0.5); color: #fca5a5; }
 .admin-bar button.logout:hover { background: rgba(220,38,38,0.18); }
 
+/* ── LOGO NAVBAR (admin-bar) — clean & responsif ── */
+.admin-bar-icon {
+  height: 26px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+  object-position: left center;
+  margin-right: auto;
+  flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .admin-bar-icon { height: 22px; max-width: 110px; }
+}
+@media (max-width: 480px) {
+  .admin-bar-icon { height: 18px; max-width: 90px; }
+}
+
 /* Modal Login */
 .login-modal-overlay {
   display: none;
@@ -2092,7 +2109,7 @@ body.admin-mode .admin-only { display: revert !important; }
      ══════════════════════════════════════════════════════════ -->
 <div class="admin-bar" id="admin-bar">
   <!-- Brand icon -->
-  <img src="logo.png" alt="Logo" class="admin-bar-icon" style="height:28px;width:28px;object-fit:contain;margin-right:auto;border-radius:4px;">
+  <img src="logo.png" alt="Logo" class="admin-bar-icon">
   <!-- Status: belum login -->
   <div class="admin-bar-status" id="admin-status-guest">
     <div class="admin-bar-dot"></div>
