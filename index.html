@@ -5704,49 +5704,69 @@ async function generatePDF() {
 
     const qrDataUrl = await getWhatsAppQrDataUrl(currentMktWaNumber);
 
-    const boxY = y;
-    const qrSize = 30;
-    doc.setDrawColor(228, 232, 240);
-    doc.setFillColor(245, 247, 252);
-    doc.roundedRect(marginL, boxY, contentW, qrSize + 10, 3, 3, 'FD');
+    const boxY   = y;
+    const qrSize = 26;
+    const boxH   = 44;
+    const padL   = 5;   // padding kiri dalam box
 
+    // ── Box background ──
+    doc.setDrawColor(200, 210, 230);
+    doc.setFillColor(248, 250, 254);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(marginL, boxY, contentW, boxH, 3, 3, 'FD');
+
+    // ── Aksen garis biru kiri (border kiri vertikal) ──
+    doc.setDrawColor(accent[0], accent[1], accent[2]);
+    doc.setLineWidth(2.5);
+    doc.line(marginL + 0.2, boxY + 3, marginL + 0.2, boxY + boxH - 3);
+
+    // ── QR Code — rata tengah vertikal di dalam box ──
+    const qrX = marginL + padL + 3;
+    const qrY = boxY + (boxH - qrSize) / 2;
     if (qrDataUrl) {
-      doc.addImage(qrDataUrl, 'PNG', marginL + 6, boxY + 5, qrSize, qrSize);
+      doc.addImage(qrDataUrl, 'PNG', qrX, qrY, qrSize, qrSize);
     }
 
-    const textX = marginL + 6 + qrSize + 8;
+    // ── Area teks ──
+    const textX  = qrX + qrSize + 8;
+    const textW  = contentW - (qrX - marginL) - qrSize - 8 - 4;
 
-    // Judul card
+    // Baris 1 — Label header kecil (navy, normal, tracking rapi)
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10.5);
-    doc.setTextColor(navy[0], navy[1], navy[2]);
-    doc.text('Konsultasi Simulasi KPR Ini', textX, boxY + 10);
-
-    // Nama marketing (bold, dark)
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10.5);
-    doc.setTextColor(textGray[0], textGray[1], textGray[2]);
-    doc.text(currentMktNama, textX, boxY + 17);
-
-    // Jabatan & perusahaan (italic, abu lebih terang)
-    doc.setFont('helvetica', 'italic');
-    doc.setFontSize(8.5);
-    doc.setTextColor(130, 135, 150);
-    doc.text('Property Consultant \u2014 PT Podo Rukun Jaya Properti', textX, boxY + 23);
-
-    // WhatsApp
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.setTextColor(green[0], green[1], green[2]);
-    doc.text('WhatsApp: ' + currentMktWaDisplay, textX, boxY + 30);
-
-    // Instruksi QR
-    doc.setFont('helvetica', 'italic');
     doc.setFontSize(7.5);
-    doc.setTextColor(textGray[0], textGray[1], textGray[2]);
-    doc.text('Scan QR di samping untuk langsung chat via WhatsApp', textX, boxY + 36);
+    doc.setTextColor(navy[0], navy[1], navy[2]);
+    doc.text('KONSULTASI SIMULASI KPR', textX, boxY + 10);
 
-    y = boxY + qrSize + 10 + 8;
+    // Garis tipis bawah header
+    doc.setDrawColor(navy[0], navy[1], navy[2]);
+    doc.setLineWidth(0.2);
+    doc.line(textX, boxY + 12, textX + textW, boxY + 12);
+
+    // Baris 2 — Nama marketing (besar, bold, hitam)
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(20, 24, 40);
+    doc.text(currentMktNama, textX, boxY + 20);
+
+    // Baris 3 — Jabatan (italic, abu, rapat di bawah nama)
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(8);
+    doc.setTextColor(110, 115, 135);
+    doc.text('Property Consultant  \u2014  PT Podo Rukun Jaya Properti', textX, boxY + 26);
+
+    // Baris 4 — WhatsApp (bold, hijau)
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9.5);
+    doc.setTextColor(green[0], green[1], green[2]);
+    doc.text('WA: ' + currentMktWaDisplay, textX, boxY + 34);
+
+    // Baris 5 — Keterangan scan (kecil, abu terang)
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(160, 165, 180);
+    doc.text('Scan QR untuk langsung terhubung via WhatsApp', textX, boxY + 40);
+
+    y = boxY + boxH + 8;
 
     // ── DISCLAIMER ──
     if (y > 270) { doc.addPage(); y = 16; }
