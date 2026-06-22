@@ -1,0 +1,22 @@
+{
+  "name": "kalkulatorkpr",
+  "version": "1.0.0",
+  "description": "Kalkulator KPR - Simulasi Cicilan Rumah",
+  "private": true,
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "serve": "python3 -m http.server 8000"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.1.1"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "kpr",
+    "calculator",
+    "mortgage",
+    "indonesia"
+  ],
+  "author": "",
+  "license": "MIT"
+}
