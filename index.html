@@ -2352,14 +2352,14 @@ body.admin-mode .admin-only { display: revert !important; }
     <div class="section-divider">
       <div class="section-divider-label">Mode Suku Bunga</div>
       <div class="bunga-mode-toggle">
-        <button class="mode-btn active" id="btn-fix" onclick="setBungaMode('fix')">📌 Bunga Fix</button>
+        <button class="mode-btn" id="btn-fix" onclick="setBungaMode('fix')">📌 Bunga Fix</button>
         <button class="mode-btn" id="btn-jenjang" onclick="setBungaMode('jenjang')">📊 Bunga Berjenjang</button>
-        <button class="mode-btn" id="btn-bank" onclick="setBungaMode('bank')">🏦 Bank Pilihan</button>
+        <button class="mode-btn active" id="btn-bank" onclick="setBungaMode('bank')">🏦 Bank Pilihan</button>
       </div>
     </div>
 
     <!-- Bunga Fix -->
-    <div id="section-fix">
+    <div id="section-fix" style="display:none;">
       <div class="field" style="margin-top:16px;">
         <label>Suku Bunga / Tahun</label>
         <div class="slider-number-row">
@@ -2380,7 +2380,7 @@ body.admin-mode .admin-only { display: revert !important; }
     </div>
 
     <!-- Bank Pilihan -->
-    <div id="section-bank" style="display:none; margin-top:16px;">
+    <div id="section-bank" style="display:block; margin-top:16px;">
       <div class="bank-select-wrap">
         <div class="field">
           <label>Pilih Bank</label>
@@ -2778,7 +2778,7 @@ body.admin-mode .admin-only { display: revert !important; }
 
 <script>
 let dpMode = 'nom';
-let bungaMode = 'fix';
+let bungaMode = 'bank';
 let showAll = false;
 let amortData = [];
 let jenjangCount = 0;
@@ -4233,7 +4233,8 @@ function hitungBank(pokok, dp, tenor) {
     const errEl = document.getElementById('err-msg');
     errEl.textContent = '⚠ Silakan pilih program KPR terlebih dahulu.';
     errEl.style.display = 'block';
-    return;
+    errEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return false;
   }
 
   const isSyariah = program.akad === 'syariah';
@@ -4270,7 +4271,7 @@ function hitungBank(pokok, dp, tenor) {
     errMsgEl.textContent = '⚠ Data periode program tidak sesuai dengan tenor yang dipilih.';
     errMsgEl.style.display = 'block';
     errMsgEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); // BUG-022
-    return;
+    return false;
   }
   document.getElementById('err-msg').style.display = 'none';
 
@@ -5199,7 +5200,8 @@ function hitung(scrollTarget) {
   if (bungaMode === 'fix') {
     hitungFix(pokok, dp, tenor);
   } else if (bungaMode === 'bank') {
-    hitungBank(pokok, dp, tenor);
+    const ok = hitungBank(pokok, dp, tenor);
+    if (ok === false) return; // program belum dipilih — jangan tampilkan result card
   } else {
     hitungJenjang(pokok, dp, tenor);
   }
