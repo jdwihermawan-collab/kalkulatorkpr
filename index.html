@@ -2788,6 +2788,32 @@ let programModalFloatingValue = FLOATING_RATE_DEFAULT; // nilai floatingRate yan
 let programModalAkad = 'konvensional'; // 'konvensional' (anuitas/efektif) atau 'syariah' (flat/margin) atau 'syariah-efektif' (anuitas tapi margin syariah) — akad yang sedang dipilih di modal program
 const PROGRAM_SEARCH_THRESHOLD = 10; // search box muncul jika jumlah program > 10
 
+// ─── localStorage: Safe wrapper dengan in-memory fallback (iOS Safari fix) ──
+const _memStorage = {};
+const safeStorage = {
+  getItem(key) {
+    try {
+      const v = localStorage.getItem(key);
+      return v;
+    } catch(e) {
+      return _memStorage[key] !== undefined ? _memStorage[key] : null;
+    }
+  },
+  setItem(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch(e) { /* silent */ }
+    // Selalu simpan ke in-memory sebagai backup
+    _memStorage[key] = value;
+  },
+  removeItem(key) {
+    try {
+      localStorage.removeItem(key);
+    } catch(e) { /* silent */ }
+    delete _memStorage[key];
+  }
+};
+
 // ─── localStorage: Harga Properti & DP ───────────────────────
 const HARGA_DP_STORAGE_KEY = 'podo_harga_dp';
 
@@ -2799,13 +2825,13 @@ function saveHargaDp() {
       dpNom   : document.getElementById('dp-nom')?.value || '',
       dpSlider: document.getElementById('dp-slider')?.value || '20',
     };
-    localStorage.setItem(HARGA_DP_STORAGE_KEY, JSON.stringify(data));
-  } catch(e) { /* silent — storage mungkin penuh atau disabled */ }
+    safeStorage.setItem(HARGA_DP_STORAGE_KEY, JSON.stringify(data));
+  } catch(e) { /* silent */ }
 }
 
 function loadHargaDp() {
   try {
-    const raw = localStorage.getItem(HARGA_DP_STORAGE_KEY);
+    const raw = safeStorage.getItem(HARGA_DP_STORAGE_KEY);
     if (!raw) return;
     const data = JSON.parse(raw);
 
@@ -4367,7 +4393,7 @@ let otherCosts = {
 // ─── localStorage CRUD: Biaya Lain-Lain ─────────────
 function loadOtherCosts() {
   try {
-    const raw = localStorage.getItem(OTHERCOST_STORAGE_KEY);
+    const raw = safeStorage.getItem(OTHERCOST_STORAGE_KEY);
     if (!raw) return;
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') return;
@@ -4404,7 +4430,7 @@ function loadOtherCosts() {
 
 function saveOtherCostsToStorage() {
   try {
-    localStorage.setItem(OTHERCOST_STORAGE_KEY, JSON.stringify(otherCosts));
+    safeStorage.setItem(OTHERCOST_STORAGE_KEY, JSON.stringify(otherCosts));
   } catch (e) {
     showToast('Gagal menyimpan preferensi Biaya Lain-Lain ke browser.', 'error', 'Simpan Gagal');
     console.error('saveOtherCostsToStorage error:', e);
@@ -5430,6 +5456,16 @@ function isMobileOrTablet() {
 }
 
 /**
+ * isIOS()
+ * Deteksi perangkat iOS (iPhone, iPad, iPod) termasuk iPadOS 13+.
+ */
+function isIOS() {
+  const ua = navigator.userAgent || navigator.vendor || '';
+  const isIpadOS = /Macintosh/i.test(ua) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1;
+  return /iPhone|iPad|iPod/i.test(ua) || isIpadOS;
+}
+
+/**
  * salinTeksSimulasi()
  * Tombol "Salin Teks" — selalu tersedia di semua device (HP, tablet, PC).
  * Menyalin teks simulasi (buildWaMessage()) ke clipboard.
@@ -6008,8 +6044,29 @@ async function generatePDF() {
     fileNameParts.push(tenorLabel);
     const rawFileName = fileNameParts.join(' - ') + '.pdf';
     const fileName = rawFileName.replace(/[<>:"/\\|?*\x00-\x1F]/g, '');
-    doc.save(fileName);
-    showToast('File PDF simulasi KPR berhasil dibuat dan diunduh.', 'success', 'PDF Berhasil Diunduh');
+    // ── PDF Download: iOS Safari fix ──
+    // Safari iOS tidak bisa download via doc.save() (akan buka di tab baru tanpa nama).
+    // Solusi: gunakan blob URL + <a> element dengan attribute download untuk non-iOS,
+    // dan untuk iOS tampilkan instruksi cara menyimpan dari preview Safari.
+    if (isIOS()) {
+      // iOS Safari: buka PDF di tab baru (user bisa Share → Save to Files)
+      const pdfBlob = doc.output('blob');
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      window.open(blobUrl, '_blank');
+      showToast('PDF terbuka di tab baru. Tekan tombol Share lalu "Save to Files" untuk menyimpan.', 'info', 'PDF Siap');
+    } else {
+      // Android, Chrome, Firefox, Desktop — download normal
+      const pdfBlob = doc.output('blob');
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+      showToast('File PDF simulasi KPR berhasil dibuat dan diunduh.', 'success', 'PDF Berhasil Diunduh');
+    }
     openPdfSuccessModal(custData);
   } catch (err) {
     console.error('Gagal generate PDF:', err);
@@ -6117,12 +6174,25 @@ function openWhatsAppToCustomer(rawNumber, message) {
  * Popup yang tampil setiap kali Generate PDF selesai. Tombol "Bagikan ke
  * WhatsApp" hanya ditampilkan jika Nomor WhatsApp Customer sudah diisi.
  */
+// Simpan data WA customer saat modal dibuka (iOS Safari fix: WA harus dipanggil synchronously)
+let _pendingWaPhone = '';
+let _pendingWaMessage = '';
+
 function openPdfSuccessModal(custData) {
   const overlay = document.getElementById('pdf-success-modal-overlay');
   if (!overlay) return;
 
   const data = custData || getCustomerData();
   const hasWa = !!(data.whatsapp && data.whatsapp.trim());
+
+  // Pre-compute WA data sebelum modal terbuka (untuk iOS Safari)
+  if (hasWa) {
+    _pendingWaPhone = data.whatsapp;
+    _pendingWaMessage = buildCustomerWaMessage(data);
+  } else {
+    _pendingWaPhone = '';
+    _pendingWaMessage = '';
+  }
 
   const questionEl = document.getElementById('pdf-success-question');
   const noNumberEl = document.getElementById('pdf-success-no-number');
@@ -6143,17 +6213,19 @@ function closePdfSuccessModal() {
 /**
  * shareGeneratedPdfToCustomer()
  * Tombol "Bagikan ke WhatsApp" pada popup PDF Berhasil Dibuat.
+ * PENTING: Fungsi ini harus synchronous agar iOS Safari mengizinkan
+ * window.location.href (deep link WhatsApp). Data WA sudah di-pre-compute
+ * di openPdfSuccessModal() sebelum modal ditampilkan.
  */
 function shareGeneratedPdfToCustomer() {
-  const cust = getCustomerData();
-  if (!cust.whatsapp) {
+  if (!_pendingWaPhone) {
     closePdfSuccessModal();
     return;
   }
 
-  const message = buildCustomerWaMessage(cust);
   closePdfSuccessModal();
-  openWhatsAppToCustomer(cust.whatsapp, message);
+  // Langsung panggil WA secara synchronous (iOS Safari fix)
+  openWhatsAppToCustomer(_pendingWaPhone, _pendingWaMessage);
 
   showToast(
     'WhatsApp berhasil dibuka. Jangan lupa melampirkan file PDF simulasi yang baru saja dibuat.',
@@ -6209,13 +6281,13 @@ function showToast(pesan, tipe, judul) {
 function saveMarketingData() {
   const mktNama = document.getElementById('mkt-nama')?.value || '';
   const mktWa = document.getElementById('mkt-wa')?.value || '';
-  localStorage.setItem('podo_mkt_nama', mktNama);
-  localStorage.setItem('podo_mkt_wa', mktWa);
+  safeStorage.setItem('podo_mkt_nama', mktNama);
+  safeStorage.setItem('podo_mkt_wa', mktWa);
 }
 
 function loadMarketingData() {
-  const savedNama = localStorage.getItem('podo_mkt_nama');
-  const savedWa = localStorage.getItem('podo_mkt_wa');
+  const savedNama = safeStorage.getItem('podo_mkt_nama');
+  const savedWa = safeStorage.getItem('podo_mkt_wa');
   
   const mktNamaEl = document.getElementById('mkt-nama');
   const mktWaEl = document.getElementById('mkt-wa');
