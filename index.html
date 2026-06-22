@@ -2885,12 +2885,24 @@ function loadHargaDp() {
 // ─── Format Rupiah ────────────────────────────────
 function formatRp(el) {
   const pos = el.selectionStart;
-  const oldLen = el.value.length;
+  // Hitung berapa digit (bukan titik) yang ada SEBELUM kursor
+  const beforeCursor = el.value.substring(0, pos);
+  const digitsBeforeCursor = beforeCursor.replace(/\D/g, '').length;
+
   const raw = el.value.replace(/\D/g, '');
   const formatted = raw.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   el.value = formatted;
-  const diff = formatted.length - oldLen;
-  el.setSelectionRange(pos + diff, pos + diff);
+
+  // Hitung ulang posisi kursor berdasarkan jumlah digit sebelum kursor
+  let newPos = 0;
+  let digitCount = 0;
+  if (digitsBeforeCursor > 0) {
+    for (let i = 0; i < formatted.length; i++) {
+      if (formatted[i] !== '.') digitCount++;
+      if (digitCount === digitsBeforeCursor) { newPos = i + 1; break; }
+    }
+  }
+  el.setSelectionRange(newPos, newPos);
   // BUG-019: refresh card estimates when harga or DP changes
   if (el.id === 'harga' || el.id === 'dp-nom') {
     if (bungaMode === 'bank') renderProgramGrid();
