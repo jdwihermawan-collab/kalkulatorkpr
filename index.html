@@ -2652,7 +2652,12 @@ body.admin-mode .admin-only { display: revert !important; }
   </div>
 </footer>
 
-<!-- MODAL TAMBAH/EDIT BANK (nama bank saja) -->
+<!-- ── VERSION TAG ── -->
+<div style="position:fixed;bottom:10px;left:12px;z-index:9999;pointer-events:none;">
+  <span style="font-family:'Inter',monospace;font-size:10px;font-weight:600;color:#8892a4;letter-spacing:0.4px;opacity:0.55;">v4.0</span>
+</div>
+
+<!-- MODAL TAMBAH/EDIT BANK -->
 <div class="modal-overlay" id="bank-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="bank-modal-title">
   <div class="modal-box">
     <div class="modal-header">
@@ -4687,7 +4692,7 @@ function renderOtherCosts() {
   `).join('') + `
     <div class="othercost-divider"></div>
     <div class="othercost-total-row"><span>Total Biaya Lain-Lain</span><span>${fmt(calc.totalOtherCost)}</span></div>
-    <div class="othercost-benefit-row"><span>🎁 Anda Hemat Sebesar</span><span>${fmt(calc.totalBenefit)}</span></div>
+    ${calc.totalBenefit > 0 ? `<div class="othercost-benefit-row"><span>🎁 Anda Hemat Sebesar</span><span>${fmt(calc.totalBenefit)}</span></div>` : ''}
     <div class="othercost-divider"></div>
     <div style="font-size:11px;color:#888;margin:4px 0 2px 0;">* Biaya di bawah belum termasuk Uang Muka (DP) sebesar <b>${fmt(dpVal)}</b>. Total dana awal yang perlu disiapkan = Biaya Lain-Lain + DP.</div>
     ${calc.adminKprInclude ? `<div style="font-size:11px;color:#888;margin:2px 0 2px 0;">- Besaran Admin KPR dapat berbeda pada setiap pengajuan. Karena nominalnya turut ditambahkan ke plafon kredit, estimasi angsuran aktual berpotensi bergeser puluhan hingga ratusan ribu rupiah dari simulasi ini.</div>` : ''}
@@ -4717,7 +4722,9 @@ function generateOtherCostsWhatsapp(calc) {
   });
   lines.push('');
   lines.push(waRow('Total Biaya Lain-Lain', fmt(calc.totalOtherCost)));
-  lines.push(waRow('Anda Hemat Sebesar (Promo)', fmt(calc.totalBenefit)));
+  if (calc.totalBenefit > 0) {
+    lines.push(waRow('Anda Hemat Sebesar (Promo)', fmt(calc.totalBenefit)));
+  }
   lines.push('');
   lines.push('* Biaya di bawah belum termasuk Uang Muka (DP) sebesar ' + fmt(dpVal) + '. Total dana awal = Biaya Lain-Lain + DP.');
   if (calc.adminKprInclude) {
@@ -4839,12 +4846,14 @@ function generateOtherCostsPDF(doc, calc, y, marginL, marginR, navy, textGray) {
   doc.text(fmt(calc.totalOtherCost), col2X, y);
   y += 5;
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
-  doc.setTextColor(green[0], green[1], green[2]);
-  doc.text('Anda Hemat Sebesar (Promo)', marginL, y);
-  doc.text(fmt(calc.totalBenefit), col2X, y);
-  y += 4;
+  if (calc.totalBenefit > 0) {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(green[0], green[1], green[2]);
+    doc.text('Anda Hemat Sebesar (Promo)', marginL, y);
+    doc.text(fmt(calc.totalBenefit), col2X, y);
+    y += 4;
+  }
 
   // Garis tipis pemisah
   doc.setDrawColor(210, 215, 225);
