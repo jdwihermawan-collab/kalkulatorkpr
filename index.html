@@ -3310,6 +3310,46 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+function escapeAttr(str) {
+  return escapeHtml(str);
+}
+
+function escapeJsString(str) {
+  return String(str == null ? '' : str)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\r/g, '\\r')
+    .replace(/\n/g, '\\n')
+    .replace(/</g, '\\x3C')
+    .replace(/>/g, '\\x3E');
+}
+
+function appendSafeToastMessage(target, message) {
+  const template = document.createElement('template');
+  template.innerHTML = String(message == null ? '' : message);
+
+  const appendNode = (node, parent) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      parent.appendChild(document.createTextNode(node.textContent || ''));
+      return;
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+    const tag = node.tagName.toLowerCase();
+    if (tag === 'b' || tag === 'strong') {
+      const strong = document.createElement('b');
+      node.childNodes.forEach(child => appendNode(child, strong));
+      parent.appendChild(strong);
+      return;
+    }
+
+    node.childNodes.forEach(child => appendNode(child, parent));
+  };
+
+  template.content.childNodes.forEach(node => appendNode(node, target));
+}
+
 // Mengubah teks menjadi Title Case (setiap kata diawali huruf kapital).
 // Khusus dipakai untuk field input customer (nama, alamat, dll) pada
 // output Salin Simulasi, WhatsApp, dan PDF — TIDAK dipakai untuk nama bank,
@@ -3349,7 +3389,7 @@ function renderBankSelect() {
   const sel = document.getElementById('bank-select');
   const prevVal = sel.value;
   sel.innerHTML = '<option value="">— Pilih bank tersimpan —</option>' +
-    banks.map(b => `<option value="${b.id}">${escapeHtml(b.nama)}</option>`).join('');
+    banks.map(b => `<option value="${escapeAttr(b.id)}">${escapeHtml(b.nama)}</option>`).join('');
 
   if (banks.some(b => String(b.id) === prevVal)) {
     sel.value = prevVal;
@@ -3386,8 +3426,9 @@ function renderBankDropdownPanel() {
 
   const optionsHtml = banks.map(b => {
     const isSelected = String(b.id) === String(currentVal);
+    const safeBankIdForJs = escapeAttr(escapeJsString(b.id));
     return `
-    <button type="button" class="bank-dd-option${isSelected ? ' selected' : ''}" role="option" aria-selected="${isSelected}" onclick="selectBankFromDropdown('${b.id}')">
+    <button type="button" class="bank-dd-option${isSelected ? ' selected' : ''}" role="option" aria-selected="${isSelected}" onclick="selectBankFromDropdown('${safeBankIdForJs}')">
       <span>${escapeHtml(b.nama)}</span>
       <svg class="bank-dd-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
     </button>`;
@@ -3700,9 +3741,11 @@ function renderProgramCardHtml(p) {
 
   const akadBadgeClass = isSyariah ? 'syariah' : isSyariahEfektif ? 'syariah-efektif' : 'konvensional';
   const akadBadgeLabel = isSyariah ? '🕊️ Syariah (Flat)' : isSyariahEfektif ? '🕌 Syariah (Efektif)' : '🏦 Konvensional';
+  const safeBankIdAttr = escapeAttr(p.bankId);
+  const safeBankIdForJs = escapeAttr(escapeJsString(p.bankId));
 
   return `
-    <div class="program-card ${isActive ? 'active' : ''}" data-bank-id="${p.bankId}" data-program-id="${p.id}" onclick="selectProgramCard('${p.bankId}', ${p.id})">
+    <div class="program-card ${isActive ? 'active' : ''}" data-bank-id="${safeBankIdAttr}" data-program-id="${p.id}" onclick="selectProgramCard('${safeBankIdForJs}', ${p.id})">
       <div class="program-card-bank">
         <div class="program-card-bank-icon">${escapeHtml(bankInitial)}</div>
         <div class="program-card-bank-name">${escapeHtml(p.bankNama)}</div>
@@ -3722,8 +3765,8 @@ function renderProgramCardHtml(p) {
       ` : ''}
       <div class="program-card-select-btn">${isActive ? '✓ Program Terpilih' : 'Pilih Program'}</div>
       <div class="program-card-actions admin-only">
-        <button type="button" class="edit" onclick="event.stopPropagation(); editProgramCard('${p.bankId}', ${p.id})">✎ Edit</button>
-        <button type="button" class="danger" onclick="event.stopPropagation(); deleteProgramCard('${p.bankId}', ${p.id})">🗑 Hapus</button>
+        <button type="button" class="edit" onclick="event.stopPropagation(); editProgramCard('${safeBankIdForJs}', ${p.id})">✎ Edit</button>
+        <button type="button" class="danger" onclick="event.stopPropagation(); deleteProgramCard('${safeBankIdForJs}', ${p.id})">🗑 Hapus</button>
       </div>
     </div>
   `;
@@ -6363,12 +6406,27 @@ function showToast(pesan, tipe, judul) {
   }
 
   toast.className = `wa-toast ${tipe}`;
-  toast.innerHTML = `
-    <span class="toast-icon">${cfg.icon}</span>
-    <div class="toast-body">
-      <div class="toast-title">${cfg.label}</div>
-      <div class="toast-msg">${pesan}</div>
-    </div>`;
+  toast.textContent = '';
+
+  const iconEl = document.createElement('span');
+  iconEl.className = 'toast-icon';
+  iconEl.textContent = cfg.icon;
+
+  const bodyEl = document.createElement('div');
+  bodyEl.className = 'toast-body';
+
+  const titleEl = document.createElement('div');
+  titleEl.className = 'toast-title';
+  titleEl.textContent = cfg.label;
+
+  const msgEl = document.createElement('div');
+  msgEl.className = 'toast-msg';
+  appendSafeToastMessage(msgEl, pesan);
+
+  bodyEl.appendChild(titleEl);
+  bodyEl.appendChild(msgEl);
+  toast.appendChild(iconEl);
+  toast.appendChild(bodyEl);
 
   toast.classList.add('show');
   if (waToastTimer) clearTimeout(waToastTimer);
