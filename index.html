@@ -1380,6 +1380,17 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 }
 .btn-calc:hover { background: var(--navy2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(13,31,60,0.25); }
 .btn-calc:active { transform: translateY(0); }
+@keyframes pulse-attention {
+  0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(46,107,230,0.55); background: var(--navy); }
+  30%  { transform: scale(1.03); box-shadow: 0 0 0 10px rgba(46,107,230,0.18); background: var(--accent); }
+  60%  { transform: scale(1.01); box-shadow: 0 0 0 18px rgba(46,107,230,0.05); background: var(--accent); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(46,107,230,0); background: var(--navy); }
+}
+.btn-calc.needs-recalc {
+  animation: pulse-attention 0.75s ease forwards;
+  outline: 2.5px solid var(--accent);
+  outline-offset: 3px;
+}
 
 /* ── RESULT CARD ── */
 .result-card {
@@ -2845,15 +2856,17 @@ function loadHargaDp() {
       }
     }
 
-    // Pulihkan mode DP (nominal/persentase) lalu isi nilainya
+    // FIX: Isi nilai DP ke DOM terlebih dulu SEBELUM setDpMode(),
+    // karena setDpMode() memanggil saveHargaDp() yang akan membaca DOM.
+    // Kalau urutan terbalik, dp-nom masih kosong saat disimpan → data hilang.
     const mode = data.dpMode || 'nom';
-    setDpMode(mode);
 
     if (mode === 'pct') {
       const slider = document.getElementById('dp-slider');
       if (slider && data.dpSlider) {
         slider.value = data.dpSlider;
-        document.getElementById('dp-val').textContent = data.dpSlider + '%';
+        const dpValEl = document.getElementById('dp-val');
+        if (dpValEl) dpValEl.textContent = data.dpSlider + '%';
       }
     } else {
       const dpNomEl = document.getElementById('dp-nom');
@@ -2861,6 +2874,11 @@ function loadHargaDp() {
         dpNomEl.value = data.dpNom;
       }
     }
+
+    // Panggil setDpMode SETELAH nilai DP sudah ada di DOM,
+    // agar saveHargaDp() di dalamnya membaca nilai yang benar.
+    setDpMode(mode);
+
   } catch(e) { /* data korup — abaikan saja */ }
 }
 
@@ -2884,6 +2902,7 @@ function formatRp(el) {
   // Auto-simpan harga & DP ke localStorage setiap ada perubahan
   if (el.id === 'harga' || el.id === 'dp-nom') {
     saveHargaDp();
+    invalidateSimulasi();
   }
 }
 function parseRp(el) {
@@ -2902,6 +2921,7 @@ function setDpMode(m) {
   nomWrap.style.display = m==='nom' ? 'block' : 'none';
   // Simpan mode DP yang dipilih
   saveHargaDp();
+  invalidateSimulasi();
 }
 function syncSlider() {
   document.getElementById('dp-val').textContent = document.getElementById('dp-slider').value + '%';
@@ -2909,12 +2929,14 @@ function syncSlider() {
   if (bungaMode === 'bank') renderProgramGrid();
   // Simpan nilai slider DP
   saveHargaDp();
+  invalidateSimulasi();
 }
 
 // ─── Tenor Sync ───────────────────────────────────
 function syncTenorFromSlider() {
   document.getElementById('tenor-input').value = document.getElementById('tenor-slider').value;
   updateJenjangLabels();
+  invalidateSimulasi();
 }
 function syncTenorFromInput() {
   let v = parseInt(document.getElementById('tenor-input').value);
@@ -2923,11 +2945,13 @@ function syncTenorFromInput() {
   document.getElementById('tenor-input').value = v; // BUG-009: update field if clamped
   document.getElementById('tenor-slider').value = v;
   updateJenjangLabels();
+  invalidateSimulasi();
 }
 
 // ─── Bunga Fix Sync ───────────────────────────────
 function syncBungaFromSlider() {
   document.getElementById('bunga-input').value = parseFloat(document.getElementById('bunga-slider').value).toFixed(2);
+  invalidateSimulasi();
 }
 function syncBungaFromInput() {
   let v = parseFloat(document.getElementById('bunga-input').value);
@@ -2935,6 +2959,7 @@ function syncBungaFromInput() {
   v = Math.min(20, Math.max(1, v));
   document.getElementById('bunga-input').value = v.toFixed(2); // BUG-009: update field if clamped
   document.getElementById('bunga-slider').value = v;
+  invalidateSimulasi();
 }
 
 // ─── Bunga Mode ───────────────────────────────────
@@ -3703,6 +3728,8 @@ function selectProgramCard(bankId, programId) {
   // sinkronkan tenor pinjaman global agar sesuai dengan program yang dipilih
   document.getElementById('tenor-input').value = program.tenor;
   document.getElementById('tenor-slider').value = program.tenor;
+  // Update label baris jenjang jika mode Berjenjang pernah dipakai (tenor berubah)
+  updateJenjangLabels();
 
   renderProgramGrid();
   syncFloatingAssumptionBoxVisibility();
@@ -4677,11 +4704,16 @@ function renderOtherCosts() {
     const tenor = s.tenor;
     const n = tenor * 12;
     const r = rate1 / 12;
+    const isSyariahFlat = s.akad === 'syariah';
 
     function hitungCicilanDp(newDp) {
       const newPlafonAwal = s.harga - newDp;
       const newPokok = newPlafonAwal + (calc.adminKprInclude ? calc.adminKprRaw : 0);
       if (newPokok <= 0) return 0;
+      if (isSyariahFlat) {
+        // Syariah Flat: pokok rata + margin flat dari sisa pokok awal
+        return (newPokok / n) + (newPokok * r);
+      }
       if (r === 0) return newPokok / n;
       return newPokok * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
     }
@@ -4766,10 +4798,12 @@ function generateOtherCostsWhatsapp(calc) {
     const tenor = s.tenor;
     const n = tenor * 12;
     const r = rate1 / 12;
+    const isSyariahFlatWa = s.akad === 'syariah';
     function hitungCicilanDpWa(newDp) {
       const newPlafonAwal = s.harga - newDp;
       const newPokok = newPlafonAwal + (calc.adminKprInclude ? calc.adminKprRaw : 0);
       if (newPokok <= 0) return 0;
+      if (isSyariahFlatWa) return (newPokok / n) + (newPokok * r);
       if (r === 0) return newPokok / n;
       return newPokok * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
     }
@@ -4960,11 +4994,13 @@ function generateOtherCostsPDF(doc, calc, y, marginL, marginR, navy, textGray) {
     const rate1 = s.periods[0].rate / 100;
     const n = s.tenor * 12;
     const r = rate1 / 12;
+    const isSyariahFlatPdfRek = s.akad === 'syariah';
 
     function _hitDp(newDp) {
       const newPlafonAwal = s.harga - newDp;
       const p = newPlafonAwal + (calc.adminKprInclude ? calc.adminKprRaw : 0);
       if (p <= 0) return 0;
+      if (isSyariahFlatPdfRek) return (p / n) + (p * r);
       if (r === 0) return p / n;
       return p * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
     }
@@ -5053,9 +5089,48 @@ function generateOtherCostsPDF(doc, calc, y, marginL, marginR, navy, textGray) {
 // lagi lewat hideResultCard() — supaya user tidak salah baca hasil simulasi
 // yang sebenarnya sudah tidak sesuai dengan pilihan terbaru, dan harus klik
 // "HITUNG CICILAN" lagi untuk melihat hasil yang baru.
+/**
+ * invalidateSimulasi()
+ * Dipanggil setiap kali parameter input berubah (harga, DP, tenor, bunga, mode).
+ * Menyembunyikan card hasil DAN membersihkan data lama agar tidak bisa diekspor.
+ * Ringan — hanya jalan jika lastSimulasi memang ada (tidak null), supaya tidak
+ * ada pekerjaan sia-sia saat user baru pertama kali mengisi form.
+ */
+function invalidateSimulasi() {
+  if (!lastSimulasi) return; // sudah bersih, tidak perlu apa-apa
+  hideResultCard(); // ini juga null-kan lastSimulasi & amortData
+}
+
 function hideResultCard() {
   const rc = document.getElementById('result-card');
   if (rc) rc.classList.remove('show');
+  // Bersihkan data simulasi lama agar tombol Salin/WA/PDF tidak bisa
+  // mengekspor data "zombie" dari kalkulasi sebelumnya yang sudah tidak relevan.
+  lastSimulasi = null;
+  amortData = [];
+}
+
+/**
+ * requireSimulasi()
+ * Guard untuk semua tombol yang membutuhkan data simulasi valid (Salin Teks,
+ * Bagikan ke WA, Download PDF). Jika lastSimulasi null -> scroll + pulse tombol
+ * Hitung Cicilan dan tampilkan toast petunjuk, lalu return false.
+ * Jika data tersedia -> return true (caller boleh lanjut).
+ */
+function requireSimulasi() {
+  if (lastSimulasi && lastSimulasi.periods && lastSimulasi.periods.length > 0) {
+    return true;
+  }
+  const btn = document.querySelector('.btn-calc');
+  if (btn) {
+    btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    btn.classList.remove('needs-recalc');
+    void btn.offsetWidth;
+    btn.classList.add('needs-recalc');
+    setTimeout(() => btn.classList.remove('needs-recalc'), 800);
+  }
+  showToast('Klik <b>Hitung Cicilan</b> terlebih dahulu untuk memperbarui hasil simulasi.', 'warning', 'Simulasi Belum Dihitung');
+  return false;
 }
 
 // BUG-016: debounced hitung entry point called from button
@@ -5387,7 +5462,8 @@ function buildWaMessage() {
   if (s.programName) lines.push(row('Program KPR', s.programName));
   lines.push(row('Tenor', `${s.tenor} Tahun`));
   if (s.bankName || s.programName) {
-    lines.push(row('Jenis Akad', isSyariah ? 'Syariah (Margin Flat)' : 'Konvensional'));
+    const akadLabel = isSyariah ? 'Syariah (Margin Flat)' : isSyariahEfektif ? 'Syariah (Margin Efektif/Anuitas)' : 'Konvensional';
+    lines.push(row('Jenis Akad', akadLabel));
   }
 
   // Program Suku Bunga / Margin — hanya disertakan jika toggle "Tampilkan Bunga di PDF" ON
@@ -5422,6 +5498,10 @@ function buildWaMessage() {
     lines.push('');
     lines.push('Catatan Syariah:');
     lines.push('Simulasi ini menggunakan akad syariah dengan margin flat (bukan bunga/riba). Margin dihitung tetap dari sisa pokok di awal setiap periode, bukan bunga efektif/anuitas seperti bank konvensional.');
+  } else if (isSyariahEfektif) {
+    lines.push('');
+    lines.push('Catatan Syariah:');
+    lines.push('Simulasi ini menggunakan akad syariah murabahah dengan margin efektif/anuitas (sebagaimana diterapkan oleh BSN, BSI, dan bank syariah lainnya). Margin dihitung setara anuitas dari sisa pokok, namun tetap disebut margin (bukan bunga/riba).');
   }
 
   // Biaya Lain-Lain — auto-update, selalu dihitung ulang
@@ -5471,10 +5551,7 @@ function isIOS() {
  * Menyalin teks simulasi (buildWaMessage()) ke clipboard.
  */
 async function salinTeksSimulasi() {
-  if (!lastSimulasi || !lastSimulasi.periods.length) {
-    showToast('⚠ Hitung simulasi terlebih dahulu', true);
-    return;
-  }
+  if (!requireSimulasi()) return;
 
   const text = buildWaMessage();
   let success = false;
@@ -5511,10 +5588,7 @@ async function salinTeksSimulasi() {
  *   versi sebelumnya — tanpa modal tambahan.
  */
 async function bagikanSimulasi() {
-  if (!lastSimulasi || !lastSimulasi.periods.length) {
-    showToast('⚠ Hitung simulasi terlebih dahulu', true);
-    return;
-  }
+  if (!requireSimulasi()) return;
 
   const text = buildWaMessage();
 
@@ -5620,10 +5694,7 @@ function getWhatsAppQrDataUrl(waNumber) {
 }
 
 async function generatePDF() {
-  if (!lastSimulasi || !lastSimulasi.periods.length) {
-    showToast('⚠ Hitung simulasi terlebih dahulu', true);
-    return;
-  }
+  if (!requireSimulasi()) return;
 
   const btn = document.getElementById('btn-generate-pdf');
   const originalLabel = btn.innerHTML;
@@ -5808,6 +5879,8 @@ async function generatePDF() {
     }
     if (isSyariahPDF) {
       discParts.push('* Catatan Syariah: Simulasi ini menggunakan akad syariah dengan margin flat (bukan bunga/riba). Margin dihitung tetap dari sisa pokok di awal setiap periode, bukan bunga efektif/anuitas seperti bank konvensional.');
+    } else if (isSyariahEfektifPDF) {
+      discParts.push('* Catatan Syariah: Simulasi ini menggunakan akad syariah murabahah dengan margin efektif/anuitas (sebagaimana diterapkan oleh BSN, BSI, dan bank syariah lainnya). Margin dihitung setara anuitas dari sisa pokok, namun tetap disebut margin (bukan bunga/riba).');
     }
 
     if (discParts.length) {
