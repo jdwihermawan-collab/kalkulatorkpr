@@ -2234,7 +2234,10 @@ body.admin-mode .admin-only { display: revert !important; }
           <div class="card-title-optional-tag" style="background: var(--gray); color: var(--text3); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Opsional</div>
         </div>
       </div>
-      <div class="toggle-chevron" id="customerChevron" style="font-size: 16px; color: var(--text3); transition: transform 0.3s ease; transform: rotate(0deg);">▼</div>
+      <div id="customerChevron" style="display: flex; align-items: center; gap: 6px; color: var(--accent); font-size: 12px; font-weight: 700; font-family: 'DM Sans', sans-serif; letter-spacing: 0.3px; background: rgba(46,107,230,0.08); border: 1.5px solid rgba(46,107,230,0.2); border-radius: 100px; padding: 5px 12px; transition: all 0.3s ease; white-space: nowrap; flex-shrink: 0;">
+        <span class="chevron-label" style="transition: opacity 0.2s;">Isi Data</span>
+        <svg style="width:14px;height:14px;transition:transform 0.3s ease;flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
     </div>
 
     <div class="collapsible-content" id="customerCardBody" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, opacity 0.3s ease; opacity: 0; padding-top: 0;">
@@ -4366,11 +4369,15 @@ function loadOtherCosts() {
 
     if (parsed.bphtb) {
       otherCosts.bphtb.enabled = !!parsed.bphtb.enabled;
-      otherCosts.bphtb.free    = !!parsed.bphtb.free;
+      // Toggle "Free" BPHTB SENGAJA TIDAK dipulihkan dari localStorage.
+      // Harus selalu default OFF setiap kali halaman dimuat/refresh.
+      otherCosts.bphtb.free    = false;
     }
     if (parsed.ajbBbn) {
       otherCosts.ajbBbn.enabled = !!parsed.ajbBbn.enabled;
-      otherCosts.ajbBbn.free    = !!parsed.ajbBbn.free;
+      // Toggle "Free" AJB SENGAJA TIDAK dipulihkan dari localStorage.
+      // Harus selalu default OFF setiap kali halaman dimuat/refresh.
+      otherCosts.ajbBbn.free    = false;
       otherCosts.ajbBbn.preset  = ['5000000','6000000','custom'].includes(parsed.ajbBbn.preset) ? parsed.ajbBbn.preset : '5000000';
       otherCosts.ajbBbn.custom  = Math.max(0, parseFloat(parsed.ajbBbn.custom) || 0);
     }
@@ -6243,15 +6250,29 @@ function loadMarketingData() {
 function toggleCustomerForm() {
   const content = document.getElementById('customerCardBody');
   const chevron = document.getElementById('customerChevron');
+  const label = chevron ? chevron.querySelector('.chevron-label') : null;
+  const svg = chevron ? chevron.querySelector('svg') : null;
   
   if (content.style.maxHeight === '0px' || content.style.maxHeight === '') {
     content.style.maxHeight = content.scrollHeight + 'px';
     content.style.opacity = '1';
-    chevron.style.transform = 'rotate(180deg)';
+    if (svg) svg.style.transform = 'rotate(180deg)';
+    if (label) label.textContent = 'Tutup';
+    if (chevron) {
+      chevron.style.background = 'rgba(220,38,38,0.08)';
+      chevron.style.borderColor = 'rgba(220,38,38,0.2)';
+      chevron.style.color = 'var(--red)';
+    }
   } else {
     content.style.maxHeight = '0px';
     content.style.opacity = '0';
-    chevron.style.transform = 'rotate(0deg)';
+    if (svg) svg.style.transform = 'rotate(0deg)';
+    if (label) label.textContent = 'Isi Data';
+    if (chevron) {
+      chevron.style.background = 'rgba(46,107,230,0.08)';
+      chevron.style.borderColor = 'rgba(46,107,230,0.2)';
+      chevron.style.color = 'var(--accent)';
+    }
   }
 }
 // Pastikan inisialisasi awal dalam keadaan tertutup dengan benar
