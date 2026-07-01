@@ -1118,6 +1118,67 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .program-card-akad-badge.syariah { color: #047857; background: rgba(4,120,87,0.08); border: 1px solid rgba(4,120,87,0.22); }
 .program-card-akad-badge.syariah-efektif { color: #065f46; background: rgba(6,95,70,0.08); border: 1px solid rgba(6,95,70,0.22); }
 
+.program-card-plafon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #92400e;
+  background: rgba(180,83,9,0.08);
+  border: 1px solid rgba(180,83,9,0.2);
+  border-radius: 7px;
+  padding: 4px 9px;
+}
+.program-card-plafon-badge.unavail {
+  color: #7a7a7a;
+  background: rgba(120,120,120,0.08);
+  border: 1px solid rgba(120,120,120,0.2);
+}
+
+/* ── Card tidak tersedia (di luar syarat plafon) ── */
+.program-card.plafon-unavailable {
+  opacity: 0.55;
+  filter: grayscale(0.6);
+  cursor: not-allowed;
+  background: var(--off);
+}
+.program-card.plafon-unavailable:hover { transform: none; box-shadow: none; }
+.program-card.plafon-unavailable .program-card-select-btn {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+.program-card-unavail-reason {
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: #9a3412;
+  background: rgba(154,52,18,0.07);
+  border: 1px solid rgba(154,52,18,0.18);
+  border-radius: 8px;
+  padding: 7px 10px;
+  margin-top: 2px;
+}
+
+/* ── Divider antara program tersedia dan tidak tersedia ── */
+.program-plafon-divider {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 2px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text3);
+}
+.program-plafon-divider::before,
+.program-plafon-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray);
+}
+.program-plafon-divider span { white-space: nowrap; }
+
 .program-card-installment {
   background: var(--off);
   border-radius: var(--radius3);
@@ -1783,6 +1844,84 @@ input[type="range"]::-webkit-slider-thumb:hover {
   color: rgba(255,255,255,0.3);
 }
 .footer span { color: rgba(255,255,255,0.55); }
+
+/* ══════════════════════════════════════════════════
+   PERBANDINGAN MULTI-BANK
+══════════════════════════════════════════════════ */
+.btn-komparasi-trigger {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 20px; border-radius: 12px;
+  border: 1.5px solid rgba(37,99,235,0.3);
+  background: rgba(37,99,235,0.06); color: var(--accent);
+  font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; width: 100%; justify-content: center; margin-top: 14px;
+}
+.btn-komparasi-trigger:hover { background: rgba(37,99,235,0.12); border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(37,99,235,0.15); }
+.btn-komparasi-trigger.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.komparasi-panel { margin-top: 18px; background: var(--white); border: 1.5px solid var(--gray); border-radius: var(--radius); overflow: hidden; animation: fadeUp 0.3s ease both; display: none; }
+.komparasi-panel.show { display: block; }
+.komparasi-panel-header { background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.komparasi-panel-title { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; }
+.komparasi-panel-subtitle { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+.komparasi-selector-wrap { padding: 20px 24px; background: var(--off); border-bottom: 1px solid var(--gray); }
+.komparasi-selector-label { font-size: 10.5px; letter-spacing: 1.8px; text-transform: uppercase; color: var(--text3); font-weight: 700; margin-bottom: 12px; }
+.komparasi-bank-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.komparasi-bank-pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 100px; border: 1.5px solid var(--gray2); background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--text2); cursor: pointer; transition: all 0.2s; }
+.komparasi-bank-pill:hover { border-color: var(--accent2); color: var(--accent); background: rgba(37,99,235,0.04); }
+.komparasi-bank-pill.selected { border-color: var(--accent); background: var(--accent); color: #fff; }
+.komparasi-bank-pill.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+.komparasi-pill-check { font-size: 11px; display: none; }
+.komparasi-bank-pill.selected .komparasi-pill-check { display: inline; }
+.komparasi-info-tip { font-size: 11.5px; color: var(--text3); margin-top: 10px; display: flex; align-items: center; gap: 5px; }
+.btn-hitung-komparasi { display: flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 48px); margin: 16px 24px 0; padding: 13px; background: linear-gradient(135deg, var(--navy) 0%, #1a3a7c 100%); color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 16px rgba(10,22,40,0.2); }
+.btn-hitung-komparasi:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(10,22,40,0.28); }
+.btn-hitung-komparasi:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.komparasi-pdf-toggle-row { display: flex; align-items: center; gap: 10px; padding: 12px 24px; border-top: 1px solid var(--gray); margin-top: 14px; }
+.komparasi-pdf-toggle-label { font-size: 12.5px; color: var(--text2); font-weight: 500; display: flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; flex: 1; }
+.komparasi-pdf-badge { display: none; font-size: 10.5px; font-weight: 700; color: var(--accent); background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2); border-radius: 6px; padding: 2px 8px; }
+.komparasi-pdf-badge.show { display: inline-flex; align-items: center; gap: 4px; }
+.komparasi-result-wrap { display: none; padding: 0 24px 24px; }
+.komparasi-result-wrap.show { display: block; }
+.komparasi-table-outer { overflow-x: auto; border-radius: 12px; border: 1px solid var(--gray); margin-top: 4px; }
+.komparasi-table { width: 100%; border-collapse: collapse; font-family: 'DM Sans', sans-serif; font-size: 13.5px; }
+.komparasi-table th { background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); color: rgba(255,255,255,0.85); font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; padding: 13px 16px; text-align: left; white-space: nowrap; }
+.komparasi-table th:first-child { border-radius: 12px 0 0 0; }
+.komparasi-table th:last-child  { border-radius: 0 12px 0 0; }
+.komparasi-table td { padding: 14px 16px; border-bottom: 1px solid var(--gray); vertical-align: middle; color: var(--text); }
+.komparasi-table tr:last-child td { border-bottom: none; }
+.komparasi-table tr:nth-child(even) td { background: var(--off); }
+.komparasi-best-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 6px; white-space: nowrap; margin-left: 6px; }
+.komparasi-best-badge.cicilan { background: rgba(5,150,105,0.12); color: #065f46; border: 1px solid rgba(5,150,105,0.25); }
+.komparasi-best-badge.total   { background: rgba(37,99,235,0.1);  color: #1e40af; border: 1px solid rgba(37,99,235,0.2); }
+td.komparasi-highlight-green { color: var(--green); font-weight: 700; }
+td.komparasi-highlight-blue  { color: var(--accent); font-weight: 700; }
+.komparasi-program-name { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); line-height: 1.25; }
+.komparasi-bank-name { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 2px; display: flex; align-items: center; gap: 4px; }
+.komparasi-akad-badge { font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 600; }
+.komparasi-akad-badge.konvensional { background: rgba(37,99,235,0.08); color: var(--accent); }
+.komparasi-akad-badge.syariah { background: rgba(4,120,87,0.1); color: #047857; }
+.komparasi-floating-note { font-size: 10px; color: #b45309; background: rgba(217,119,6,0.08); border: 1px solid rgba(217,119,6,0.2); border-radius: 4px; padding: 1px 5px; margin-top: 3px; display: inline-block; }
+.komparasi-result-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; padding-top: 16px; flex-wrap: wrap; }
+.komparasi-result-title { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); display: flex; align-items: center; gap: 7px; }
+.komparasi-result-count { font-size: 11px; background: rgba(37,99,235,0.1); color: var(--accent); border-radius: 6px; padding: 2px 8px; font-weight: 600; }
+.komparasi-period-rows { display: flex; flex-direction: column; gap: 4px; }
+.komparasi-period-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--text2); background: var(--off2); border-radius: 6px; padding: 4px 8px; min-width: 160px; }
+.komparasi-period-label { color: var(--text3); font-size: 11px; }
+.komparasi-period-val { font-weight: 700; color: var(--navy); font-family: 'Inter', sans-serif; font-size: 13px; white-space: nowrap; }
+.komparasi-skipped-row td { padding: 0 !important; border-bottom: 1px solid var(--gray); background: transparent !important; }
+.komparasi-skipped-card { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: repeating-linear-gradient(135deg, rgba(148,163,184,0.06), rgba(148,163,184,0.06) 8px, rgba(148,163,184,0.11) 8px, rgba(148,163,184,0.11) 16px); border-left: 3px solid var(--text3); }
+.komparasi-skipped-icon { font-size: 18px; opacity: 0.55; flex-shrink: 0; }
+.komparasi-skipped-bank { font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 700; color: var(--text2); }
+.komparasi-skipped-reason { font-size: 11.5px; color: var(--text3); margin-top: 1px; }
+.komparasi-skipped-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.4px; color: var(--text3); background: var(--white); border: 1px solid var(--gray2); border-radius: 6px; padding: 2px 8px; white-space: nowrap; margin-left: auto; }
+@media (max-width: 600px) {
+  .komparasi-panel-header { padding: 14px 16px; }
+  .komparasi-selector-wrap { padding: 14px 16px; }
+  .komparasi-result-wrap { padding: 0 12px 16px; }
+  .btn-hitung-komparasi { width: calc(100% - 32px); margin: 12px 16px 0; }
+  .komparasi-pdf-toggle-row { padding: 10px 16px; }
+  .komparasi-table th, .komparasi-table td { padding: 10px 12px; font-size: 12px; }
+}
 
 /* ══════════════════════════════════════════════════
    ANIMATIONS
@@ -2729,9 +2868,87 @@ body.admin-mode .admin-only { display: revert !important; }
     <!-- Biaya Lain-Lain (BPHTB & AJB/BBN) — selalu di bawah Tabel Amortisasi -->
     <div class="res-divider" id="othercost-result-divider" style="display:none;"></div>
     <div class="othercost-card" id="othercost-result-card" style="display:none;">
-      <div class="othercost-card-title">💰 Biaya Lain-Lain</div>
+      <div class="othercost-card-title" style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+        <span>💰 Biaya Lain-Lain</span>
+        <label class="pdf-toggle-label" style="margin:0; font-size:12px; font-weight:500; gap:7px;" for="chk-othercost-pdf">
+          <span class="pdf-toggle-switch">
+            <input type="checkbox" id="chk-othercost-pdf" onchange="onOtherCostPdfToggleChange()" />
+            <span class="pdf-toggle-slider"></span>
+          </span>
+          Sertakan di PDF
+        </label>
+      </div>
       <div id="othercost-result-body"></div>
     </div>
+
+    <!-- ── PERBANDINGAN MULTI-BANK — di bawah Tabel Amortisasi / Biaya Lain-Lain ── -->
+    <!-- Wrapper tunggal: divider + trigger + panel dikontrol bersama oleh syncKomparasiTriggerVisibility() -->
+    <div id="komparasi-section-wrap" style="display:none;">
+      <div class="res-divider"></div>
+      <div id="komparasi-trigger-wrap">
+        <button class="btn-komparasi-trigger" id="btn-komparasi-trigger" onclick="toggleKomparasiPanel()">
+          <span>⚖️</span>
+          <span id="komparasi-trigger-label">Bandingkan Program Antar Bank</span>
+        </button>
+      </div>
+
+      <div class="komparasi-panel" id="komparasi-panel">
+        <div class="komparasi-panel-header">
+          <div>
+            <div class="komparasi-panel-title">⚖️ Perbandingan Multi-Bank</div>
+            <div class="komparasi-panel-subtitle">Pilih hingga 3 bank — program terbaik tiap bank otomatis dideteksi</div>
+          </div>
+        </div>
+
+        <div class="komparasi-selector-wrap">
+          <div class="komparasi-selector-label">Pilih Bank untuk Dibandingkan (Maks. 3)</div>
+          <div class="komparasi-bank-pills" id="komparasi-bank-pills"></div>
+          <div class="komparasi-info-tip">💡 Program dengan tenor paling mendekati tenor simulasi yang akan ditampilkan</div>
+        </div>
+
+        <button class="btn-hitung-komparasi" id="btn-hitung-komparasi" onclick="hitungKomparasi()" disabled>
+          ⚖️ Hitung &amp; Tampilkan Perbandingan
+        </button>
+
+        <!-- Toggle: Sertakan di PDF — DEFAULT OFF -->
+        <div class="komparasi-pdf-toggle-row">
+          <label class="komparasi-pdf-toggle-label" for="chk-komparasi-pdf">
+            <span class="pdf-toggle-switch">
+              <input type="checkbox" id="chk-komparasi-pdf" onchange="onKomparasiPdfToggleChange()" />
+              <span class="pdf-toggle-slider"></span>
+            </span>
+            Sertakan Tabel Perbandingan di PDF
+          </label>
+          <span class="komparasi-pdf-badge" id="komparasi-pdf-badge">📄 Akan dicetak di PDF</span>
+        </div>
+
+        <!-- Hasil komparasi -->
+        <div class="komparasi-result-wrap" id="komparasi-result-wrap">
+          <div class="komparasi-result-header">
+            <div class="komparasi-result-title">
+              Hasil Perbandingan
+              <span class="komparasi-result-count" id="komparasi-result-count">0 Bank</span>
+            </div>
+          </div>
+          <div class="komparasi-table-outer">
+            <table class="komparasi-table">
+              <thead>
+                <tr>
+                  <th>Program KPR</th>
+                  <th>Cicilan Tahun 1</th>
+                  <th>Total Bayar</th>
+                  <th>Akad</th>
+                  <th>Semua Periode</th>
+                </tr>
+              </thead>
+              <tbody id="komparasi-tbody"></tbody>
+            </table>
+          </div>
+          <div id="komparasi-notes" style="margin-top:12px; font-size:11.5px; color:var(--text3); line-height:1.7;"></div>
+        </div>
+      </div>
+    </div>
+    <!-- ── END PERBANDINGAN MULTI-BANK ── -->
   </div>
 
 </div><!-- end main-wrap -->
@@ -2792,8 +3009,44 @@ body.admin-mode .admin-only { display: revert !important; }
       </div>
       <div class="field">
         <label>Tenor (Tahun)</label>
-        <input type="number" id="program-modal-tenor" min="1" max="30" step="1" placeholder="Contoh: 20" oninput="onProgramModalTenorChange()">
+        <input type="number" id="program-modal-tenor" min="1" max="30" step="1" placeholder="Contoh: 15" oninput="onProgramModalTenorChange()">
       </div>
+    </div>
+
+    <!-- ── Rentang Tenor Berlaku (opsional) ── -->
+    <div style="margin-top:14px; padding:14px 16px; background:var(--off); border:1.5px solid var(--gray); border-radius:var(--radius2);">
+      <div style="font-size:10.5px; letter-spacing:1.6px; text-transform:uppercase; color:var(--text3); font-weight:700; margin-bottom:10px;">
+        Berlaku Hingga Tenor <span style="font-size:10px; font-weight:500; text-transform:none; letter-spacing:0; color:var(--text3); opacity:0.75;">(opsional)</span>
+      </div>
+      <div class="field" style="margin:0; max-width:220px;">
+        <label>Tenor Maksimum (Tahun)</label>
+        <input type="number" id="program-modal-tenor-max" min="1" max="30" step="1" placeholder="Contoh: 19">
+      </div>
+      <p style="font-size:11.5px; color:var(--text3); margin-top:8px; line-height:1.5;">
+        💡 Contoh: program dengan Tenor 15 & Tenor Maksimum 19 berarti rate program ini berlaku untuk pengajuan tenor 15–19 tahun. Kosongkan jika program hanya berlaku persis pada tenor di atas.
+      </p>
+    </div>
+
+    <!-- ── Syarat Plafon (opsional) ── -->
+    <div style="margin-top:14px; padding:14px 16px; background:var(--off); border:1.5px solid var(--gray); border-radius:var(--radius2);">
+      <div style="font-size:10.5px; letter-spacing:1.6px; text-transform:uppercase; color:var(--text3); font-weight:700; margin-bottom:10px;">
+        Syarat Plafon <span style="font-size:10px; font-weight:500; text-transform:none; letter-spacing:0; color:var(--text3); opacity:0.75;">(opsional — kosongkan jika tidak ada batas)</span>
+      </div>
+      <div class="grid" style="gap:12px;">
+        <div class="field" style="margin:0;">
+          <label>Plafon Minimum (Rp)</label>
+          <input type="text" id="program-modal-plafon-min" placeholder="Contoh: 500.000.000" autocomplete="off"
+            oninput="formatRpModal(this)" style="font-family:'DM Sans',sans-serif;">
+        </div>
+        <div class="field" style="margin:0;">
+          <label>Plafon Maksimum (Rp)</label>
+          <input type="text" id="program-modal-plafon-max" placeholder="Contoh: 2.000.000.000" autocomplete="off"
+            oninput="formatRpModal(this)" style="font-family:'DM Sans',sans-serif;">
+        </div>
+      </div>
+      <p style="font-size:11.5px; color:var(--text3); margin-top:8px; line-height:1.5;">
+        💡 Card program hanya akan tampil jika plafon customer memenuhi syarat ini. Program tanpa batas plafon selalu ditampilkan.
+      </p>
     </div>
 
     <div class="field" style="margin-top:16px;">
@@ -3035,6 +3288,8 @@ function syncSlider() {
 function syncTenorFromSlider() {
   document.getElementById('tenor-input').value = document.getElementById('tenor-slider').value;
   updateJenjangLabels();
+  // Filter card program ikut diperbarui saat tenor berubah (lihat isTenorOk di renderProgramGrid)
+  if (bungaMode === 'bank') renderProgramGrid();
   invalidateSimulasi();
 }
 function syncTenorFromInput() {
@@ -3044,6 +3299,8 @@ function syncTenorFromInput() {
   document.getElementById('tenor-input').value = v; // BUG-009: update field if clamped
   document.getElementById('tenor-slider').value = v;
   updateJenjangLabels();
+  // Filter card program ikut diperbarui saat tenor berubah (lihat isTenorOk di renderProgramGrid)
+  if (bungaMode === 'bank') renderProgramGrid();
   invalidateSimulasi();
 }
 
@@ -3081,6 +3338,8 @@ function setBungaMode(m) {
   // relevan lagi (basis hitungannya berbeda). Sembunyikan card hasil; user
   // harus klik "HITUNG CICILAN" lagi untuk melihat hasil yang baru.
   hideResultCard();
+  // Komparasi: tampilkan/sembunyikan tombol trigger sesuai mode
+  if (typeof syncKomparasiTriggerVisibility === 'function') syncKomparasiTriggerVisibility();
 }
 
 // ─── Jenjang Rows ─────────────────────────────────
@@ -3129,7 +3388,7 @@ function addJenjang(defaultDari, defaultSampai, defaultRate = 9.0) {
       <div class="jenjang-input-group">
         <label>Bunga</label>
         <div class="jenjang-input-wrap">
-          <input type="number" id="jenjang-rate-${idx}" value="${defaultRate}" min="0.1" max="30" step="0.1">
+          <input type="number" id="jenjang-rate-${idx}" value="${defaultRate}" min="0.1" max="30" step="0.1" oninput="invalidateSimulasi()">
           <span class="jenjang-unit">%</span>
         </div>
       </div>
@@ -3188,6 +3447,10 @@ function updateJenjangLabels() {
       if (badge) badge.remove();
     }
   });
+
+  // Anti-zombie-data: perubahan periode Bunga Berjenjang (tambah/hapus/ubah rentang
+  // tahun) membuat hasil simulasi sebelumnya tidak relevan lagi.
+  invalidateSimulasi();
 }
 
 function updateAddBtn() {
@@ -3244,6 +3507,8 @@ async function subscribeBanks() {
       banks.sort((a, b) => a.nama.localeCompare(b.nama, 'id'));
       // Render ulang UI secara real-time
       renderBankSelect();
+      // Komparasi: refresh pills jika panel sedang terbuka
+      if (typeof renderKomparasiBankPillsIfOpen === 'function') renderKomparasiBankPillsIfOpen();
     },
     (error) => {
       console.error('subscribeBanks error:', error);
@@ -3697,6 +3962,16 @@ async function saveBank() {
   }
 }
 
+// ─── Format Rupiah untuk input modal plafon ───────
+function formatRpModal(el) {
+  const raw = el.value.replace(/\D/g, '');
+  el.value = raw.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+function parseRpModal(el) {
+  const v = parseFloat((el.value || '').replace(/\./g, ''));
+  return isNaN(v) ? null : v;
+}
+
 // ─── Program: helper ───────────────────────────────
 function findBankById(bankId) {
   return banks.find(b => b.id === bankId) || null;
@@ -3780,6 +4055,37 @@ function renderProgramGrid() {
   const allPrograms = getAllPrograms();
   searchWrap.style.display = allPrograms.length > PROGRAM_SEARCH_THRESHOLD ? 'block' : 'none';
 
+  // ── Hitung plafon customer saat ini ──────────────
+  const harga = parseRp(document.getElementById('harga'));
+  let dp = 0;
+  if (dpMode === 'pct') {
+    dp = harga * (parseFloat(document.getElementById('dp-slider').value) / 100);
+  } else {
+    dp = parseRp(document.getElementById('dp-nom'));
+  }
+  const plafonUser = (harga > 0 && dp >= 0 && dp < harga) ? (harga - dp) : null;
+
+  // ── Tenor customer saat ini ───────────────────────
+  const tenorUser = parseInt(document.getElementById('tenor-input').value) || null;
+
+  // ── Fungsi cek apakah program sesuai plafon ──────
+  function isPlafonOk(p) {
+    if (plafonUser === null) return true; // harga belum diisi → tampil semua
+    const minOk = (p.plafonMin == null) || (plafonUser >= p.plafonMin);
+    const maxOk = (p.plafonMax == null) || (plafonUser <= p.plafonMax);
+    return minOk && maxOk;
+  }
+
+  // ── Fungsi cek apakah program sesuai rentang tenor ──
+  // Rentang berlaku program: [tenor, tenorMax || tenor]
+  function isTenorOk(p) {
+    if (tenorUser === null) return true; // tenor belum diisi → tampil semua
+    const tMax = (p.tenorMax != null && p.tenorMax >= p.tenor) ? p.tenorMax : p.tenor;
+    return tenorUser >= p.tenor && tenorUser <= tMax;
+  }
+
+  function isAvailable(p) { return isPlafonOk(p) && isTenorOk(p); }
+
   const query = (document.getElementById('program-search').value || '').trim().toLowerCase();
   const filtered = !query ? allPrograms : allPrograms.filter(p => {
     const haystack = [
@@ -3789,14 +4095,31 @@ function renderProgramGrid() {
     return haystack.includes(query);
   });
 
-  // Urutkan kartu program berdasarkan tenor, dari yang paling pendek ke paling lama (ascending)
-  filtered.sort((a, b) => (a.tenor || 0) - (b.tenor || 0));
+  // Pisahkan: tersedia vs tidak sesuai (plafon dan/atau tenor)
+  const available   = filtered.filter(p => isAvailable(p));
+  const unavailable = filtered.filter(p => !isAvailable(p));
+
+  // Urutkan masing-masing grup berdasarkan tenor ascending
+  available.sort((a, b) => (a.tenor || 0) - (b.tenor || 0));
+  unavailable.sort((a, b) => (a.tenor || 0) - (b.tenor || 0));
 
   let cardsHtml = '';
   if (allPrograms.length > 0 && filtered.length === 0) {
     cardsHtml += `<div class="program-no-result">Tidak ada program yang cocok dengan pencarian "${escapeHtml(query)}".</div>`;
   } else {
-    cardsHtml += filtered.map(p => renderProgramCardHtml(p)).join('');
+    // Render card yang sesuai
+    cardsHtml += available.map(p => renderProgramCardHtml(p, false)).join('');
+
+    // Render card yang tidak sesuai (grey-out) — hanya jika ada
+    if (unavailable.length > 0) {
+      // Separator hanya muncul jika ada card tersedia di atas
+      if (available.length > 0) {
+        cardsHtml += `<div class="program-plafon-divider">
+          <span>Program berikut tidak tersedia untuk plafon/tenor saat ini</span>
+        </div>`;
+      }
+      cardsHtml += unavailable.map(p => renderProgramCardHtml(p, true)).join('');
+    }
   }
 
   cardsHtml += `
@@ -3809,16 +4132,17 @@ function renderProgramGrid() {
   grid.innerHTML = cardsHtml;
 }
 
-function renderProgramCardHtml(p) {
+function renderProgramCardHtml(p, isUnavailable = false) {
   const isActive = activeProgram && activeProgram.bankId === p.bankId && activeProgram.programId === p.id;
   const firstPeriode = p.periode[0];
   const bankInitial = (p.bankNama || '?').trim().charAt(0).toUpperCase();
-  const estCicilan = estimateProgramFirstInstallment(p);
+  const estCicilan = isUnavailable ? null : estimateProgramFirstInstallment(p);
   const hasFloating = programHasFloating(p);
   const isSyariah = p.akad === 'syariah';
   const isSyariahEfektif = p.akad === 'syariah-efektif';
   const isAnySharia = isSyariah || isSyariahEfektif;
   const rateWord = isAnySharia ? 'Margin' : 'Bunga';
+  const tenorMax = (p.tenorMax != null && p.tenorMax >= p.tenor) ? p.tenorMax : null;
 
   const rateBadge = firstPeriode
     ? (firstPeriode.floating
@@ -3831,18 +4155,64 @@ function renderProgramCardHtml(p) {
   const safeBankIdAttr = escapeAttr(p.bankId);
   const safeBankIdForJs = escapeAttr(escapeJsString(p.bankId));
 
+  // ── Label tenor: tampilkan rentang jika tenorMax diisi ──
+  const tenorLabel = tenorMax ? `${p.tenor}–${tenorMax} Tahun` : `${p.tenor} Tahun`;
+
+  // ── Badge syarat plafon (ditampilkan di card jika ada batasan) ──
+  let plafonBadgeHtml = '';
+  if (p.plafonMin != null || p.plafonMax != null) {
+    const minTxt = p.plafonMin != null ? `Min ${fmtShort(p.plafonMin)}` : null;
+    const maxTxt = p.plafonMax != null ? `Maks ${fmtShort(p.plafonMax)}` : null;
+    const rangeLabel = [minTxt, maxTxt].filter(Boolean).join(' – ');
+    plafonBadgeHtml = `<span class="program-card-plafon-badge ${isUnavailable ? 'unavail' : ''}">🏷️ Plafon: ${rangeLabel}</span>`;
+  }
+
+  // ── Badge rentang tenor (ditampilkan di card jika ada tenorMax) ──
+  let tenorBadgeHtml = '';
+  if (tenorMax) {
+    tenorBadgeHtml = `<span class="program-card-plafon-badge ${isUnavailable ? 'unavail' : ''}">📅 Tenor: ${p.tenor}–${tenorMax} Thn</span>`;
+  }
+
+  // ── Keterangan mengapa tidak tersedia ──
+  let unavailReasonHtml = '';
+  if (isUnavailable) {
+    const reasons = [];
+    const harga = parseRp(document.getElementById('harga'));
+    let dp = 0;
+    if (dpMode === 'pct') dp = harga * (parseFloat(document.getElementById('dp-slider').value) / 100);
+    else dp = parseRp(document.getElementById('dp-nom'));
+    const plafonUser = harga > 0 ? harga - dp : null;
+    if (plafonUser !== null) {
+      if (p.plafonMin != null && plafonUser < p.plafonMin) reasons.push(`Plafon customer (${fmtShort(plafonUser)}) di bawah minimum ${fmtShort(p.plafonMin)}`);
+      if (p.plafonMax != null && plafonUser > p.plafonMax) reasons.push(`Plafon customer (${fmtShort(plafonUser)}) di atas maksimum ${fmtShort(p.plafonMax)}`);
+    }
+    const tenorUser = parseInt(document.getElementById('tenor-input').value) || null;
+    if (tenorUser !== null) {
+      const tMaxEff = tenorMax || p.tenor;
+      if (tenorUser < p.tenor || tenorUser > tMaxEff) {
+        const tenorRangeTxt = tenorMax ? `${p.tenor}–${tenorMax} tahun` : `${p.tenor} tahun`;
+        reasons.push(`Tenor pilihan Anda (${tenorUser} thn) di luar rentang program ini (${tenorRangeTxt})`);
+      }
+    }
+    unavailReasonHtml = `<div class="program-card-unavail-reason">${reasons.join(' · ') || 'Tidak sesuai plafon/tenor saat ini'}</div>`;
+  }
+
   return `
-    <div class="program-card ${isActive ? 'active' : ''}" data-bank-id="${safeBankIdAttr}" data-program-id="${p.id}" onclick="selectProgramCard('${safeBankIdForJs}', ${p.id})">
+    <div class="program-card ${isActive ? 'active' : ''} ${isUnavailable ? 'plafon-unavailable' : ''}"
+      data-bank-id="${safeBankIdAttr}" data-program-id="${p.id}"
+      ${isUnavailable ? '' : `onclick="selectProgramCard('${safeBankIdForJs}', ${p.id})"`}>
       <div class="program-card-bank">
         <div class="program-card-bank-icon">${escapeHtml(bankInitial)}</div>
         <div class="program-card-bank-name">${escapeHtml(p.bankNama)}</div>
       </div>
       <div class="program-card-name">${escapeHtml(p.nama)}</div>
-      <div class="program-card-tenor">Tenor <b>${p.tenor} Tahun</b></div>
+      <div class="program-card-tenor">Tenor <b>${tenorLabel}</b></div>
       <div class="program-card-badges">
         <span class="program-card-rate-badge" title="${rateWord}">${rateBadge}</span>
         ${hasFloating ? '<span class="program-card-type-badge floating">⚠ Floating</span>' : '<span class="program-card-type-badge fix">📌 Fix</span>'}
         <span class="program-card-akad-badge ${akadBadgeClass}">${akadBadgeLabel}</span>
+        ${plafonBadgeHtml}
+        ${tenorBadgeHtml}
       </div>
       ${estCicilan ? `
         <div class="program-card-installment">
@@ -3850,7 +4220,8 @@ function renderProgramCardHtml(p) {
           <div class="program-card-installment-val">${fmtShort(estCicilan)} <span>/bln</span></div>
         </div>
       ` : ''}
-      <div class="program-card-select-btn">${isActive ? '✓ Program Terpilih' : 'Pilih Program'}</div>
+      ${unavailReasonHtml}
+      <div class="program-card-select-btn">${isUnavailable ? '🚫 Tidak Tersedia' : (isActive ? '✓ Program Terpilih' : 'Pilih Program')}</div>
       <div class="program-card-actions admin-only">
         <button type="button" class="edit" onclick="event.stopPropagation(); editProgramCard('${safeBankIdForJs}', ${p.id})">✎ Edit</button>
         <button type="button" class="danger" onclick="event.stopPropagation(); deleteProgramCard('${safeBankIdForJs}', ${p.id})">🗑 Hapus</button>
@@ -3867,9 +4238,18 @@ function selectProgramCard(bankId, programId) {
 
   activeProgram = { bankId: String(bankId), programId };
 
-  // sinkronkan tenor pinjaman global agar sesuai dengan program yang dipilih
-  document.getElementById('tenor-input').value = program.tenor;
-  document.getElementById('tenor-slider').value = program.tenor;
+  // ── Tenor: pertahankan input tenor user JIKA masih berada dalam
+  // rentang berlaku program ini (tenor s/d tenorMax). Hanya di-overwrite
+  // ke program.tenor kalau tenor saat ini berada DI LUAR rentang —
+  // misal user belum mengisi tenor sama sekali, atau tenor sebelumnya
+  // dari program lain yang rentangnya tidak mencakup tenor program ini.
+  const tenorMax = (program.tenorMax != null && program.tenorMax >= program.tenor) ? program.tenorMax : program.tenor;
+  const currentTenor = parseInt(document.getElementById('tenor-input').value) || 0;
+  const tenorInRange = currentTenor >= program.tenor && currentTenor <= tenorMax;
+  if (!tenorInRange) {
+    document.getElementById('tenor-input').value = program.tenor;
+    document.getElementById('tenor-slider').value = program.tenor;
+  }
   // Update label baris jenjang jika mode Berjenjang pernah dipakai (tenor berubah)
   updateJenjangLabels();
 
@@ -3945,6 +4325,9 @@ function openProgramModal() {
   document.getElementById('program-modal-title').textContent = 'Tambah Program KPR';
   document.getElementById('program-modal-nama').value = '';
   document.getElementById('program-modal-tenor').value = '';
+  document.getElementById('program-modal-tenor-max').value = '';
+  document.getElementById('program-modal-plafon-min').value = '';
+  document.getElementById('program-modal-plafon-max').value = '';
   document.getElementById('program-modal-err').style.display = 'none';
   document.getElementById('bank-modal-rows').innerHTML = '';
   bankJenjangCount = 0;
@@ -3960,6 +4343,12 @@ function openProgramModalForEdit(bank, program) {
   document.getElementById('program-modal-title').textContent = 'Edit Program KPR';
   document.getElementById('program-modal-nama').value = program.nama;
   document.getElementById('program-modal-tenor').value = program.tenor;
+  document.getElementById('program-modal-tenor-max').value = program.tenorMax != null ? program.tenorMax : '';
+  // Load plafon jika ada
+  const pMin = program.plafonMin != null ? String(program.plafonMin).replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
+  const pMax = program.plafonMax != null ? String(program.plafonMax).replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
+  document.getElementById('program-modal-plafon-min').value = pMin;
+  document.getElementById('program-modal-plafon-max').value = pMax;
   document.getElementById('program-modal-err').style.display = 'none';
   document.getElementById('bank-modal-rows').innerHTML = '';
   bankJenjangCount = 0;
@@ -4302,6 +4691,34 @@ async function saveProgram() {
   }
   const floatingRate = floatingRateResult.value;
 
+  // Baca plafon opsional dari modal
+  const plafonMin = parseRpModal(document.getElementById('program-modal-plafon-min'));
+  const plafonMax = parseRpModal(document.getElementById('program-modal-plafon-max'));
+
+  // Validasi: plafonMin tidak boleh lebih besar dari plafonMax jika keduanya diisi
+  if (plafonMin !== null && plafonMax !== null && plafonMin >= plafonMax) {
+    errEl.textContent = '⚠ Plafon Minimum harus lebih kecil dari Plafon Maksimum.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // Baca Tenor Maksimum opsional (rentang tenor di mana program ini berlaku)
+  const tenorMaxRaw = document.getElementById('program-modal-tenor-max').value;
+  const tenorMax = tenorMaxRaw === '' ? null : parseInt(tenorMaxRaw);
+
+  if (tenorMax !== null) {
+    if (isNaN(tenorMax) || tenorMax < 1 || tenorMax > 30) {
+      errEl.textContent = '⚠ Tenor Maksimum harus berupa angka 1–30 tahun.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (tenorMax < tenor) {
+      errEl.textContent = '⚠ Tenor Maksimum tidak boleh lebih kecil dari Tenor program.';
+      errEl.style.display = 'block';
+      return;
+    }
+  }
+
   errEl.style.display = 'none';
 
   const periodeFinal = sorted.map(p => ({
@@ -4321,14 +4738,16 @@ async function saveProgram() {
     // EDIT program yang sudah ada
     updatedPrograms = bank.programs.map(p =>
       p.id === programModalEditId
-        ? { id: programModalEditId, nama, tenor, periode: periodeFinal, floatingRate, akad: programModalAkad }
+        ? { id: programModalEditId, nama, tenor, periode: periodeFinal, floatingRate, akad: programModalAkad,
+            plafonMin: plafonMin ?? null, plafonMax: plafonMax ?? null, tenorMax: tenorMax ?? null }
         : p
     );
     savedProgramId = programModalEditId;
   } else {
     // TAMBAH program baru — ID numerik berurutan tetap dipakai di dalam array programs
     const newId = getNextProgramId(bank);
-    updatedPrograms = [...bank.programs, { id: newId, nama, tenor, periode: periodeFinal, floatingRate, akad: programModalAkad }];
+    updatedPrograms = [...bank.programs, { id: newId, nama, tenor, periode: periodeFinal, floatingRate, akad: programModalAkad,
+      plafonMin: plafonMin ?? null, plafonMax: plafonMax ?? null, tenorMax: tenorMax ?? null }];
     savedProgramId = newId;
   }
 
@@ -4393,10 +4812,16 @@ function hitungBank(pokok, dp, tenor) {
     return { dari: p.dari, sampai, thn, rate: p.rate, floating: p.floating };
   }).filter(p => p.thn > 0 && p.dari <= tenor);
 
-  // BUG-004: Warning jika tenor pinjaman berbeda dari tenor program
-  if (tenor !== program.tenor) {
+  // BUG-004 (diperbarui untuk rentang tenor): Warning hanya muncul jika tenor
+  // pinjaman berada DI LUAR rentang resmi program ini (tenor s/d tenorMax).
+  // Jika program punya tenorMax dan tenor user masih dalam rentang tsb,
+  // ini dianggap penggunaan NORMAL/RESMI — tidak perlu warning.
+  const programTenorMax = (program.tenorMax != null && program.tenorMax >= program.tenor) ? program.tenorMax : program.tenor;
+  const tenorDiLuarRentang = tenor < program.tenor || tenor > programTenorMax;
+  if (tenorDiLuarRentang) {
     const warnEl = document.getElementById('err-msg');
-    warnEl.textContent = `⚠ Peringatan: Tenor pinjaman Anda (${tenor} tahun) berbeda dari tenor program bank "${program.nama}" (${program.tenor} tahun). Simulasi ini menggunakan tenor ${tenor} tahun dengan penyesuaian otomatis pada periode terakhir.`;
+    const rentangTxt = programTenorMax > program.tenor ? `${program.tenor}–${programTenorMax} tahun` : `${program.tenor} tahun`;
+    warnEl.textContent = `⚠ Peringatan: Tenor pinjaman Anda (${tenor} tahun) berada di luar rentang resmi program bank "${program.nama}" (berlaku untuk ${rentangTxt}). Simulasi ini menggunakan tenor ${tenor} tahun dengan penyesuaian otomatis pada periode terakhir — silakan konfirmasi ke pihak bank untuk kepastian rate yang berlaku.`;
     warnEl.style.display = 'block';
     warnEl.style.color = '#b45309';
     warnEl.style.background = 'rgba(217,119,6,0.07)';
@@ -4650,11 +5075,60 @@ function onOtherCostToggle() {
   otherCosts.adminKpr.include   = document.getElementById('oc-adminkpr-include').checked;
   otherCosts.adminKpr.customPct = parseFloat(document.getElementById('oc-adminkpr-custom-pct').value) || 0;
 
+  // Jika toggle "Free" BPHTB diaktifkan, otomatis nyalakan juga toggle utama
+  // "Hitung BPHTB" (card BPHTB) — hanya menyalakan, tidak pernah mematikan
+  // otomatis (mematikan tetap manual oleh pengguna).
+  const bphtbEnabledEl = document.getElementById('oc-bphtb-enabled');
+  if (bphtbEnabledEl && otherCosts.bphtb.free && !bphtbEnabledEl.checked) {
+    bphtbEnabledEl.checked = true;
+    otherCosts.bphtb.enabled = true;
+  }
+
+  // Jika toggle "Free" AJB & BBN diaktifkan, otomatis nyalakan juga toggle utama
+  // "Hitung AJB & BBN" (card AJB & BBN) — hanya menyalakan, tidak pernah mematikan
+  // otomatis (mematikan tetap manual oleh pengguna).
+  const ajbEnabledEl = document.getElementById('oc-ajb-enabled');
+  if (ajbEnabledEl && otherCosts.ajbBbn.free && !ajbEnabledEl.checked) {
+    ajbEnabledEl.checked = true;
+    otherCosts.ajbBbn.enabled = true;
+  }
+
+  // Jika toggle "Include" Admin KPR diaktifkan, otomatis nyalakan juga toggle utama
+  // "Hitung Admin KPR" (card Admin KPR) — hanya menyalakan, tidak pernah mematikan
+  // otomatis (mematikan tetap manual oleh pengguna).
+  const adminKprEnabledEl = document.getElementById('oc-adminkpr-enabled');
+  if (adminKprEnabledEl && otherCosts.adminKpr.include && !adminKprEnabledEl.checked) {
+    adminKprEnabledEl.checked = true;
+    otherCosts.adminKpr.enabled = true;
+  }
+
   document.getElementById('oc-ajb-body').classList.toggle('show', otherCosts.ajbBbn.enabled);
   document.getElementById('oc-adminkpr-body').classList.toggle('show', otherCosts.adminKpr.enabled);
 
+  // Jika salah satu toggle "Free" (BPHTB / AJB & BBN / Admin KPR) atau toggle "Include"
+  // (Admin KPR) diaktifkan, otomatis nyalakan toggle "Sertakan di PDF" pada card Biaya
+  // Lain-Lain — hanya menyalakan, tidak pernah mematikan otomatis (mematikan tetap manual
+  // oleh pengguna).
+  const pdfToggleEl = document.getElementById('chk-othercost-pdf');
+  if (pdfToggleEl && (otherCosts.bphtb.free || otherCosts.ajbBbn.free || otherCosts.adminKpr.free || otherCosts.adminKpr.include) && !pdfToggleEl.checked) {
+    pdfToggleEl.checked = true;
+    onOtherCostPdfToggleChange();
+  }
+
   saveOtherCostsToStorage();
   renderOtherCosts();
+
+  // Anti-zombie-data: perubahan toggle/kolom Biaya Lain-Lain (termasuk "Include"
+  // Admin KPR yang memengaruhi Plafon/Pokok Pinjaman) membuat hasil simulasi yang
+  // sudah tampil tidak relevan lagi. Sembunyikan card hasil (sekaligus hasil
+  // Perbandingan Multi-Bank di dalamnya) — user wajib klik "Hitung Cicilan" lagi.
+  invalidateSimulasi();
+}
+
+// Handler toggle "Sertakan di PDF" pada card Biaya Lain-Lain (BPHTB/AJB & BBN/Admin KPR)
+function onOtherCostPdfToggleChange() {
+  const el = document.getElementById('chk-othercost-pdf');
+  _includeOtherCostsPDF = !!(el && el.checked);
 }
 
 // Toggle "Free" dan "Include" pada Admin KPR bersifat mutex (saling mengunci):
@@ -5201,9 +5675,7 @@ function generateOtherCostsPDF(doc, calc, y, marginL, marginR, navy, textGray) {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8.5);
     doc.setTextColor(255, 255, 255);
-    const judulRek = salaryEnabled
-      ? '★  REKOMENDASI CERDAS'
-      : '★  REKOMENDASI CERDAS — Alternatif Penambahan DP';
+    const judulRek = 'REKOMENDASI CERDAS';
     doc.text(judulRek, innerX, cardStartY + 4.8);
     y = cardStartY + headerH + cardPadY;
 
@@ -5218,7 +5690,7 @@ function generateOtherCostsPDF(doc, calc, y, marginL, marginR, navy, textGray) {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(8.5);
       doc.setTextColor(darkGreen[0], darkGreen[1], darkGreen[2]);
-      doc.text('1.  Saran Minimal Gaji / Joint Income', innerX + 2, y + 3.8);
+      doc.text('1.  Saran Pendapatan / Joint Income', innerX + 2, y + 3.8);
       y += 5.5 + 5; // +5 = jeda sebelum angka agar tidak nyangkut strip
 
       // Nominal gaji — besar & menonjol
@@ -5375,6 +5847,13 @@ function invalidateSimulasi() {
 function hideResultCard() {
   const rc = document.getElementById('result-card');
   if (rc) rc.classList.remove('show');
+  // Sembunyikan juga section komparasi yang ada di dalam result-card
+  const ks = document.getElementById('komparasi-section-wrap');
+  if (ks) ks.style.display = 'none';
+  // Reset juga hasil "Perbandingan Multi-Bank" agar tidak jadi zombie data —
+  // begitu section komparasi tampil lagi (setelah klik Hitung Cicilan), user
+  // wajib klik "Hitung & Tampilkan Perbandingan" ulang untuk melihat hasil baru.
+  if (typeof invalidateKomparasi === 'function') invalidateKomparasi();
   // Bersihkan data simulasi lama agar tombol Salin/WA/PDF tidak bisa
   // mengekspor data "zombie" dari kalkulasi sebelumnya yang sudah tidak relevan.
   lastSimulasi = null;
@@ -5490,6 +5969,9 @@ function hitung(scrollTarget) {
 
   const rc = document.getElementById('result-card');
   rc.classList.add('show');
+
+  // Komparasi: sinkronkan visibilitas tombol (hanya muncul di bank mode setelah ada hasil)
+  if (typeof syncKomparasiTriggerVisibility === 'function') syncKomparasiTriggerVisibility();
 
   if (scrollTarget === 'othercost') {
     // Scroll ke seksi Biaya Lain-Lain agar user mengisi/mengecek biaya dulu sebelum lihat hasil
@@ -6100,6 +6582,17 @@ async function generatePDF() {
     doc.setTextColor(textGray[0], textGray[1], textGray[2]);
     doc.text(`Tanggal Generate: ${formatTanggalPDF()}`, pageW - marginR, y + 6, { align: 'right' });
 
+    // Baris "oleh [Nama Marketing]" — fallback ke nama CS default jika kolom kosong
+    const headerMktNamaEl = document.getElementById('mkt-nama');
+    let headerMktNama = 'CS Podo Rukun Jaya Properti';
+    if (headerMktNamaEl && headerMktNamaEl.value.trim() !== '') {
+      headerMktNama = headerMktNamaEl.value.trim().toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+    }
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(8);
+    doc.setTextColor(textGray[0], textGray[1], textGray[2]);
+    doc.text(`oleh ${headerMktNama}`, pageW - marginR, y + 11, { align: 'right' });
+
     y += 16;
     doc.setDrawColor(navy[0], navy[1], navy[2]);
     doc.setLineWidth(0.6);
@@ -6269,9 +6762,19 @@ async function generatePDF() {
       y = doc.lastAutoTable.finalY + 6;
     }
 
-    // ── SECTION: Biaya Lain-Lain (BPHTB & AJB/BBN) — auto-update, dihitung ulang saat generate.
-    // Posisi: setelah Ringkasan Simulasi Utama, SEBELUM Tabel Amortisasi. ──
-    y = generateOtherCostsPDF(doc, calculateOtherCosts(), y, marginL, marginR, navy, textGray);
+    // ── SECTION: Tabel Perbandingan Multi-Bank (hanya jika toggle ON dan ada hasil) ──
+    // Selalu di halaman tersendiri, ditempatkan SEBELUM section Rekomendasi Cerdas.
+    if (isKomparasiPdfEnabled() && _komparasiLastResults.length) {
+      doc.addPage();
+      y = 16;
+    }
+    y = generateKomparasiPDF(doc, y, marginL, marginR, navy, textGray, accent);
+
+    // ── SECTION: Biaya Lain-Lain (BPHTB & AJB/BBN) — hanya jika toggle "Sertakan di PDF" ON ──
+    const includeOtherCostPDF = document.getElementById('chk-othercost-pdf')?.checked;
+    if (includeOtherCostPDF) {
+      y = generateOtherCostsPDF(doc, calculateOtherCosts(), y, marginL, marginR, navy, textGray);
+    }
 
     // ── SECTION: Tabel Amortisasi (hanya jika toggle ON) — selalu elemen terakhir dari konten utama PDF ──
     const includeAmortPDF = document.getElementById('chk-amort-pdf') && document.getElementById('chk-amort-pdf').checked;
@@ -6780,6 +7283,427 @@ function loadMarketingData() {
   // Mulai memantau status login Firebase
   initAuthObserver();
 })();
+
+// ══════════════════════════════════════════════════
+// PERBANDINGAN MULTI-BANK — Fitur baru v6
+// ══════════════════════════════════════════════════
+
+let komparasi_selectedBankIds = [];
+let _komparasiPanelOpen = false;
+let _komparasiLastResults = [];
+let _komparasiLastSkipped = []; // bank yang tidak punya program cocok plafon/tenor pada hitung terakhir
+
+/**
+ * invalidateKomparasi()
+ * Anti-zombie-data untuk card "Perbandingan Multi-Bank": dipanggil setiap kali
+ * ada input di atas yang berubah (harga, DP, tenor, bunga, mode, toggle/kolom
+ * Biaya Lain-Lain, dsb). Menyembunyikan hasil perbandingan yang sudah tampil
+ * DAN membersihkan data lama, supaya tidak ada hasil "zombie" yang sudah tidak
+ * relevan lagi ikut kebaca/kepakai. User wajib klik "Hitung & Tampilkan
+ * Perbandingan" lagi untuk melihat hasil yang baru.
+ */
+function invalidateKomparasi() {
+  document.getElementById('komparasi-result-wrap')?.classList.remove('show');
+  _komparasiLastResults = [];
+  _komparasiLastSkipped = [];
+}
+
+function syncKomparasiTriggerVisibility() {
+  const wrap = document.getElementById('komparasi-section-wrap');
+  if (!wrap) return;
+  const isBankMode = (typeof bungaMode !== 'undefined') && bungaMode === 'bank';
+  // Hanya tampil jika mode bank DAN result-card sudah show (ada lastSimulasi)
+  const hasResult = !!(lastSimulasi && lastSimulasi.periods && lastSimulasi.periods.length);
+  wrap.style.display = (isBankMode && hasResult) ? 'block' : 'none';
+  if (!isBankMode) {
+    document.getElementById('komparasi-panel')?.classList.remove('show');
+    _komparasiPanelOpen = false;
+    _updateKomparasiTriggerLabel();
+  }
+}
+
+function toggleKomparasiPanel() {
+  _komparasiPanelOpen = !_komparasiPanelOpen;
+  document.getElementById('komparasi-panel')?.classList.toggle('show', _komparasiPanelOpen);
+  _updateKomparasiTriggerLabel();
+  if (_komparasiPanelOpen) {
+    renderKomparasiBankPills();
+    setTimeout(() => document.getElementById('komparasi-panel')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 120);
+  }
+}
+
+function _updateKomparasiTriggerLabel() {
+  const btn = document.getElementById('btn-komparasi-trigger');
+  const lbl = document.getElementById('komparasi-trigger-label');
+  if (!btn || !lbl) return;
+  btn.classList.toggle('active', _komparasiPanelOpen);
+  lbl.textContent = _komparasiPanelOpen ? 'Tutup Panel Perbandingan' : 'Bandingkan Program Antar Bank';
+}
+
+// Toggle PDF — default OFF (checkbox tidak ada atribut checked)
+function isKomparasiPdfEnabled() {
+  const chk = document.getElementById('chk-komparasi-pdf');
+  return chk ? chk.checked : false;
+}
+function onKomparasiPdfToggleChange() {
+  const isOn = isKomparasiPdfEnabled();
+  const badge = document.getElementById('komparasi-pdf-badge');
+  if (badge) badge.classList.toggle('show', isOn);
+}
+
+function renderKomparasiBankPills() {
+  const container = document.getElementById('komparasi-bank-pills');
+  if (!container) return;
+  const validBanks = (banks || []).filter(b => (b.programs || []).length > 0);
+  if (!validBanks.length) {
+    container.innerHTML = '<span style="font-size:13px;color:var(--text3);">Belum ada bank tersimpan.</span>';
+    return;
+  }
+  container.innerHTML = validBanks.map(bank => {
+    const isSelected = komparasi_selectedBankIds.includes(bank.id);
+    const isDisabled = !isSelected && komparasi_selectedBankIds.length >= 3;
+    const pCount = (bank.programs || []).length;
+    return `<button
+      class="komparasi-bank-pill ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}"
+      onclick="toggleKomparasiBankPill('${bank.id}')"
+      title="${bank.nama} — ${pCount} program">
+      <span class="komparasi-pill-check">✓</span>
+      ${escapeHtml(bank.nama)}
+      <span style="font-size:10px;opacity:0.7;">(${pCount})</span>
+    </button>`;
+  }).join('');
+  const btn = document.getElementById('btn-hitung-komparasi');
+  if (btn) btn.disabled = komparasi_selectedBankIds.length < 2;
+}
+
+function toggleKomparasiBankPill(bankId) {
+  const idx = komparasi_selectedBankIds.indexOf(bankId);
+  if (idx >= 0) {
+    komparasi_selectedBankIds.splice(idx, 1);
+  } else {
+    if (komparasi_selectedBankIds.length >= 3) {
+      showToast('Maksimal 3 bank yang bisa dibandingkan sekaligus.', 'warning', 'Batas Tercapai');
+      return;
+    }
+    komparasi_selectedBankIds.push(bankId);
+  }
+  renderKomparasiBankPills();
+  document.getElementById('komparasi-result-wrap')?.classList.remove('show');
+  _komparasiLastResults = [];
+}
+
+function hitungKomparasi() {
+  if (komparasi_selectedBankIds.length < 2) {
+    showToast('Pilih minimal 2 bank untuk perbandingan.', 'warning', 'Pilih Bank');
+    return;
+  }
+  const harga = parseRp(document.getElementById('harga'));
+  let dp = 0;
+  if (dpMode === 'pct') {
+    dp = harga * (parseFloat(document.getElementById('dp-slider').value) / 100);
+  } else {
+    dp = parseRp(document.getElementById('dp-nom'));
+  }
+  const tenor = parseInt(document.getElementById('tenor-input').value) || 20;
+  if (!harga || harga <= 0) { showToast('Isi Harga Properti terlebih dahulu.', 'warning', 'Data Kurang'); return; }
+  if (dp >= harga)           { showToast('Uang Muka tidak boleh melebihi Harga Properti.', 'warning', 'Data Tidak Valid'); return; }
+  const pokok = harga - dp; // plafon customer saat ini
+
+  const results = [];
+  const skipped = []; // bank yang tidak punya program cocok plafon/tenor — ditampilkan di catatan
+
+  for (const bankId of komparasi_selectedBankIds) {
+    const bank = findBankById(bankId);
+    if (!bank) continue;
+
+    const allCandidates = (bank.programs || []).filter(p => p.periode && p.periode.length > 0);
+    if (!allCandidates.length) { skipped.push({ bankNama: bank.nama, alasan: 'Belum ada program KPR tersimpan' }); continue; }
+
+    // ── Filter 1: plafon (plafonMin/plafonMax) ──
+    const plafonOk = allCandidates.filter(p => {
+      const minOk = (p.plafonMin == null) || (pokok >= p.plafonMin);
+      const maxOk = (p.plafonMax == null) || (pokok <= p.plafonMax);
+      return minOk && maxOk;
+    });
+    if (!plafonOk.length) {
+      skipped.push({ bankNama: bank.nama, alasan: `Tidak ada program yang sesuai plafon ${fmtShort(pokok)}` });
+      continue;
+    }
+
+    // ── Filter 2: rentang tenor [tenor, tenorMax || tenor] ──
+    const tenorOk = plafonOk.filter(p => {
+      const tMax = (p.tenorMax != null && p.tenorMax >= p.tenor) ? p.tenorMax : p.tenor;
+      return tenor >= p.tenor && tenor <= tMax;
+    });
+
+    if (!tenorOk.length) {
+      // Tidak ada program yang rentang tenornya mencakup tenor user — jangan dihitung
+      // dengan pendekatan/fallback apapun, cukup catat sebagai program yang tidak bisa dipakai.
+      skipped.push({ bankNama: bank.nama, alasan: `Tidak ada program yang sesuai tenor ${tenor} thn` });
+      continue;
+    }
+    // Ada program yang rentang tenornya mencakup tenor user persis — pilih yang tenor dasarnya paling dekat
+    tenorOk.sort((a, b) => Math.abs((a.tenor||0) - tenor) - Math.abs((b.tenor||0) - tenor));
+    const program = tenorOk[0];
+
+    const calc = _komparasiHitung(pokok, tenor, program);
+    if (!calc) { skipped.push({ bankNama: bank.nama, alasan: 'Gagal menghitung program (data periode tidak valid)' }); continue; }
+
+    results.push({ bankId, bankNama: bank.nama, program, tenorExactMatch: true, ...calc });
+  }
+
+  if (!results.length) {
+    const detail = skipped.length ? ' (' + skipped.map(s => `${s.bankNama}: ${s.alasan}`).join('; ') + ')' : '';
+    showToast('Tidak ada program yang sesuai dengan plafon/tenor saat ini.' + detail, 'error', 'Kalkulasi Gagal');
+    return;
+  }
+
+  _komparasiLastResults = results;
+  _komparasiLastSkipped = skipped;
+  renderKomparasiTable(results, tenor, pokok, skipped);
+}
+
+function _komparasiHitung(pokok, tenor, program) {
+  try {
+    const isSyariah = program.akad === 'syariah';
+    const eff = _komparasiGetEff(program, tenor);
+    if (!eff.length) return null;
+    let sisa = pokok;
+    let thnOffset = 0;
+    const periodResults = [];
+    let totalBunga = 0;
+    for (const { dari, sampai, thn, rate, floating } of eff) {
+      const r = (rate / 100) / 12;
+      const nSisa = (tenor - thnOffset) * 12;
+      let cicilan;
+      if (isSyariah) {
+        const pokokPerBulan = sisa / nSisa;
+        const marginPerBulan = sisa * r;
+        cicilan = pokokPerBulan + marginPerBulan;
+        totalBunga += marginPerBulan * thn * 12;
+        for (let t = 0; t < thn * 12; t++) sisa -= pokokPerBulan;
+      } else {
+        cicilan = r === 0 ? sisa / nSisa : sisa * r * Math.pow(1+r, nSisa) / (Math.pow(1+r, nSisa) - 1);
+        for (let t = 0; t < thn * 12; t++) {
+          const b = sisa * r;
+          totalBunga += b;
+          sisa -= (cicilan - b);
+        }
+      }
+      sisa = Math.max(0, sisa);
+      periodResults.push({ dari, sampai, thn, rate, floating, cicilan });
+      thnOffset += thn;
+    }
+    return {
+      cicilanTahun1: periodResults[0]?.cicilan || 0,
+      totalBayar: totalBunga + pokok,
+      totalBunga,
+      periodResults,
+      hasFloating: periodResults.some(p => p.floating)
+    };
+  } catch(e) { console.error('_komparasiHitung error:', e); return null; }
+}
+
+function _komparasiGetEff(program, tenor) {
+  try {
+    const fr = typeof FLOATING_RATE_DEFAULT !== 'undefined' ? FLOATING_RATE_DEFAULT : 11;
+    const floatRate = typeof program.floatingRate === 'number' ? program.floatingRate : fr;
+    return (program.periode || [])
+      .map((p, i, arr) => {
+        const isLast = i === arr.length - 1;
+        const sampai = isLast ? tenor : Math.min(Number(p.sampai), tenor);
+        const thn = sampai - Number(p.dari) + 1;
+        return { dari: Number(p.dari), sampai, thn, rate: p.floating ? floatRate : Number(p.rate), floating: !!p.floating };
+      })
+      .filter(p => p.thn > 0 && p.dari <= tenor);
+  } catch(e) { return []; }
+}
+
+function renderKomparasiTable(results, tenor, pokok, skipped) {
+  const tbody = document.getElementById('komparasi-tbody');
+  const resultWrap = document.getElementById('komparasi-result-wrap');
+  const countEl = document.getElementById('komparasi-result-count');
+  const notesEl = document.getElementById('komparasi-notes');
+  if (!tbody || !resultWrap) return;
+  const minCicilan = Math.min(...results.map(r => r.cicilanTahun1));
+  const minTotal   = Math.min(...results.map(r => r.totalBayar));
+  tbody.innerHTML = results.map(r => {
+    const isBestCicilan = r.cicilanTahun1 === minCicilan;
+    const isBestTotal   = r.totalBayar    === minTotal;
+    const akadClass = (r.program.akad === 'syariah' || r.program.akad === 'syariah-efektif') ? 'syariah' : 'konvensional';
+    const akadLabel = r.program.akad === 'syariah' ? 'Syariah Flat' : r.program.akad === 'syariah-efektif' ? 'Syariah Efektif' : 'Konvensional';
+
+    // ── Label rentang tenor program (tenor–tenorMax jika ada) ──
+    const tMax = (r.program.tenorMax != null && r.program.tenorMax >= r.program.tenor) ? r.program.tenorMax : null;
+    const tenorRangeLabel = tMax ? `${r.program.tenor}–${tMax} thn` : `${r.program.tenor} thn`;
+
+    // ── Label syarat plafon program (jika ada batasan) ──
+    let plafonLabel = '';
+    if (r.program.plafonMin != null || r.program.plafonMax != null) {
+      const minTxt = r.program.plafonMin != null ? `Min ${fmtShort(r.program.plafonMin)}` : null;
+      const maxTxt = r.program.plafonMax != null ? `Maks ${fmtShort(r.program.plafonMax)}` : null;
+      plafonLabel = [minTxt, maxTxt].filter(Boolean).join(' – ');
+    }
+
+    const periodeHtml = r.periodResults.map(p => `
+      <div class="komparasi-period-row">
+        <span class="komparasi-period-label">Thn ${p.dari}–${p.sampai}${p.floating ? ' ⚠' : ''}</span>
+        <span class="komparasi-period-val">${fmt(p.cicilan)}<span style="font-size:10px;font-weight:400;color:var(--text3);"> /bln</span></span>
+      </div>`).join('');
+
+    return `<tr>
+      <td>
+        <div class="komparasi-program-name">${escapeHtml(r.program.nama)}</div>
+        <div class="komparasi-bank-name">🏦 ${escapeHtml(r.bankNama)}&nbsp;<span class="komparasi-akad-badge ${akadClass}">${akadLabel}</span></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px; display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
+          <span>📅 Tenor: ${tenorRangeLabel}</span>
+          ${plafonLabel ? `<span>· 🏷️ Plafon: ${plafonLabel}</span>` : ''}
+        </div>
+      </td>
+      <td class="${isBestCicilan ? 'komparasi-highlight-green' : ''}">
+        ${fmt(r.cicilanTahun1)}
+        ${isBestCicilan ? '<span class="komparasi-best-badge cicilan">✓ Cicilan Terendah</span>' : ''}
+        ${r.hasFloating ? '<div class="komparasi-floating-note">⚠ Ada periode floating</div>' : ''}
+      </td>
+      <td class="${isBestTotal ? 'komparasi-highlight-blue' : ''}">
+        ${fmtShort(r.totalBayar)}
+        ${isBestTotal ? '<span class="komparasi-best-badge total">✓ Total Terendah</span>' : ''}
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;">Bunga: ${fmtShort(r.totalBunga)}</div>
+      </td>
+      <td><span class="komparasi-akad-badge ${akadClass}" style="font-size:11px;">${akadLabel}</span></td>
+      <td><div class="komparasi-period-rows">${periodeHtml}</div></td>
+    </tr>`;
+  }).join('')
+  // ── Baris kartu untuk bank yang tidak punya program cocok (plafon/tenor) ──
+  // Sengaja tetap ditampilkan sebagai baris (bukan dihilangkan begitu saja) supaya
+  // jelas terlihat itu memang "tidak tersedia", bukan bug/hilang tanpa sebab.
+  // Tidak ada perhitungan apapun di baris ini.
+  + (skipped && skipped.length ? skipped.map(s => `
+    <tr class="komparasi-skipped-row">
+      <td colspan="5">
+        <div class="komparasi-skipped-card">
+          <span class="komparasi-skipped-icon">🏦</span>
+          <div>
+            <div class="komparasi-skipped-bank">${escapeHtml(s.bankNama)}</div>
+            <div class="komparasi-skipped-reason">${escapeHtml(s.alasan)}</div>
+          </div>
+          <span class="komparasi-skipped-tag">Tidak Tersedia</span>
+        </div>
+      </td>
+    </tr>`).join('') : '');
+  if (countEl) countEl.textContent = results.length + ' Bank';
+
+  const hasFloating = results.some(r => r.hasFloating);
+  const noteLines = [
+    `<b>Catatan:</b> Program dipilih otomatis berdasarkan kecocokan plafon (${fmtShort(pokok)}) dan tenor (${tenor} tahun) terhadap syarat masing-masing program.`,
+    `Total bayar = pokok pinjaman + seluruh bunga/margin selama tenor penuh.`,
+    hasFloating ? '⚠ Beberapa program memiliki periode <em>floating</em> — cicilan aktual bisa berbeda bergantung kebijakan bank.' : ''
+  ];
+  if (notesEl) {
+    notesEl.innerHTML = noteLines.filter(Boolean).join(' ');
+  }
+
+  resultWrap.classList.add('show');
+  setTimeout(() => resultWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+}
+
+function renderKomparasiBankPillsIfOpen() {
+  if (_komparasiPanelOpen) {
+    komparasi_selectedBankIds = komparasi_selectedBankIds.filter(id => findBankById(id));
+    renderKomparasiBankPills();
+  }
+}
+
+// Inject tabel komparasi ke PDF — dipanggil dari generatePDF()
+function generateKomparasiPDF(doc, y, marginL, marginR, navy, textGray, accent) {
+  if (!isKomparasiPdfEnabled()) return y;
+  if (!_komparasiLastResults.length) return y;
+  const results = _komparasiLastResults;
+  const skipped = _komparasiLastSkipped || [];
+  const pageW   = doc.internal.pageSize.getWidth();
+  const pageH   = doc.internal.pageSize.getHeight();
+  const contentW = pageW - marginL - marginR;
+  const marginBot = 20;
+  const minH = 20 + results.length * 14;
+  if (y + minH > pageH - marginBot) { doc.addPage(); y = 16; }
+  // ── Header strip "TABEL PERBANDINGAN" — gaya card konsisten dgn section lain ──
+  const headerStripH = 9;
+  doc.setFillColor(navy[0], navy[1], navy[2]);
+  doc.roundedRect(marginL, y, contentW, headerStripH, 2, 2, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9.5);
+  doc.setTextColor(255, 255, 255);
+  doc.text('\u2696  TABEL PERBANDINGAN — Perbandingan Program Antar Bank', marginL + 4, y + 6);
+  y += headerStripH + 6;
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(7.5);
+  doc.setTextColor(textGray[0], textGray[1], textGray[2]);
+  doc.text('Program dipilih otomatis berdasarkan kecocokan plafon dan rentang tenor dari masing-masing bank.', marginL, y + 4);
+  y += 9;
+  const minCicilan = Math.min(...results.map(r => r.cicilanTahun1));
+  const minTotal   = Math.min(...results.map(r => r.totalBayar));
+  const tableBody = results.map(r => {
+    const akadLabel = r.program.akad === 'syariah' ? 'Syariah Flat'
+                    : r.program.akad === 'syariah-efektif' ? 'Syariah Efektif'
+                    : 'Konvensional';
+    const isBestC = r.cicilanTahun1 === minCicilan;
+    const isBestT = r.totalBayar    === minTotal;
+    const tMax = (r.program.tenorMax != null && r.program.tenorMax >= r.program.tenor) ? r.program.tenorMax : null;
+    const tenorRangeLabel = tMax ? `${r.program.tenor}-${tMax} thn` : `${r.program.tenor} thn`;
+    let plafonLabel = '';
+    if (r.program.plafonMin != null || r.program.plafonMax != null) {
+      const minTxt = r.program.plafonMin != null ? `Min ${fmtShort(r.program.plafonMin)}` : null;
+      const maxTxt = r.program.plafonMax != null ? `Maks ${fmtShort(r.program.plafonMax)}` : null;
+      plafonLabel = [minTxt, maxTxt].filter(Boolean).join(' - ');
+    }
+    const periodeText = r.periodResults.map(p =>
+      `Thn ${p.dari}-${p.sampai}: ${fmt(p.cicilan)}/bln${p.floating ? ' (Float)' : ''}`
+    ).join('\n');
+    const syaratText = `Tenor: ${tenorRangeLabel}` + (plafonLabel ? `\nPlafon: ${plafonLabel}` : '');
+    return [
+      `${r.program.nama}\n${r.bankNama} · ${akadLabel}`,
+      syaratText,
+      fmt(r.cicilanTahun1) + (isBestC ? '\n\u2605 Termurah' : ''),
+      fmtShort(r.totalBayar) + (isBestT ? '\n\u2605 Termurah' : '') + `\nBunga: ${fmtShort(r.totalBunga)}`,
+      periodeText
+    ];
+  });
+  doc.autoTable({
+    startY: y,
+    margin: { left: marginL, right: marginR, top: 24 },
+    theme: 'grid',
+    styles: { overflow: 'linebreak' },
+    headStyles: { fillColor: navy, textColor: 255, fontSize: 8.5, fontStyle: 'bold', cellPadding: 2.5 },
+    bodyStyles: { fontSize: 7.5, textColor: [30, 35, 50], cellPadding: 2.5, valign: 'top' },
+    columnStyles: { 0: { cellWidth: 37 }, 1: { cellWidth: 28 }, 2: { cellWidth: 34, halign: 'right' }, 3: { cellWidth: 34, halign: 'right' }, 4: { cellWidth: 'auto' } },
+    didParseCell: function(data) {
+      if (data.section !== 'body') return;
+      const r = results[data.row.index];
+      if (!r) return;
+      if (data.column.index === 2 && r.cicilanTahun1 === minCicilan) { data.cell.styles.textColor = [5, 150, 105]; data.cell.styles.fontStyle = 'bold'; }
+      if (data.column.index === 3 && r.totalBayar === minTotal) { data.cell.styles.textColor = [46, 107, 230]; data.cell.styles.fontStyle = 'bold'; }
+    },
+    head: [['Program KPR / Bank', 'Syarat', 'Cicilan Thn 1', 'Total Bayar', 'Semua Periode']],
+    body: tableBody,
+  });
+  y = doc.lastAutoTable.finalY + 4;
+  // Catatan kaki tabel komparasi — hanya menjelaskan program yang tampil di tabel,
+  // bank yang tidak punya program cocok tidak perlu disebut di PDF.
+  const hasFloat = results.some(r => r.hasFloating);
+  const catLines = [
+    '* Total bayar = pokok pinjaman + seluruh bunga/margin selama tenor penuh.',
+    hasFloat ? '* Periode floating menggunakan asumsi rate yang disetting pada program tersebut.' : ''
+  ].filter(Boolean).join(' ');
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(7);
+  doc.setTextColor(textGray[0], textGray[1], textGray[2]);
+  const catW = doc.splitTextToSize(catLines, contentW);
+  doc.text(catW, marginL, y);
+  y += catW.length * 3.5 + 8;
+  return y;
+}
+
+// ══ END PERBANDINGAN MULTI-BANK ══
 
 </script>
 
