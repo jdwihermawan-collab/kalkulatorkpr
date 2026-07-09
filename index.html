@@ -4021,15 +4021,31 @@ function estimateProgramFirstInstallment(program) {
   if (!harga || dp < 0 || dp >= harga) return null;
 
   const pokok = harga - dp;
-  const tenor = program.tenor;
+
+  // Pakai tenor yang SEDANG DIINPUT user (bukan tenor dasar/template program),
+  // supaya estimasi di card selalu sinkron dengan hasil simulasi tahun pertama
+  // untuk tenor yang sedang dipilih — bukan angka template tetap.
+  const tenorInputEl = document.getElementById('tenor-input');
+  const tenorUser = tenorInputEl ? parseInt(tenorInputEl.value) : null;
+  const tenor = (tenorUser && tenorUser > 0) ? tenorUser : program.tenor;
   if (!tenor || tenor <= 0) return null;
+
   const eff = getEffectivePeriode(program);
   if (!eff.length) return null;
   const first = eff[0];
   const r = (first.rate / 100) / 12;
   const n = tenor * 12;
   if (n <= 0) return null;
-  const cicilan = r === 0 ? pokok / n : pokok * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
+
+  // Rumus disesuaikan dengan akad, identik dengan perhitungan tahun-1 di hitungBank():
+  let cicilan;
+  if (program.akad === 'syariah') {
+    // Syariah flat: pokok dicicil rata selama tenor + margin flat dari pokok awal
+    cicilan = (pokok / n) + (pokok * r);
+  } else {
+    // Konvensional & Syariah Efektif: anuitas
+    cicilan = r === 0 ? pokok / n : pokok * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
+  }
   if (!isFinite(cicilan) || isNaN(cicilan)) return null;
   return cicilan;
 }
