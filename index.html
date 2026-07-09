@@ -4804,13 +4804,29 @@ function hitungBank(pokok, dp, tenor) {
   const rateWord = isAnySharia ? 'margin' : 'bunga';
 
   const eff = getEffectivePeriode(program);
-  // sesuaikan periode terakhir agar mengikuti tenor aktual (mis. tenor diubah manual)
-  const jData = eff.map((p, i, arr) => {
-    const isLast = i === arr.length - 1;
-    const sampai = isLast ? tenor : Math.min(p.sampai, tenor);
+  // Potong periode sesuai tenor aktual (tidak memperpanjang rate periode
+  // terakhir melebihi tenor dasar program — lihat blok tambahan di bawah).
+  const jData = eff.map((p) => {
+    const sampai = Math.min(p.sampai, tenor);
     const thn = sampai - p.dari + 1;
     return { dari: p.dari, sampai, thn, rate: p.rate, floating: p.floating };
   }).filter(p => p.thn > 0 && p.dari <= tenor);
+
+  // Jika tenor aktual pinjaman melebihi tenor dasar program (mis. program
+  // didefinisikan utk tenor 10 thn tapi user pilih 12 thn & program punya
+  // tenorMax >= 12), tahun-tahun tambahan di luar periode yang didefinisikan
+  // TIDAK mewarisi rate periode terakhir — melainkan otomatis memakai
+  // Asumsi Floating (%) milik program, sebagai periode baru tersendiri.
+  if (tenor > program.tenor) {
+    const floatingRateExtra = getProgramFloatingRate(program);
+    jData.push({
+      dari: program.tenor + 1,
+      sampai: tenor,
+      thn: tenor - program.tenor,
+      rate: floatingRateExtra,
+      floating: true
+    });
+  }
 
   // BUG-004 (diperbarui untuk rentang tenor): Warning hanya muncul jika tenor
   // pinjaman berada DI LUAR rentang resmi program ini (tenor s/d tenorMax).
@@ -7508,14 +7524,22 @@ function _komparasiGetEff(program, tenor) {
   try {
     const fr = typeof FLOATING_RATE_DEFAULT !== 'undefined' ? FLOATING_RATE_DEFAULT : 11;
     const floatRate = typeof program.floatingRate === 'number' ? program.floatingRate : fr;
-    return (program.periode || [])
-      .map((p, i, arr) => {
-        const isLast = i === arr.length - 1;
-        const sampai = isLast ? tenor : Math.min(Number(p.sampai), tenor);
+    const baseTenor = Number(program.tenor);
+    const result = (program.periode || [])
+      .map((p) => {
+        const sampai = Math.min(Number(p.sampai), tenor);
         const thn = sampai - Number(p.dari) + 1;
         return { dari: Number(p.dari), sampai, thn, rate: p.floating ? floatRate : Number(p.rate), floating: !!p.floating };
       })
       .filter(p => p.thn > 0 && p.dari <= tenor);
+
+    // Tahun tambahan di luar tenor dasar program (dalam rentang tenorMax)
+    // otomatis memakai Asumsi Floating (%) milik program, bukan mewarisi
+    // rate periode terakhir yang didefinisikan.
+    if (tenor > baseTenor) {
+      result.push({ dari: baseTenor + 1, sampai: tenor, thn: tenor - baseTenor, rate: floatRate, floating: true });
+    }
+    return result;
   } catch(e) { return []; }
 }
 
