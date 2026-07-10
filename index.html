@@ -1873,6 +1873,30 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .komparasi-pill-check { font-size: 11px; display: none; }
 .komparasi-bank-pill.selected .komparasi-pill-check { display: inline; }
 .komparasi-info-tip { font-size: 11.5px; color: var(--text3); margin-top: 10px; display: flex; align-items: center; gap: 5px; }
+.komparasi-program-selectors { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--gray2); }
+.komparasi-program-selectors.show { display: flex; flex-direction: column; gap: 14px; }
+.komparasi-program-select-row { display: flex; flex-direction: column; gap: 7px; }
+.komparasi-program-select-label { font-size: 11.5px; font-weight: 700; color: var(--text2); display: flex; align-items: center; gap: 5px; }
+.komparasi-program-pickcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+.komparasi-program-pickcard { text-align: left; width: 100%; padding: 11px 13px; border: 1.5px solid var(--gray2); border-radius: 12px; background: var(--white); cursor: pointer; transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease; font-family: 'DM Sans', sans-serif; }
+.komparasi-program-pickcard:hover { border-color: var(--accent2); background: rgba(37,99,235,0.03); transform: translateY(-1px); }
+.komparasi-program-pickcard.selected { border-color: var(--accent); background: rgba(37,99,235,0.06); box-shadow: 0 0 0 1px var(--accent) inset, 0 4px 14px rgba(37,99,235,0.14); animation: komparasiPickPulse 0.32s ease; }
+.komparasi-program-pickcard:active { transform: scale(0.98); }
+@keyframes komparasiPickPulse {
+  0%   { transform: scale(0.97); box-shadow: 0 0 0 1px var(--accent) inset, 0 0 0 6px rgba(37,99,235,0.12); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 1px var(--accent) inset, 0 4px 14px rgba(37,99,235,0.14); }
+}
+.komparasi-program-pickcard.auto { border-style: dashed; }
+.komparasi-program-pickcard-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.komparasi-program-pickcard-name { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); line-height: 1.3; }
+.komparasi-program-pickcard-badge { flex-shrink: 0; font-size: 9.5px; font-weight: 700; letter-spacing: 0.3px; padding: 3px 9px; border-radius: 100px; white-space: nowrap; }
+.komparasi-program-pickcard-badge.termurah { background: rgba(5,150,105,0.12); color: #065f46; border: 1px solid rgba(5,150,105,0.25); }
+.komparasi-program-pickcard-badge.alt { background: rgba(148,163,184,0.15); color: var(--text2); border: 1px solid rgba(148,163,184,0.3); }
+.komparasi-program-pickcard-sub { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 4px; }
+.komparasi-program-pickcard-check { display: none; color: var(--accent); font-weight: 700; }
+.komparasi-program-pickcard.selected .komparasi-program-pickcard-check { display: inline; }
+.komparasi-program-pickcard.selected .komparasi-program-pickcard-sub { color: var(--accent); }
+.komparasi-outofrange-note { font-size: 10px; color: #b45309; background: rgba(217,119,6,0.08); border: 1px solid rgba(217,119,6,0.2); border-radius: 4px; padding: 1px 5px; margin-top: 3px; display: inline-block; }
 .btn-hitung-komparasi { display: flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 48px); margin: 16px 24px 0; padding: 13px; background: linear-gradient(135deg, var(--navy) 0%, #1a3a7c 100%); color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 16px rgba(10,22,40,0.2); }
 .btn-hitung-komparasi:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(10,22,40,0.28); }
 .btn-hitung-komparasi:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
@@ -1893,6 +1917,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .komparasi-best-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 6px; white-space: nowrap; margin-left: 6px; }
 .komparasi-best-badge.cicilan { background: rgba(5,150,105,0.12); color: #065f46; border: 1px solid rgba(5,150,105,0.25); }
 .komparasi-best-badge.total   { background: rgba(37,99,235,0.1);  color: #1e40af; border: 1px solid rgba(37,99,235,0.2); }
+.komparasi-termurah-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; padding: 2px 8px; border-radius: 100px; white-space: nowrap; margin-left: 6px; background: rgba(217,119,6,0.12); color: #92400e; border: 1px solid rgba(217,119,6,0.3); }
 td.komparasi-highlight-green { color: var(--green); font-weight: 700; }
 td.komparasi-highlight-blue  { color: var(--accent); font-weight: 700; }
 .komparasi-program-name { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); line-height: 1.25; }
@@ -1914,6 +1939,30 @@ td.komparasi-highlight-blue  { color: var(--accent); font-weight: 700; }
 .komparasi-skipped-bank { font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 700; color: var(--text2); }
 .komparasi-skipped-reason { font-size: 11.5px; color: var(--text3); margin-top: 1px; }
 .komparasi-skipped-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.4px; color: var(--text3); background: var(--white); border: 1px solid var(--gray2); border-radius: 6px; padding: 2px 8px; white-space: nowrap; margin-left: auto; }
+.komparasi-single-note { display: block; margin-top: 10px; padding: 10px 12px; background: rgba(37,99,235,0.06); border: 1px solid rgba(37,99,235,0.18); border-radius: 8px; color: var(--text2); font-size: 11.5px; line-height: 1.6; }
+.komparasi-kesimpulan { display: block; margin-top: 14px; padding: 12px 14px; background: rgba(5,150,105,0.07); border-left: 3px solid var(--green); border-radius: 8px; color: var(--navy); font-size: 12.5px; line-height: 1.7; }
+.komparasi-kesimpulan b { color: var(--green); }
+/* ── Plus & Minus per Program ── */
+.komparasi-proscons-title-main { font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 700; color: var(--navy); display: flex; align-items: center; gap: 6px; margin-top: 18px; }
+.komparasi-proscons-subtitle { font-size: 11.5px; color: var(--text3); margin-top: 3px; margin-bottom: 12px; line-height: 1.6; }
+.komparasi-proscons-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.komparasi-proscons-card { background: var(--white); border: 1.5px solid var(--gray); border-radius: 12px; padding: 14px 16px; }
+.komparasi-proscons-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 11px; padding-bottom: 11px; border-bottom: 1px dashed var(--gray); }
+.komparasi-proscons-name { font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 700; color: var(--navy); line-height: 1.3; }
+.komparasi-proscons-bank { font-size: 11px; color: var(--text3); margin-top: 3px; }
+.komparasi-proscons-rank { font-size: 9.5px; font-weight: 700; letter-spacing: 0.4px; padding: 3px 9px; border-radius: 100px; white-space: nowrap; flex-shrink: 0; }
+.komparasi-proscons-rank.rec { background: rgba(5,150,105,0.12); color: #065f46; border: 1px solid rgba(5,150,105,0.25); }
+.komparasi-proscons-rank.alt { background: rgba(148,163,184,0.15); color: var(--text2); border: 1px solid rgba(148,163,184,0.3); }
+.komparasi-proscons-block + .komparasi-proscons-block { margin-top: 12px; }
+.komparasi-proscons-col-title { font-size: 10px; letter-spacing: 0.6px; text-transform: uppercase; font-weight: 700; margin-bottom: 7px; }
+.komparasi-proscons-col-title.plus { color: var(--green); }
+.komparasi-proscons-col-title.minus { color: var(--red); }
+.komparasi-proscons-item { display: flex; align-items: flex-start; gap: 6px; font-size: 11.5px; line-height: 1.55; color: var(--text2); margin-bottom: 6px; }
+.komparasi-proscons-item:last-child { margin-bottom: 0; }
+.komparasi-proscons-item .ic { flex-shrink: 0; font-size: 11px; font-weight: 700; margin-top: 1px; }
+.komparasi-proscons-item.plus .ic { color: var(--green); }
+.komparasi-proscons-item.minus .ic { color: var(--red); }
+.komparasi-proscons-empty { font-size: 11px; color: var(--text3); font-style: italic; }
 @media (max-width: 600px) {
   .komparasi-panel-header { padding: 14px 16px; }
   .komparasi-selector-wrap { padding: 14px 16px; }
@@ -2896,14 +2945,15 @@ body.admin-mode .admin-only { display: revert !important; }
         <div class="komparasi-panel-header">
           <div>
             <div class="komparasi-panel-title">⚖️ Perbandingan Multi-Bank</div>
-            <div class="komparasi-panel-subtitle">Pilih hingga 3 bank — program terbaik tiap bank otomatis dideteksi</div>
+            <div class="komparasi-panel-subtitle">Pilih 1 bank untuk membandingkan antar program di bank itu, atau 2–3 bank untuk membandingkan antar bank</div>
           </div>
         </div>
 
         <div class="komparasi-selector-wrap">
-          <div class="komparasi-selector-label">Pilih Bank untuk Dibandingkan (Maks. 3)</div>
+          <div class="komparasi-selector-label">Pilih Bank untuk Dibandingkan (1–3 Bank)</div>
           <div class="komparasi-bank-pills" id="komparasi-bank-pills"></div>
-          <div class="komparasi-info-tip">💡 Program dengan tenor paling mendekati tenor simulasi yang akan ditampilkan</div>
+          <div class="komparasi-info-tip">💡 Biarkan di "Otomatis" untuk dibandingkan otomatis, atau pilih sendiri program spesifik tiap bank lewat dropdown di bawah</div>
+          <div class="komparasi-program-selectors" id="komparasi-program-selectors"></div>
         </div>
 
         <button class="btn-hitung-komparasi" id="btn-hitung-komparasi" onclick="hitungKomparasi()" disabled>
@@ -2937,7 +2987,7 @@ body.admin-mode .admin-only { display: revert !important; }
                   <th>Program KPR</th>
                   <th>Cicilan Tahun 1</th>
                   <th>Total Bayar</th>
-                  <th>Akad</th>
+                  <th>Suku Bunga</th>
                   <th>Semua Periode</th>
                 </tr>
               </thead>
@@ -2945,6 +2995,14 @@ body.admin-mode .admin-only { display: revert !important; }
             </table>
           </div>
           <div id="komparasi-notes" style="margin-top:12px; font-size:11.5px; color:var(--text3); line-height:1.7;"></div>
+          <!-- KESIMPULAN OTOMATIS — diisi & ditampilkan oleh renderKomparasiTable() -->
+          <div id="komparasi-kesimpulan" class="komparasi-kesimpulan" style="display:none;"></div>
+          <!-- PLUS & MINUS PER PROGRAM — diisi & ditampilkan oleh renderKomparasiTable() -->
+          <div id="komparasi-proscons-container" style="display:none;">
+            <div class="komparasi-proscons-title-main">⚖️ Plus &amp; Minus Tiap Program</div>
+            <div class="komparasi-proscons-subtitle">Bandingkan kelebihan &amp; kekurangan tiap pilihan di bawah ini supaya Anda bisa menentukan sendiri mana yang paling sesuai dengan kebutuhan &mdash; bukan cuma yang termurah.</div>
+            <div class="komparasi-proscons-wrap" id="komparasi-proscons-wrap"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -6378,6 +6436,18 @@ function buildWaMessage() {
   const calc = calculateOtherCosts();
   lines.push(...generateOtherCostsWhatsapp(calc));
 
+  // Kesimpulan Otomatis Perbandingan Bank — hanya disertakan jika sudah pernah dihitung
+  // (_komparasiLastKesimpulanText terisi oleh renderKomparasiTable()) DAN toggle "Sertakan
+  // Tabel Perbandingan di PDF" sedang ON, supaya perilakunya konsisten dengan PDF.
+  // Jika Anda ingin toggle terpisah khusus untuk WA, buat checkbox baru lalu ganti kondisi
+  // isKomparasiPdfEnabled() di bawah ini dengan fungsi toggle WA yang baru.
+  if (_komparasiLastKesimpulanText && isKomparasiPdfEnabled()) {
+    lines.push('');
+    lines.push('*KESIMPULAN OTOMATIS PERBANDINGAN BANK*');
+    lines.push('');
+    lines.push(_komparasiLastKesimpulanText);
+  }
+
   // Catatan
   lines.push('');
   lines.push('Catatan:');
@@ -7321,9 +7391,13 @@ function loadMarketingData() {
 // ══════════════════════════════════════════════════
 
 let komparasi_selectedBankIds = [];
+// Program spesifik yang dipilih manual oleh user per bank (mode 2-3 bank), key = bankId, value = programId.
+// Kalau bankId tidak ada di object ini → belum dipilih manual, dipakai fallback "Otomatis" (tenor paling sesuai, perilaku lama).
+let komparasi_selectedPrograms = {};
 let _komparasiPanelOpen = false;
 let _komparasiLastResults = [];
 let _komparasiLastSkipped = []; // bank yang tidak punya program cocok plafon/tenor pada hitung terakhir
+let _komparasiLastKesimpulanText = ''; // teks "Kesimpulan Otomatis" dari hitungan terakhir (dipakai di web, PDF, dan WA)
 
 /**
  * invalidateKomparasi()
@@ -7338,6 +7412,10 @@ function invalidateKomparasi() {
   document.getElementById('komparasi-result-wrap')?.classList.remove('show');
   _komparasiLastResults = [];
   _komparasiLastSkipped = [];
+  _komparasiLastKesimpulanText = '';
+  // Plafon/tenor bisa saja berubah (Harga/DP/Tenor diedit) — refresh daftar pilihan
+  // program per bank supaya tetap sesuai, tapi hanya kalau panelnya sedang terbuka.
+  if (_komparasiPanelOpen) renderKomparasiProgramSelectors();
 }
 
 function syncKomparasiTriggerVisibility() {
@@ -7352,6 +7430,40 @@ function syncKomparasiTriggerVisibility() {
     _komparasiPanelOpen = false;
     _updateKomparasiTriggerLabel();
   }
+}
+
+/**
+ * _komparasiGetPokokTenor()
+ * Helper bersama: hitung plafon (pokok) & tenor customer SAAT INI dari input form utama
+ * (Harga, DP, Tenor). Dipakai baik oleh hitungKomparasi() maupun renderKomparasiProgramSelectors()
+ * supaya keduanya selalu konsisten memakai plafon/tenor yang sama persis.
+ * @returns {{pokok:number, tenor:number}|null} null kalau harga belum diisi / tidak valid.
+ */
+function _komparasiGetPokokTenor() {
+  const harga = parseRp(document.getElementById('harga'));
+  if (!harga || harga <= 0) return null;
+  let dp = 0;
+  if (dpMode === 'pct') {
+    dp = harga * (parseFloat(document.getElementById('dp-slider').value) / 100);
+  } else {
+    dp = parseRp(document.getElementById('dp-nom'));
+  }
+  if (dp >= harga) return null;
+  const tenor = parseInt(document.getElementById('tenor-input').value) || 20;
+  return { pokok: harga - dp, tenor };
+}
+
+/**
+ * _komparasiProgramEligible(program, pokok, tenor)
+ * Cek apakah sebuah program KPR sesuai dengan plafon & tenor customer saat ini
+ * (dipakai untuk menyaring pilihan dropdown & juga untuk deteksi outOfRange saat hitung).
+ */
+function _komparasiProgramEligible(program, pokok, tenor) {
+  const minOk = (program.plafonMin == null) || (pokok >= program.plafonMin);
+  const maxOk = (program.plafonMax == null) || (pokok <= program.plafonMax);
+  const tMax = (program.tenorMax != null && program.tenorMax >= program.tenor) ? program.tenorMax : program.tenor;
+  const tenorOk = tenor >= program.tenor && tenor <= tMax;
+  return minOk && maxOk && tenorOk;
 }
 
 function toggleKomparasiPanel() {
@@ -7405,13 +7517,127 @@ function renderKomparasiBankPills() {
     </button>`;
   }).join('');
   const btn = document.getElementById('btn-hitung-komparasi');
-  if (btn) btn.disabled = komparasi_selectedBankIds.length < 2;
+  // Minimal 1 bank sudah cukup: 1 bank → bandingkan antar program di bank itu,
+  // 2-3 bank → bandingkan program pilihan user antar bank (bisa dipilih manual per bank).
+  if (btn) btn.disabled = komparasi_selectedBankIds.length < 1;
+  renderKomparasiProgramSelectors();
+}
+
+/**
+ * renderKomparasiProgramSelectors()
+ * Menampilkan dropdown "Pilih Program" per bank untuk tiap bank yang dipilih (1-3 bank),
+ * supaya user bisa menentukan sendiri program spesifik yang mau dibandingkan — bukan
+ * otomatis dipilihkan/dibandingkan semua oleh sistem. Hanya program yang SESUAI dengan
+ * plafon & tenor customer saat ini yang dimunculkan sebagai pilihan.
+ * Kalau user tidak memilih apa-apa (tetap di opsi "Otomatis"):
+ *  - Mode 1 bank  → tampilkan semua program yang cocok (perilaku lama).
+ *  - Mode 2-3 bank → pilih program dengan tenor dasar paling sesuai per bank (perilaku lama).
+ */
+function renderKomparasiProgramSelectors() {
+  const wrap = document.getElementById('komparasi-program-selectors');
+  if (!wrap) return;
+  if (komparasi_selectedBankIds.length < 1) {
+    wrap.classList.remove('show');
+    wrap.innerHTML = '';
+    return;
+  }
+  const pt = _komparasiGetPokokTenor(); // null kalau Harga belum diisi/valid
+  wrap.classList.add('show');
+  wrap.innerHTML = komparasi_selectedBankIds.map(bankId => {
+    const bank = findBankById(bankId);
+    if (!bank) return '';
+    const allPrograms = (bank.programs || []).filter(p => p.periode && p.periode.length > 0);
+    // Hanya tampilkan program yang sesuai plafon & tenor saat ini. Kalau plafon/tenor
+    // belum bisa dihitung (Harga belum diisi), tampilkan semua sebagai fallback.
+    const programs = pt ? allPrograms.filter(p => _komparasiProgramEligible(p, pt.pokok, pt.tenor)) : allPrograms;
+    const selectedProgramId = komparasi_selectedPrograms[bankId] || '';
+
+    if (!programs.length) {
+      return `<div class="komparasi-program-select-row">
+        <label class="komparasi-program-select-label">🏦 ${escapeHtml(bank.nama)}</label>
+        <div style="font-size:11px;color:var(--text3);">Belum ada program di bank ini yang sesuai plafon/tenor saat ini.</div>
+      </div>`;
+    }
+
+    // Hitung Total Bayar tiap program (kalau pokok/tenor sudah bisa dihitung) supaya
+    // bisa ditandai mana yang "Termurah" vs "Alternatif" langsung di kartu pilihan —
+    // jadi user bisa lihat perkiraan termurah SEBELUM klik Hitung & Tampilkan Perbandingan.
+    let cheapestProgramId = null;
+    if (pt) {
+      let minTotal = Infinity;
+      for (const p of programs) {
+        const calc = _komparasiHitung(pt.pokok, pt.tenor, p);
+        if (calc && calc.totalBayar < minTotal) { minTotal = calc.totalBayar; cheapestProgramId = p.id; }
+      }
+    }
+
+    const autoLabel = komparasi_selectedBankIds.length === 1 ? 'Otomatis (semua program cocok)' : 'Otomatis (tenor paling sesuai)';
+    const autoCardHtml = `<button type="button"
+        class="komparasi-program-pickcard auto ${!selectedProgramId ? 'selected' : ''}"
+        onclick="setKomparasiProgramPilihan('${bankId}', '')">
+      <div class="komparasi-program-pickcard-top">
+        <div class="komparasi-program-pickcard-name">🔄 ${escapeHtml(autoLabel)}</div>
+      </div>
+      <div class="komparasi-program-pickcard-sub"><span class="komparasi-program-pickcard-check">✓ Dipilih ·</span> Sistem yang memilihkan program</div>
+    </button>`;
+
+    const programCardsHtml = programs.map(p => {
+      const isSelected = String(selectedProgramId) === String(p.id);
+      const isCheapest = programs.length > 1 && p.id === cheapestProgramId;
+      const badgeHtml = programs.length > 1
+        ? (isCheapest
+            ? '<span class="komparasi-program-pickcard-badge termurah">🏆 Termurah</span>'
+            : (cheapestProgramId != null ? '<span class="komparasi-program-pickcard-badge alt">Alternatif</span>' : ''))
+        : '';
+      return `<button type="button"
+          class="komparasi-program-pickcard ${isSelected ? 'selected' : ''}"
+          onclick="setKomparasiProgramPilihan('${bankId}', '${p.id}')">
+        <div class="komparasi-program-pickcard-top">
+          <div class="komparasi-program-pickcard-name">${escapeHtml(p.nama)}</div>
+          ${badgeHtml}
+        </div>
+        <div class="komparasi-program-pickcard-sub"><span class="komparasi-program-pickcard-check">✓ Dipilih ·</span> 🏦 ${escapeHtml(bank.nama)}</div>
+      </button>`;
+    }).join('');
+
+    return `<div class="komparasi-program-select-row">
+      <label class="komparasi-program-select-label">🏦 ${escapeHtml(bank.nama)}</label>
+      <div class="komparasi-program-pickcards">
+        ${autoCardHtml}
+        ${programCardsHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/**
+ * setKomparasiProgramPilihan(bankId, programId)
+ * Dipanggil saat user memilih program spesifik (atau kembali ke "Otomatis") lewat
+ * dropdown per bank. Hasil perbandingan lama disembunyikan karena sudah tidak
+ * relevan — user wajib klik "Hitung & Tampilkan Perbandingan" lagi.
+ */
+function setKomparasiProgramPilihan(bankId, programId) {
+  if (programId) {
+    // programId datang dari <button> (selalu string) — program.id di data disimpan sebagai number,
+    // jadi dikonversi dulu supaya perbandingan === di hitungKomparasi() konsisten.
+    const numId = Number(programId);
+    komparasi_selectedPrograms[bankId] = isNaN(numId) ? programId : numId;
+  } else {
+    delete komparasi_selectedPrograms[bankId];
+  }
+  document.getElementById('komparasi-result-wrap')?.classList.remove('show');
+  _komparasiLastResults = [];
+  _komparasiLastKesimpulanText = '';
+  // Render ulang kartu supaya kartu yang baru diklik langsung ketandai "selected"
+  // (kalau tidak di-render ulang, class "selected" tidak akan pernah pindah ke kartu yang baru).
+  renderKomparasiProgramSelectors();
 }
 
 function toggleKomparasiBankPill(bankId) {
   const idx = komparasi_selectedBankIds.indexOf(bankId);
   if (idx >= 0) {
     komparasi_selectedBankIds.splice(idx, 1);
+    delete komparasi_selectedPrograms[bankId]; // bank dilepas → hapus juga pilihan program manualnya
   } else {
     if (komparasi_selectedBankIds.length >= 3) {
       showToast('Maksimal 3 bank yang bisa dibandingkan sekaligus.', 'warning', 'Batas Tercapai');
@@ -7420,13 +7646,15 @@ function toggleKomparasiBankPill(bankId) {
     komparasi_selectedBankIds.push(bankId);
   }
   renderKomparasiBankPills();
+  renderKomparasiProgramSelectors();
   document.getElementById('komparasi-result-wrap')?.classList.remove('show');
   _komparasiLastResults = [];
+  _komparasiLastKesimpulanText = '';
 }
 
 function hitungKomparasi() {
-  if (komparasi_selectedBankIds.length < 2) {
-    showToast('Pilih minimal 2 bank untuk perbandingan.', 'warning', 'Pilih Bank');
+  if (komparasi_selectedBankIds.length < 1) {
+    showToast('Pilih minimal 1 bank untuk perbandingan.', 'warning', 'Pilih Bank');
     return;
   }
   const harga = parseRp(document.getElementById('harga'));
@@ -7443,13 +7671,19 @@ function hitungKomparasi() {
 
   const results = [];
   const skipped = []; // bank yang tidak punya program cocok plafon/tenor — ditampilkan di catatan
+  let extraNoteHtml = ''; // catatan tambahan khusus mode 1-bank (info "tidak ada pembanding")
 
-  for (const bankId of komparasi_selectedBankIds) {
+  if (komparasi_selectedBankIds.length === 1) {
+    // ── Mode 1 Bank: bandingkan ANTAR PROGRAM di dalam bank yang sama ──
+    const bankId = komparasi_selectedBankIds[0];
     const bank = findBankById(bankId);
-    if (!bank) continue;
+    if (!bank) { showToast('Bank tidak ditemukan.', 'error', 'Kalkulasi Gagal'); return; }
 
     const allCandidates = (bank.programs || []).filter(p => p.periode && p.periode.length > 0);
-    if (!allCandidates.length) { skipped.push({ bankNama: bank.nama, alasan: 'Belum ada program KPR tersimpan' }); continue; }
+    if (!allCandidates.length) {
+      showToast(`Bank ${bank.nama} belum memiliki program KPR tersimpan.`, 'error', 'Kalkulasi Gagal');
+      return;
+    }
 
     // ── Filter 1: plafon (plafonMin/plafonMax) ──
     const plafonOk = allCandidates.filter(p => {
@@ -7458,8 +7692,8 @@ function hitungKomparasi() {
       return minOk && maxOk;
     });
     if (!plafonOk.length) {
-      skipped.push({ bankNama: bank.nama, alasan: `Tidak ada program yang sesuai plafon ${fmtShort(pokok)}` });
-      continue;
+      showToast(`Tidak ada program di bank ${bank.nama} yang sesuai plafon ${fmtShort(pokok)}.`, 'error', 'Kalkulasi Gagal');
+      return;
     }
 
     // ── Filter 2: rentang tenor [tenor, tenorMax || tenor] ──
@@ -7467,32 +7701,117 @@ function hitungKomparasi() {
       const tMax = (p.tenorMax != null && p.tenorMax >= p.tenor) ? p.tenorMax : p.tenor;
       return tenor >= p.tenor && tenor <= tMax;
     });
-
     if (!tenorOk.length) {
-      // Tidak ada program yang rentang tenornya mencakup tenor user — jangan dihitung
-      // dengan pendekatan/fallback apapun, cukup catat sebagai program yang tidak bisa dipakai.
-      skipped.push({ bankNama: bank.nama, alasan: `Tidak ada program yang sesuai tenor ${tenor} thn` });
-      continue;
+      showToast(`Tidak ada program di bank ${bank.nama} yang sesuai tenor ${tenor} thn.`, 'error', 'Kalkulasi Gagal');
+      return;
     }
-    // Ada program yang rentang tenornya mencakup tenor user persis — pilih yang tenor dasarnya paling dekat
-    tenorOk.sort((a, b) => Math.abs((a.tenor||0) - tenor) - Math.abs((b.tenor||0) - tenor));
-    const program = tenorOk[0];
 
-    const calc = _komparasiHitung(pokok, tenor, program);
-    if (!calc) { skipped.push({ bankNama: bank.nama, alasan: 'Gagal menghitung program (data periode tidak valid)' }); continue; }
+    // Hitung program yang mau dibandingkan:
+    // - Kalau user memilih program spesifik manual lewat dropdown → hitung program itu SAJA.
+    // - Kalau masih "Otomatis" → hitung SEMUA program yang lolos filter (perilaku lama).
+    const manualProgramId = komparasi_selectedPrograms[bankId];
+    let programsToCalc = tenorOk;
+    let manualPick = false;
+    if (manualProgramId) {
+      const picked = allCandidates.find(p => String(p.id) === String(manualProgramId));
+      if (!picked) {
+        showToast('Program yang dipilih sudah tidak tersedia / terhapus.', 'error', 'Kalkulasi Gagal');
+        return;
+      }
+      programsToCalc = [picked];
+      manualPick = true;
+    }
 
-    results.push({ bankId, bankNama: bank.nama, program, tenorExactMatch: true, ...calc });
-  }
+    for (const program of programsToCalc) {
+      const calc = _komparasiHitung(pokok, tenor, program);
+      if (!calc) continue;
+      const outOfRange = manualPick && !_komparasiProgramEligible(program, pokok, tenor);
+      results.push({ bankId, bankNama: bank.nama, program, manualPick, outOfRange, ...calc });
+    }
 
-  if (!results.length) {
-    const detail = skipped.length ? ' (' + skipped.map(s => `${s.bankNama}: ${s.alasan}`).join('; ') + ')' : '';
-    showToast('Tidak ada program yang sesuai dengan plafon/tenor saat ini.' + detail, 'error', 'Kalkulasi Gagal');
-    return;
+    if (!results.length) {
+      showToast(`Gagal menghitung program pada bank ${bank.nama} (data periode tidak valid).`, 'error', 'Kalkulasi Gagal');
+      return;
+    }
+
+    // Kalau cuma ada 1 program yang bisa dipakai → tetap tampilkan 1 baris hasil itu,
+    // dan kasih catatan bahwa tidak ada program lain di bank ini untuk dibandingkan.
+    // Catatan ini tidak relevan kalau memang user sengaja memilih 1 program secara manual.
+    if (results.length === 1 && !manualPick) {
+      extraNoteHtml = `<div class="komparasi-single-note">ℹ️ Bank <b>${escapeHtml(bank.nama)}</b> saat ini hanya punya <b>1 program</b> yang sesuai dengan plafon (${fmtShort(pokok)}) dan tenor (${tenor} thn) yang dipilih, sehingga belum ada program lain di bank ini untuk dibandingkan. Hasil di atas ditampilkan sebagai simulasi tunggal.</div>`;
+    }
+  } else {
+    // ── Mode 2-3 Bank: bandingkan program pilihan user antar bank berbeda ──
+    // Kalau user sudah memilih program spesifik lewat dropdown (komparasi_selectedPrograms),
+    // pakai program itu apa adanya. Kalau belum (masih "Otomatis"), fallback ke perilaku
+    // lama: pilih program dengan tenor dasar paling dekat yang lolos filter plafon/tenor.
+    for (const bankId of komparasi_selectedBankIds) {
+      const bank = findBankById(bankId);
+      if (!bank) continue;
+
+      const allCandidates = (bank.programs || []).filter(p => p.periode && p.periode.length > 0);
+      if (!allCandidates.length) { skipped.push({ bankNama: bank.nama, alasan: 'Belum ada program KPR tersimpan' }); continue; }
+
+      const manualProgramId = komparasi_selectedPrograms[bankId];
+      let program = null;
+      let outOfRange = false;
+
+      if (manualProgramId) {
+        // ── Program dipilih manual oleh user — pakai apa adanya ──
+        program = allCandidates.find(p => String(p.id) === String(manualProgramId)) || null;
+        if (!program) {
+          skipped.push({ bankNama: bank.nama, alasan: 'Program yang dipilih sudah tidak tersedia / terhapus' });
+          continue;
+        }
+        // Tetap cek kecocokan plafon/tenor hanya untuk ditampilkan sebagai catatan peringatan,
+        // BUKAN untuk membatalkan perhitungan — pilihan manual user tetap dihormati.
+        outOfRange = !_komparasiProgramEligible(program, pokok, tenor);
+      } else {
+        // ── Otomatis (perilaku lama) ──
+        // Filter 1: plafon (plafonMin/plafonMax)
+        const plafonOk = allCandidates.filter(p => {
+          const minOk = (p.plafonMin == null) || (pokok >= p.plafonMin);
+          const maxOk = (p.plafonMax == null) || (pokok <= p.plafonMax);
+          return minOk && maxOk;
+        });
+        if (!plafonOk.length) {
+          skipped.push({ bankNama: bank.nama, alasan: `Tidak ada program yang sesuai plafon ${fmtShort(pokok)}` });
+          continue;
+        }
+
+        // Filter 2: rentang tenor [tenor, tenorMax || tenor]
+        const tenorOk = plafonOk.filter(p => {
+          const tMax = (p.tenorMax != null && p.tenorMax >= p.tenor) ? p.tenorMax : p.tenor;
+          return tenor >= p.tenor && tenor <= tMax;
+        });
+
+        if (!tenorOk.length) {
+          // Tidak ada program yang rentang tenornya mencakup tenor user — jangan dihitung
+          // dengan pendekatan/fallback apapun, cukup catat sebagai program yang tidak bisa dipakai.
+          skipped.push({ bankNama: bank.nama, alasan: `Tidak ada program yang sesuai tenor ${tenor} thn` });
+          continue;
+        }
+        // Ada program yang rentang tenornya mencakup tenor user persis — pilih yang tenor dasarnya paling dekat
+        tenorOk.sort((a, b) => Math.abs((a.tenor||0) - tenor) - Math.abs((b.tenor||0) - tenor));
+        program = tenorOk[0];
+      }
+
+      const calc = _komparasiHitung(pokok, tenor, program);
+      if (!calc) { skipped.push({ bankNama: bank.nama, alasan: 'Gagal menghitung program (data periode tidak valid)' }); continue; }
+
+      results.push({ bankId, bankNama: bank.nama, program, tenorExactMatch: true, manualPick: !!manualProgramId, outOfRange, ...calc });
+    }
+
+    if (!results.length) {
+      const detail = skipped.length ? ' (' + skipped.map(s => `${s.bankNama}: ${s.alasan}`).join('; ') + ')' : '';
+      showToast('Tidak ada program yang sesuai dengan plafon/tenor saat ini.' + detail, 'error', 'Kalkulasi Gagal');
+      return;
+    }
   }
 
   _komparasiLastResults = results;
   _komparasiLastSkipped = skipped;
-  renderKomparasiTable(results, tenor, pokok, skipped);
+  renderKomparasiTable(results, tenor, pokok, skipped, extraNoteHtml);
 }
 
 function _komparasiHitung(pokok, tenor, program) {
@@ -7559,7 +7878,189 @@ function _komparasiGetEff(program, tenor) {
   } catch(e) { return []; }
 }
 
-function renderKomparasiTable(results, tenor, pokok, skipped) {
+// ══════════════════════════════════════════════════
+// KESIMPULAN OTOMATIS — Fitur baru
+// ══════════════════════════════════════════════════
+
+/**
+ * _klasifikasiTipeBunga(r)
+ * Deteksi tipe skema bunga dari salah satu elemen hasil komparasi (r), dipakai murni
+ * untuk menyusun kalimat "alasan teknis" di Kesimpulan Otomatis.
+ * Prioritas deteksi:
+ *  1) Kata kunci pada nama program (paling akurat, karena nama program di aplikasi ini
+ *     biasanya sudah mencantumkan skemanya, misal "... Berjenjang ..." / "... Fix to Floating ...").
+ *  2) Fallback ke heuristik dari jumlah periode & flag floating hasil hitung, jika nama
+ *     program tidak mengandung kata kunci apapun.
+ */
+function _klasifikasiTipeBunga(r) {
+  const nama = (r.program?.nama || '').toLowerCase();
+  if (/fix.?to.?floating/.test(nama)) return 'fix-to-floating';
+  if (/berjenjang/.test(nama))        return 'berjenjang';
+  if (/flat/.test(nama) && !r.hasFloating) return 'fixed';
+
+  // Fallback heuristik dari struktur periode hasil hitung
+  const jumlahPeriode = (r.periodResults || []).length;
+  if (!r.hasFloating && jumlahPeriode <= 1) return 'fixed';
+  if (r.hasFloating && jumlahPeriode <= 2)  return 'fix-to-floating';
+  if (jumlahPeriode > 2)                    return 'berjenjang';
+  return 'lainnya';
+}
+
+/**
+ * buildKomparasiKesimpulan(results)
+ * Dipanggil oleh renderKomparasiTable() setiap kali hitungan komparasi baru selesai
+ * (baik mode 1-bank/antar-program maupun mode 2-3 bank).
+ *
+ * @param {Array} results  Sama persis dengan _komparasiLastResults: setiap elemen minimal
+ *                         punya { bankNama, program:{nama}, totalBayar, hasFloating, periodResults }.
+ * @returns {string} Kalimat kesimpulan siap-pakai, atau '' jika tidak bisa disimpulkan
+ *                    (misal karena cuma ada 1 program yang bisa dihitung, jadi tanpa pembanding).
+ */
+function buildKomparasiKesimpulan(results) {
+  if (!Array.isArray(results) || results.length < 2) return ''; // butuh minimal 2 utk dibandingkan
+
+  // 1) Tangkap Total Keseluruhan (= totalBayar = Total Pokok + Total Bunga) tiap program,
+  //    lalu cari yang termurah & termahal.
+  let termurah = results[0];
+  let termahal = results[0];
+  for (const r of results) {
+    if (r.totalBayar < termurah.totalBayar) termurah = r;
+    if (r.totalBayar > termahal.totalBayar) termahal = r;
+  }
+  if (termurah === termahal) return ''; // seluruh total persis sama, tidak ada yang perlu disimpulkan
+
+  // Selisih nominal termurah vs termahal
+  const selisih = termahal.totalBayar - termurah.totalBayar;
+
+  // Label "Program (Bank)" — tetap jelas baik di mode 1-bank (antar program) maupun mode multi-bank
+  const labelTermurah = `${termurah.program.nama} (${termurah.bankNama})`;
+  const labelTermahal  = `${termahal.program.nama} (${termahal.bankNama})`;
+
+  // 2) Kalimat dasar kesimpulan
+  let kalimat = `Secara keseluruhan, program ${labelTermurah} lebih hemat ${fmtShort(selisih)} dibandingkan ${labelTermahal}.`;
+
+  // 3) Alasan teknis tambahan — IF/ELSE berdasarkan tipe skema bunga masing-masing program
+  const tipeTermurah = _klasifikasiTipeBunga(termurah);
+  const tipeTermahal  = _klasifikasiTipeBunga(termahal);
+
+  let alasan;
+  if (tipeTermurah === 'berjenjang' && tipeTermahal === 'fix-to-floating') {
+    alasan = 'Hal ini wajar karena skema bunga berjenjang cenderung menaikkan suku bunga secara bertahap dan terukur, sedangkan skema fix-to-floating berisiko melonjak signifikan begitu masa fixed berakhir.';
+  } else if (tipeTermurah === 'fix-to-floating' && tipeTermahal === 'berjenjang') {
+    alasan = 'Meski sama-sama memiliki risiko kenaikan suku bunga di kemudian hari, skema fix-to-floating pada program ini menghasilkan total bunga yang lebih rendah dibandingkan skema berjenjang pada program pembanding.';
+  } else if (tipeTermurah === 'fixed' && tipeTermahal !== 'fixed') {
+    alasan = 'Program termurah menggunakan skema bunga tetap (fixed) sepanjang tenor sehingga totalnya lebih rendah dan lebih mudah diprediksi dibandingkan program pembanding yang memiliki periode floating.';
+  } else if (!termurah.hasFloating && termahal.hasFloating) {
+    alasan = 'Selisih ini turut dipengaruhi oleh adanya periode floating pada program pembanding, yang berpotensi meningkatkan total bunga di tahun-tahun berikutnya.';
+  } else {
+    alasan = 'Perbedaan total pembayaran ini terutama dipengaruhi oleh besaran suku bunga/margin yang ditetapkan pada masing-masing program.';
+  }
+
+  return kalimat + ' ' + alasan;
+}
+
+/**
+ * buildProgramProsCons(results)
+ * Menyusun poin Kelebihan (plus) & Kekurangan (minus) OTOMATIS untuk SETIAP program yang
+ * sedang dibandingkan — pelengkap dari Kesimpulan Otomatis (yang cuma bilang "mana yang
+ * termurah"). Tujuannya supaya customer bisa menimbang sendiri mana yang paling sesuai
+ * dengan kebutuhannya (misal: lebih suka cicilan ringan vs total hemat vs bunga stabil),
+ * bukan cuma diarahkan ke satu pilihan "termurah" saja.
+ *
+ * Dipanggil oleh renderKomparasiTable() setiap kali hitungan komparasi baru selesai.
+ *
+ * @param {Array} results  Sama persis dengan input buildKomparasiKesimpulan().
+ * @returns {Array} Array sejajar dengan `results`; tiap elemen: { plus: string[], minus: string[] }
+ *                  (array kosong jika results.length < 2, karena tidak ada yang bisa dibandingkan).
+ */
+function buildProgramProsCons(results) {
+  if (!Array.isArray(results) || results.length < 2) return [];
+
+  const minCicilan = Math.min(...results.map(r => r.cicilanTahun1));
+  const maxCicilan = Math.max(...results.map(r => r.cicilanTahun1));
+  const minTotal   = Math.min(...results.map(r => r.totalBayar));
+  const maxTotal   = Math.max(...results.map(r => r.totalBayar));
+  const adaFloatingLain = results.some(r => r.hasFloating);
+
+  return results.map(r => {
+    const plus = [];  // { t: teks, p: prioritas (makin kecil makin penting) }
+    const minus = [];
+    const tipe = _klasifikasiTipeBunga(r);
+
+    // ── 1) Cicilan Tahun Pertama — paling langsung dirasakan customer tiap bulan ──
+    if (minCicilan !== maxCicilan) {
+      if (r.cicilanTahun1 === minCicilan) {
+        plus.push({ t: 'Cicilan tahun pertama paling ringan di antara pilihan yang dibandingkan.', p: 1 });
+      } else if (r.cicilanTahun1 === maxCicilan) {
+        minus.push({ t: `Cicilan tahun pertama paling tinggi, sekitar ${fmtShort(r.cicilanTahun1 - minCicilan)}/bln lebih mahal dari opsi teringan.`, p: 1 });
+      } else {
+        const pct = (r.cicilanTahun1 - minCicilan) / minCicilan;
+        if (pct <= 0.03) {
+          plus.push({ t: 'Cicilan tahun pertama termasuk kompetitif, selisih tipis dari opsi teringan.', p: 2 });
+        } else {
+          minus.push({ t: `Cicilan tahun pertama sekitar ${fmtShort(r.cicilanTahun1 - minCicilan)}/bln lebih tinggi dibanding opsi teringan.`, p: 2 });
+        }
+      }
+    }
+
+    // ── 2) Total Bayar Keseluruhan — gambaran beban jangka panjang ──
+    if (minTotal !== maxTotal) {
+      if (r.totalBayar === minTotal) {
+        plus.push({ t: 'Total pembayaran keseluruhan (pokok + bunga) paling hemat dibanding pilihan lain.', p: 1 });
+      } else if (r.totalBayar === maxTotal) {
+        minus.push({ t: `Total pembayaran keseluruhan paling besar, selisih ${fmtShort(r.totalBayar - minTotal)} dari opsi termurah.`, p: 1 });
+      } else {
+        const pct = (r.totalBayar - minTotal) / minTotal;
+        if (pct <= 0.03) {
+          plus.push({ t: 'Total pembayaran keseluruhan cukup bersaing, hanya berselisih tipis dari opsi termurah.', p: 2 });
+        } else {
+          minus.push({ t: `Total pembayaran keseluruhan sekitar ${fmtShort(r.totalBayar - minTotal)} lebih besar dari opsi termurah.`, p: 2 });
+        }
+      }
+    }
+
+    // ── 3) Skema & Risiko Suku Bunga — seberapa stabil/terprediksi cicilan ke depan ──
+    if (!r.hasFloating) {
+      plus.push({ t: 'Suku bunga tetap (fixed) sepanjang tenor — cicilan stabil dan mudah diprediksi tiap bulan.', p: 1 });
+      if (adaFloatingLain) {
+        plus.push({ t: 'Risiko kenaikan cicilan lebih rendah dibanding pilihan lain yang masih punya periode floating.', p: 3 });
+      }
+    } else if (tipe === 'fix-to-floating') {
+      minus.push({ t: 'Setelah masa fixed/promo berakhir, suku bunga langsung mengikuti floating penuh yang berisiko naik cukup signifikan.', p: 1 });
+    } else if (tipe === 'berjenjang') {
+      plus.push({ t: 'Kenaikan suku bunga dilakukan bertahap per periode, lebih mudah diprediksi dibanding skema fix-to-floating.', p: 2 });
+      minus.push({ t: 'Tetap ada penyesuaian suku bunga di tahun-tahun tertentu sesuai jadwal berjenjang, cicilan bisa naik bertahap.', p: 2 });
+    } else {
+      minus.push({ t: 'Memiliki periode bunga mengambang (floating) sehingga cicilan berpotensi berubah di tahun-tahun berikutnya.', p: 2 });
+    }
+
+    // ── 4) Fleksibilitas Tenor ──
+    const tMaxProgram = (r.program.tenorMax != null && r.program.tenorMax > r.program.tenor) ? r.program.tenorMax : null;
+    if (tMaxProgram) {
+      plus.push({ t: `Tenor bisa diperpanjang hingga maksimal ${tMaxProgram} tahun, memberi ruang lebih untuk menyesuaikan besar cicilan.`, p: 3 });
+    }
+
+    // ── 5) Batasan Syarat Plafon ──
+    if (r.program.plafonMin != null && r.program.plafonMax != null) {
+      minus.push({ t: `Plafon dibatasi antara ${fmtShort(r.program.plafonMin)}–${fmtShort(r.program.plafonMax)}, pastikan sesuai kebutuhan pengajuan Anda.`, p: 4 });
+    } else if (r.program.plafonMin != null) {
+      minus.push({ t: `Ada syarat plafon minimum ${fmtShort(r.program.plafonMin)}.`, p: 4 });
+    } else if (r.program.plafonMax != null) {
+      minus.push({ t: `Plafon dibatasi maksimum ${fmtShort(r.program.plafonMax)}.`, p: 4 });
+    }
+
+    // Urutkan berdasar prioritas & batasi maksimal 4 poin per kolom supaya kartu tidak kepanjangan
+    plus.sort((a, b) => a.p - b.p);
+    minus.sort((a, b) => a.p - b.p);
+
+    return {
+      plus: plus.slice(0, 4).map(x => x.t),
+      minus: minus.slice(0, 4).map(x => x.t)
+    };
+  });
+}
+
+function renderKomparasiTable(results, tenor, pokok, skipped, extraNoteHtml) {
   const tbody = document.getElementById('komparasi-tbody');
   const resultWrap = document.getElementById('komparasi-result-wrap');
   const countEl = document.getElementById('komparasi-result-count');
@@ -7593,12 +8094,14 @@ function renderKomparasiTable(results, tenor, pokok, skipped) {
 
     return `<tr>
       <td>
-        <div class="komparasi-program-name">${escapeHtml(r.program.nama)}</div>
+        <div class="komparasi-program-name">${escapeHtml(r.program.nama)}${(results.length > 1 && isBestTotal) ? '<span class="komparasi-termurah-badge">🏆 Termurah</span>' : ''}</div>
         <div class="komparasi-bank-name">🏦 ${escapeHtml(r.bankNama)}&nbsp;<span class="komparasi-akad-badge ${akadClass}">${akadLabel}</span></div>
         <div style="font-size:11px;color:var(--text3);margin-top:3px; display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
           <span>📅 Tenor: ${tenorRangeLabel}</span>
           ${plafonLabel ? `<span>· 🏷️ Plafon: ${plafonLabel}</span>` : ''}
         </div>
+        ${r.manualPick ? `<div style="font-size:10px;color:var(--accent);margin-top:3px;">🖊️ Dipilih manual</div>` : ''}
+        ${r.outOfRange ? `<div class="komparasi-outofrange-note">⚠ Di luar syarat plafon/tenor standar program ini</div>` : ''}
       </td>
       <td class="${isBestCicilan ? 'komparasi-highlight-green' : ''}">
         ${fmt(r.cicilanTahun1)}
@@ -7610,7 +8113,12 @@ function renderKomparasiTable(results, tenor, pokok, skipped) {
         ${isBestTotal ? '<span class="komparasi-best-badge total">✓ Total Terendah</span>' : ''}
         <div style="font-size:11px;color:var(--text3);margin-top:2px;">Bunga: ${fmtShort(r.totalBunga)}</div>
       </td>
-      <td><span class="komparasi-akad-badge ${akadClass}" style="font-size:11px;">${akadLabel}</span></td>
+      <td>${(() => {
+        const rTahun1 = r.periodResults && r.periodResults[0] ? r.periodResults[0].rate : null;
+        return (typeof rTahun1 === 'number')
+          ? `<span style="font-weight:700;color:var(--navy);font-family:'Inter',sans-serif;">${rTahun1.toFixed(2)}%</span><div style="font-size:10px;color:var(--text3);margin-top:2px;">/thn (Thn 1)</div>`
+          : '-';
+      })()}</td>
       <td><div class="komparasi-period-rows">${periodeHtml}</div></td>
     </tr>`;
   }).join('')
@@ -7631,16 +8139,83 @@ function renderKomparasiTable(results, tenor, pokok, skipped) {
         </div>
       </td>
     </tr>`).join('') : '');
-  if (countEl) countEl.textContent = results.length + ' Bank';
+  if (countEl) {
+    const singleBank = results.length && results.every(r => r.bankId === results[0].bankId);
+    countEl.textContent = singleBank ? (results.length + ' Program') : (results.length + ' Bank');
+  }
 
   const hasFloating = results.some(r => r.hasFloating);
+  const isSingleBankMode = results.length && results.every(r => r.bankId === results[0].bankId);
+  const anyManualPick = results.some(r => r.manualPick);
+  const allManualPick = !isSingleBankMode && results.length && results.every(r => r.manualPick);
   const noteLines = [
-    `<b>Catatan:</b> Program dipilih otomatis berdasarkan kecocokan plafon (${fmtShort(pokok)}) dan tenor (${tenor} tahun) terhadap syarat masing-masing program.`,
+    isSingleBankMode
+      ? `<b>Catatan:</b> Seluruh program di atas berasal dari bank yang sama, dipilih otomatis berdasarkan kecocokan plafon (${fmtShort(pokok)}) dan tenor (${tenor} tahun) terhadap syarat masing-masing program.`
+      : allManualPick
+        ? `<b>Catatan:</b> Seluruh program di atas dipilih manual oleh Anda lewat dropdown per bank.`
+        : anyManualPick
+          ? `<b>Catatan:</b> Sebagian program dipilih manual oleh Anda, sisanya dipilih otomatis berdasarkan kecocokan plafon (${fmtShort(pokok)}) dan tenor (${tenor} tahun).`
+          : `<b>Catatan:</b> Program dipilih otomatis berdasarkan kecocokan plafon (${fmtShort(pokok)}) dan tenor (${tenor} tahun) terhadap syarat masing-masing program.`,
     `Total bayar = pokok pinjaman + seluruh bunga/margin selama tenor penuh.`,
     hasFloating ? '⚠ Beberapa program memiliki periode <em>floating</em> — cicilan aktual bisa berbeda bergantung kebijakan bank.' : ''
   ];
   if (notesEl) {
-    notesEl.innerHTML = noteLines.filter(Boolean).join(' ');
+    notesEl.innerHTML = noteLines.filter(Boolean).join(' ') + (extraNoteHtml || '');
+  }
+
+  // ── KESIMPULAN OTOMATIS — dihitung ulang setiap kali tabel komparasi dirender ──
+  const kesimpulanEl = document.getElementById('komparasi-kesimpulan');
+  _komparasiLastKesimpulanText = buildKomparasiKesimpulan(results);
+  if (kesimpulanEl) {
+    if (_komparasiLastKesimpulanText) {
+      kesimpulanEl.innerHTML = `<b>💡 Kesimpulan Otomatis:</b> ${escapeHtml(_komparasiLastKesimpulanText)}`;
+      kesimpulanEl.style.display = 'block';
+    } else {
+      kesimpulanEl.innerHTML = '';
+      kesimpulanEl.style.display = 'none';
+    }
+  }
+
+  // ── PLUS & MINUS PER PROGRAM — dihitung ulang setiap kali tabel komparasi dirender ──
+  const prosconsContainer = document.getElementById('komparasi-proscons-container');
+  const prosconsWrap = document.getElementById('komparasi-proscons-wrap');
+  if (prosconsContainer && prosconsWrap) {
+    const prosconsData = buildProgramProsCons(results);
+    if (prosconsData.length) {
+      const minTotalRec = Math.min(...results.map(r => r.totalBayar));
+      prosconsWrap.innerHTML = results.map((r, i) => {
+        const pc = prosconsData[i];
+        const isRec = r.totalBayar === minTotalRec;
+        const plusHtml = pc.plus.length
+          ? pc.plus.map(t => `<div class="komparasi-proscons-item plus"><span class="ic">✓</span><span>${escapeHtml(t)}</span></div>`).join('')
+          : `<div class="komparasi-proscons-empty">Tidak ada kelebihan menonjol dibanding pilihan lain.</div>`;
+        const minusHtml = pc.minus.length
+          ? pc.minus.map(t => `<div class="komparasi-proscons-item minus"><span class="ic">✕</span><span>${escapeHtml(t)}</span></div>`).join('')
+          : `<div class="komparasi-proscons-empty">Tidak ada kekurangan menonjol dibanding pilihan lain.</div>`;
+        return `
+          <div class="komparasi-proscons-card">
+            <div class="komparasi-proscons-header">
+              <div>
+                <div class="komparasi-proscons-name">${escapeHtml(r.program.nama)}</div>
+                <div class="komparasi-proscons-bank">🏦 ${escapeHtml(r.bankNama)}</div>
+              </div>
+              <span class="komparasi-proscons-rank ${isRec ? 'rec' : 'alt'}">${isRec ? '💰 Termurah' : 'Alternatif'}</span>
+            </div>
+            <div class="komparasi-proscons-block">
+              <div class="komparasi-proscons-col-title plus">✓ Kelebihan</div>
+              ${plusHtml}
+            </div>
+            <div class="komparasi-proscons-block">
+              <div class="komparasi-proscons-col-title minus">✕ Kekurangan</div>
+              ${minusHtml}
+            </div>
+          </div>`;
+      }).join('');
+      prosconsContainer.style.display = 'block';
+    } else {
+      prosconsWrap.innerHTML = '';
+      prosconsContainer.style.display = 'none';
+    }
   }
 
   resultWrap.classList.add('show');
@@ -7673,12 +8248,16 @@ function generateKomparasiPDF(doc, y, marginL, marginR, navy, textGray, accent) 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(9.5);
   doc.setTextColor(255, 255, 255);
-  doc.text('\u2696  TABEL PERBANDINGAN — Perbandingan Program Antar Bank', marginL + 4, y + 6);
+  doc.text('TABEL PERBANDINGAN - Perbandingan Program Antar Bank', marginL + 4, y + 6);
   y += headerStripH + 6;
   doc.setFont('helvetica', 'italic');
   doc.setFontSize(7.5);
   doc.setTextColor(textGray[0], textGray[1], textGray[2]);
-  doc.text('Program dipilih otomatis berdasarkan kecocokan plafon dan rentang tenor dari masing-masing bank.', marginL, y + 4);
+  const anyManualPickPdf = results.some(r => r.manualPick);
+  const komparasiPdfSubnote = anyManualPickPdf
+    ? 'Sebagian/seluruh program dipilih manual oleh Anda; sisanya dipilih otomatis berdasarkan kecocokan plafon dan rentang tenor.'
+    : 'Program dipilih otomatis berdasarkan kecocokan plafon dan rentang tenor dari masing-masing bank.';
+  doc.text(komparasiPdfSubnote, marginL, y + 4);
   y += 9;
   const minCicilan = Math.min(...results.map(r => r.cicilanTahun1));
   const minTotal   = Math.min(...results.map(r => r.totalBayar));
@@ -7687,7 +8266,7 @@ function generateKomparasiPDF(doc, y, marginL, marginR, navy, textGray, accent) 
                     : r.program.akad === 'syariah-efektif' ? 'Syariah Efektif'
                     : 'Konvensional';
     const isBestC = r.cicilanTahun1 === minCicilan;
-    const isBestT = r.totalBayar    === minTotal;
+    const isBestT = results.length > 1 && r.totalBayar === minTotal;
     const tMax = (r.program.tenorMax != null && r.program.tenorMax >= r.program.tenor) ? r.program.tenorMax : null;
     const tenorRangeLabel = tMax ? `${r.program.tenor}-${tMax} thn` : `${r.program.tenor} thn`;
     let plafonLabel = '';
@@ -7699,12 +8278,12 @@ function generateKomparasiPDF(doc, y, marginL, marginR, navy, textGray, accent) 
     const periodeText = r.periodResults.map(p =>
       `Thn ${p.dari}-${p.sampai}: ${fmt(p.cicilan)}/bln${p.floating ? ' (Float)' : ''}`
     ).join('\n');
-    const syaratText = `Tenor: ${tenorRangeLabel}` + (plafonLabel ? `\nPlafon: ${plafonLabel}` : '');
+    const syaratText = `Tenor: ${tenorRangeLabel}` + (plafonLabel ? `\nPlafon: ${plafonLabel}` : '') + (r.manualPick ? '\n(Dipilih manual)' : '') + (r.outOfRange ? '\n! Di luar syarat' : '');
     return [
-      `${r.program.nama}\n${r.bankNama} · ${akadLabel}`,
+      `${r.program.nama}${isBestT ? ' [TERMURAH]' : ''}\n${r.bankNama} · ${akadLabel}`,
       syaratText,
-      fmt(r.cicilanTahun1) + (isBestC ? '\n\u2605 Termurah' : ''),
-      fmtShort(r.totalBayar) + (isBestT ? '\n\u2605 Termurah' : '') + `\nBunga: ${fmtShort(r.totalBunga)}`,
+      fmt(r.cicilanTahun1) + (isBestC ? '\n* Termurah' : ''),
+      fmtShort(r.totalBayar) + (isBestT ? '\n* Termurah' : '') + `\nBunga: ${fmtShort(r.totalBunga)}`,
       periodeText
     ];
   });
@@ -7740,6 +8319,153 @@ function generateKomparasiPDF(doc, y, marginL, marginR, navy, textGray, accent) 
   const catW = doc.splitTextToSize(catLines, contentW);
   doc.text(catW, marginL, y);
   y += catW.length * 3.5 + 8;
+
+  // ── KESIMPULAN OTOMATIS — hanya dicetak jika ada (butuh minimal 2 program utk dibandingkan) ──
+  if (_komparasiLastKesimpulanText) {
+    const kesW = doc.splitTextToSize(_komparasiLastKesimpulanText, contentW - 6);
+    const kesH = 8 + kesW.length * 3.6;
+    if (y + kesH > pageH - marginBot) { doc.addPage(); y = 16; }
+    doc.setFillColor(236, 253, 245); // latar hijau muda, senada dengan .komparasi-kesimpulan di web
+    doc.roundedRect(marginL, y, contentW, kesH, 2, 2, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(5, 150, 105); // var(--green)
+    doc.text('Kesimpulan Otomatis:', marginL + 3, y + 5);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(navy[0], navy[1], navy[2]);
+    doc.text(kesW, marginL + 3, y + 9.5);
+    y += kesH + 6;
+  }
+
+  // ── PLUS & MINUS TIAP PROGRAM — kartu per-program, konsisten dgn tampilan web ──
+  // (dihitung langsung dari `results`, tidak butuh variabel global terpisah karena
+  // buildProgramProsCons() murni fungsi dari data yang sama dipakai tabel/kesimpulan di atas)
+  const prosconsData = buildProgramProsCons(results);
+  if (prosconsData.length) {
+    const gap = 4;
+    const colW = (contentW - gap) / 2;
+    const pad = 3.5;
+    const fsName = 8, fsBank = 6.8, fsSectionTitle = 6.8, fsItem = 6.8, fsBadge = 6.2;
+    const lh = fs => fs * 0.5;
+
+    // Header strip — gaya sama dengan "TABEL PERBANDINGAN" di atas
+    if (y + 20 > pageH - marginBot) { doc.addPage(); y = 16; }
+    const pcHeaderH = 9;
+    doc.setFillColor(navy[0], navy[1], navy[2]);
+    doc.roundedRect(marginL, y, contentW, pcHeaderH, 2, 2, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9.5);
+    doc.setTextColor(255, 255, 255);
+    doc.text('PLUS & MINUS TIAP PROGRAM', marginL + 4, y + 6);
+    y += pcHeaderH + 6;
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(7.5);
+    doc.setTextColor(textGray[0], textGray[1], textGray[2]);
+    const pcSubLines = doc.splitTextToSize('Bandingkan kelebihan & kekurangan tiap pilihan supaya lebih mudah menentukan program yang paling sesuai dengan kebutuhan.', contentW);
+    doc.text(pcSubLines, marginL, y + 4);
+    y += pcSubLines.length * 3.6 + 5;
+
+    const minTotalRec = Math.min(...results.map(r => r.totalBayar));
+
+    // Pra-hitung wrapping teks tiap kartu (dibutuhkan utk estimasi tinggi baris/halaman)
+    const cardsMeta = results.map((r, i) => {
+      const pc = prosconsData[i];
+      const isRec = r.totalBayar === minTotalRec;
+      const badgeLabel = isRec ? 'TERMURAH' : 'ALTERNATIF';
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(fsName);
+      const nameLines = doc.splitTextToSize(r.program.nama, colW - 2 * pad - 20);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(fsItem);
+      const itemW = colW - 2 * pad - 4;
+      const plusLines = pc.plus.length ? pc.plus.map(t => doc.splitTextToSize(t, itemW)) : [doc.splitTextToSize('Tidak ada kelebihan menonjol.', itemW)];
+      const minusLines = pc.minus.length ? pc.minus.map(t => doc.splitTextToSize(t, itemW)) : [doc.splitTextToSize('Tidak ada kekurangan menonjol.', itemW)];
+      return { r, isRec, badgeLabel, nameLines, plusLines, minusLines };
+    });
+
+    function _cardHeight(meta) {
+      let h = pad;
+      h += meta.nameLines.length * lh(fsName) + 1.5;
+      h += lh(fsBank) + 2.5;
+      h += 3; // garis pemisah
+      h += lh(fsSectionTitle) + 1.5;
+      meta.plusLines.forEach(lines => { h += lines.length * lh(fsItem) + 1.2; });
+      h += 1.3;
+      h += lh(fsSectionTitle) + 1.5;
+      meta.minusLines.forEach(lines => { h += lines.length * lh(fsItem) + 1.2; });
+      h += pad;
+      return h;
+    }
+
+    for (let i = 0; i < cardsMeta.length; i += 2) {
+      const rowMetas = [cardsMeta[i], cardsMeta[i + 1]].filter(Boolean);
+      const rowH = Math.max(...rowMetas.map(_cardHeight));
+      if (y + rowH > pageH - marginBot) { doc.addPage(); y = 16; }
+      rowMetas.forEach((meta, colIdx) => {
+        const x = marginL + colIdx * (colW + gap);
+        // Border kartu
+        doc.setDrawColor(224, 224, 230);
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(x, y, colW, rowH, 2, 2, 'FD');
+
+        let cy = y + pad + lh(fsName) * 0.8;
+        // Nama program
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(fsName); doc.setTextColor(navy[0], navy[1], navy[2]);
+        doc.text(meta.nameLines, x + pad, cy);
+        cy += meta.nameLines.length * lh(fsName) + 1.5;
+
+        // Baris Bank + Badge (Termurah/Alternatif)
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(fsBank); doc.setTextColor(textGray[0], textGray[1], textGray[2]);
+        doc.text(`Bank: ${meta.r.bankNama}`, x + pad, cy);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(fsBadge);
+        const badgeW = doc.getTextWidth(meta.badgeLabel) + 5;
+        const badgeH = 4.2;
+        const badgeX = x + colW - pad - badgeW;
+        const badgeY = cy - badgeH + 1.3;
+        if (meta.isRec) {
+          doc.setFillColor(220, 252, 231); doc.setDrawColor(5, 150, 105); doc.setTextColor(6, 95, 70);
+        } else {
+          doc.setFillColor(241, 245, 249); doc.setDrawColor(148, 163, 184); doc.setTextColor(71, 85, 105);
+        }
+        doc.roundedRect(badgeX, badgeY, badgeW, badgeH, badgeH / 2, badgeH / 2, 'FD');
+        doc.text(meta.badgeLabel, badgeX + badgeW / 2, badgeY + badgeH / 2 + 1.1, { align: 'center' });
+        cy += lh(fsBank) + 2.5;
+
+        // Garis pemisah
+        doc.setDrawColor(230, 230, 236);
+        doc.line(x + pad, cy, x + colW - pad, cy);
+        cy += 3;
+
+        // KELEBIHAN
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(fsSectionTitle); doc.setTextColor(5, 150, 105);
+        doc.text('KELEBIHAN', x + pad, cy);
+        cy += lh(fsSectionTitle) + 1.5;
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(fsItem);
+        meta.plusLines.forEach(lines => {
+          doc.setTextColor(5, 150, 105);
+          doc.text('+', x + pad, cy);
+          doc.setTextColor(50, 60, 75);
+          doc.text(lines, x + pad + 4, cy);
+          cy += lines.length * lh(fsItem) + 1.2;
+        });
+        cy += 1.3;
+
+        // KEKURANGAN
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(fsSectionTitle); doc.setTextColor(220, 38, 38);
+        doc.text('KEKURANGAN', x + pad, cy);
+        cy += lh(fsSectionTitle) + 1.5;
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(fsItem);
+        meta.minusLines.forEach(lines => {
+          doc.setTextColor(220, 38, 38);
+          doc.text('-', x + pad, cy);
+          doc.setTextColor(50, 60, 75);
+          doc.text(lines, x + pad + 4, cy);
+          cy += lines.length * lh(fsItem) + 1.2;
+        });
+      });
+      y += rowH + gap;
+    }
+  }
+
   return y;
 }
 
