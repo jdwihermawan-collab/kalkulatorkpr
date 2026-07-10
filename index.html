@@ -939,7 +939,38 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .btn-bank-action:hover { border-color: var(--navy); color: var(--navy); background: var(--off); }
 .btn-bank-action.edit:hover { border-color: var(--accent); color: var(--accent); background: rgba(37,99,235,0.04); }
 .btn-bank-action.delete:hover { border-color: var(--red); color: var(--red); background: rgba(220,38,38,0.05); }
+.btn-bank-action.import:hover { border-color: #059669; color: #059669; background: rgba(5,150,105,0.05); }
 .btn-bank-action:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Import Data Cepat (Bulk Insert) ── */
+.bulk-import-box { max-width: 720px; }
+.bulk-import-textarea {
+  width: 100%;
+  min-height: 280px;
+  background: var(--off);
+  border: 1.5px solid var(--gray);
+  border-radius: var(--radius3);
+  color: var(--text);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  padding: 14px;
+  resize: vertical;
+  tab-size: 2;
+}
+.bulk-import-textarea:focus { outline: none; border-color: var(--navy); }
+.bulk-import-summary {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius3);
+  background: rgba(5,150,105,0.08);
+  border: 1.5px solid rgba(5,150,105,0.3);
+  color: #047857;
+  font-size: 13px;
+  font-weight: 600;
+  display: none;
+  white-space: pre-line;
+}
 
 .bank-empty-tip {
   font-size: 13px;
@@ -2470,12 +2501,12 @@ body.admin-mode .admin-only { display: revert !important; }
     <p class="hero-credit">Dibuat oleh Jony Dwi H. &mdash; Social Media Specialist PRJP</p>
     <div class="hero-stats">
       <div class="hero-stat">
-        <div class="hero-stat-num">30 thn</div>
-        <div class="hero-stat-label">Tenor Maks</div>
+        <div class="hero-stat-num">Multi Bank</div>
+        <div class="hero-stat-label">Bandingkan Sekaligus</div>
       </div>
       <div class="hero-stat">
-        <div class="hero-stat-num" id="hero-stat-jenjang">5 Jenjang</div>
-        <div class="hero-stat-label">Bunga Bertahap</div>
+        <div class="hero-stat-num">Export PDF</div>
+        <div class="hero-stat-label">Siap Dibagikan</div>
       </div>
       <div class="hero-stat">
         <div class="hero-stat-num">Akurat</div>
@@ -2653,6 +2684,7 @@ body.admin-mode .admin-only { display: revert !important; }
           <button type="button" class="btn-bank-action admin-only" onclick="openBankModal()">＋ Tambah Bank</button>
           <button type="button" class="btn-bank-action edit admin-only" id="btn-edit-bank" onclick="editSelectedBank()" disabled>✎ Edit Nama Bank</button>
           <button type="button" class="btn-bank-action delete admin-only" id="btn-delete-bank" onclick="deleteSelectedBank()" disabled>🗑 Hapus Bank</button>
+          <button type="button" class="btn-bank-action import admin-only" onclick="openBulkImportModal()">📥 Import Data Cepat</button>
         </div>
         <p class="bank-empty-tip" id="bank-empty-tip">Belum ada bank tersimpan. Klik "Tambah Bank" untuk membuat bank baru, lalu tambahkan Program KPR-nya.</p>
       </div>
@@ -3144,6 +3176,65 @@ body.admin-mode .admin-only { display: revert !important; }
     <div class="modal-actions">
       <button class="btn-modal-cancel" onclick="closeProgramModal()">Batal</button>
       <button class="btn-modal-save" onclick="saveProgram()">💾 Simpan Program</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: IMPORT DATA CEPAT (BULK INSERT VIA JSON) -->
+<div class="modal-overlay" id="bulk-import-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="bulk-import-modal-title">
+  <div class="modal-box bulk-import-box">
+    <div class="modal-header">
+      <div class="modal-title" id="bulk-import-modal-title">📥 Import Data Cepat (Bulk Insert)</div>
+      <button class="modal-close" onclick="closeBulkImportModal()" title="Tutup" aria-label="Tutup modal import">×</button>
+    </div>
+
+    <p style="font-size:12.5px; color:var(--text3); line-height:1.6; margin-bottom:12px;">
+      Tempelkan (paste) data program KPR dalam format JSON di bawah ini untuk menambahkan atau memperbarui banyak program sekaligus, tanpa perlu mengisi form satu per satu. Bank baru akan otomatis dibuat jika namanya belum ada; program dengan nama yang sama persis pada bank yang sama akan <b>ditimpa (update)</b>, bukan digandakan.
+    </p>
+
+    <div class="field">
+      <label>Data JSON Program</label>
+      <textarea id="bulk-import-textarea" class="bulk-import-textarea" spellcheck="false" placeholder='[
+  {
+    "bank": "BNI",
+    "nama_program": "KPR BNI Griya Berjenjang 10 Tahun",
+    "min_tenor": 10,
+    "max_tenor": 10,
+    "akad": "konvensional",
+    "skema": [
+      { "tahap": 1, "tipe": "fixed", "bunga": 3.75, "masa_fixed": 1 },
+      { "tahap": 2, "tipe": "fixed", "bunga": 6.75, "masa_fixed": 2 },
+      { "tahap": 3, "tipe": "floating", "masa_fixed": 7 }
+    ]
+  }
+]'></textarea>
+    </div>
+
+    <div class="jenjang-section" style="margin-top:10px; padding:14px 16px; background:var(--off); border:1.5px solid var(--gray); border-radius:var(--radius2);">
+      <div style="font-size:10.5px; letter-spacing:1.6px; text-transform:uppercase; color:var(--text3); font-weight:700; margin-bottom:8px;">Keterangan Field</div>
+      <p style="font-size:11.5px; color:var(--text3); line-height:1.7; margin:0;">
+        • <b>bank</b> — nama bank (wajib)<br>
+        • <b>nama_program</b> — nama program KPR (wajib)<br>
+        • <b>min_tenor</b> — tenor dasar program dalam tahun, 1–30 (wajib)<br>
+        • <b>max_tenor</b> — tenor maksimum program berlaku (opsional, boleh dikosongkan/sama dengan min_tenor jika tidak ada rentang)<br>
+        • <b>akad</b> — "konvensional" / "syariah" / "syariah-efektif" (opsional, default "konvensional")<br>
+        • <b>skema</b> — daftar periode bunga berurutan (wajib, minimal 1 tahap):<br>
+        &nbsp;&nbsp;– <b>tahap</b> — urutan periode (angka, dipakai untuk mengurutkan)<br>
+        &nbsp;&nbsp;– <b>tipe</b> — "fixed" atau "floating"<br>
+        &nbsp;&nbsp;– <b>bunga</b> — persen bunga/margin, wajib diisi jika tipe "fixed"<br>
+        &nbsp;&nbsp;– <b>masa_fixed</b> — durasi periode ini dalam tahun<br>
+        • <b>floating_rate</b> — asumsi persen untuk semua periode floating pada program ini (opsional, default 11%)<br>
+        • <b>plafon_min</b> / <b>plafon_max</b> — syarat plafon dalam Rupiah (opsional)<br>
+        💡 Periode terakhir akan otomatis disesuaikan agar berakhir tepat di tahun ke-<i>min_tenor</i>, mengikuti aturan sistem.
+      </p>
+    </div>
+
+    <p class="modal-error" id="bulk-import-modal-err">⚠ Format JSON tidak valid.</p>
+    <div class="bulk-import-summary" id="bulk-import-modal-summary"></div>
+
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeBulkImportModal()">Batal</button>
+      <button class="btn-modal-save" id="btn-bulk-import" onclick="importBankDataJSON()">📥 Import Data JSON</button>
     </div>
   </div>
 </div>
@@ -4851,6 +4942,228 @@ async function saveProgram() {
     showToast('Gagal menyimpan program. Periksa koneksi internet atau izin Firestore.', 'error', 'Simpan Gagal');
   } finally {
     if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Simpan Program'; }
+  }
+}
+
+// ─── Import Data Cepat (Bulk Insert via JSON) ─────
+// Memungkinkan admin menempelkan array JSON berisi banyak program KPR
+// sekaligus, tanpa mengisi form satu per satu. Data JSON dikonversi ke
+// struktur internal { id, nama, programs:[{id, nama, tenor, periode, ...}] }
+// yang sama persis dengan yang dipakai saveProgram(), lalu ditulis ke
+// Firestore lewat saveBankToFirestore() yang sudah ada.
+
+function openBulkImportModal() {
+  document.getElementById('bulk-import-modal-err').style.display = 'none';
+  document.getElementById('bulk-import-modal-summary').style.display = 'none';
+  document.getElementById('bulk-import-modal-overlay').classList.add('show');
+}
+
+function closeBulkImportModal() {
+  document.getElementById('bulk-import-modal-overlay').classList.remove('show');
+}
+
+// Konversi 1 item JSON dari user menjadi { bankNama, program } sesuai skema internal.
+// Melempar Error dengan pesan yang jelas jika ada field wajib yang tidak valid.
+function _bulkImportConvertItem(item, idx) {
+  const label = `Item #${idx + 1}`;
+  if (!item || typeof item !== 'object' || Array.isArray(item)) {
+    throw new Error(`${label}: bukan objek JSON yang valid.`);
+  }
+
+  const bankNama = (item.bank || '').toString().trim();
+  if (!bankNama) throw new Error(`${label}: field "bank" wajib diisi.`);
+
+  const namaProgram = (item.nama_program || '').toString().trim();
+  if (!namaProgram) throw new Error(`${label}: field "nama_program" wajib diisi.`);
+  if (namaProgram.length > 80) throw new Error(`${label}: "nama_program" maksimal 80 karakter.`);
+
+  const tenor = parseInt(item.min_tenor);
+  if (!tenor || isNaN(tenor) || tenor < 1 || tenor > 30) {
+    throw new Error(`${label}: field "min_tenor" harus berupa angka 1–30.`);
+  }
+
+  let tenorMax = (item.max_tenor === undefined || item.max_tenor === null || item.max_tenor === '')
+    ? null : parseInt(item.max_tenor);
+  if (tenorMax !== null) {
+    if (isNaN(tenorMax) || tenorMax < 1 || tenorMax > 30) {
+      throw new Error(`${label}: field "max_tenor" harus berupa angka 1–30.`);
+    }
+    if (tenorMax < tenor) {
+      throw new Error(`${label}: "max_tenor" tidak boleh lebih kecil dari "min_tenor".`);
+    }
+    if (tenorMax === tenor) tenorMax = null; // sama dengan tenor dasar = tidak perlu rentang
+  }
+
+  if (!Array.isArray(item.skema) || !item.skema.length) {
+    throw new Error(`${label}: field "skema" wajib berupa array dan tidak boleh kosong.`);
+  }
+
+  // Urutkan berdasarkan "tahap", lalu bangun periode dari/sampai secara kumulatif
+  // memakai "masa_fixed" sebagai durasi tiap tahap (tahun).
+  const skemaSorted = [...item.skema].sort((a, b) => (parseInt(a.tahap) || 0) - (parseInt(b.tahap) || 0));
+  let cursor = 1;
+  const periode = skemaSorted.map((s, i) => {
+    const tahapLabel = s.tahap ?? (i + 1);
+    const isFloating = (s.tipe || '').toString().trim().toLowerCase() === 'floating';
+    let rate = null;
+    if (!isFloating) {
+      rate = parseFloat(s.bunga);
+      if (s.bunga === undefined || s.bunga === null || isNaN(rate)) {
+        throw new Error(`${label}, tahap ${tahapLabel}: field "bunga" wajib diisi untuk tipe "fixed".`);
+      }
+    }
+    const durasi = parseInt(s.masa_fixed);
+    if (!durasi || isNaN(durasi) || durasi < 1) {
+      throw new Error(`${label}, tahap ${tahapLabel}: field "masa_fixed" wajib diisi (durasi dalam tahun, minimal 1).`);
+    }
+    const dari = cursor;
+    const sampai = cursor + durasi - 1;
+    cursor = sampai + 1;
+    return { dari, sampai, rate, floating: isFloating };
+  });
+
+  // Aturan sistem: periode pertama harus mulai tahun ke-1, periode terakhir
+  // harus berakhir tepat di tahun ke-<tenor>. Sesuaikan otomatis di sini
+  // supaya data hasil import selalu valid tanpa perlu bolak-balik edit manual.
+  const periodeFinal = periode.filter(p => p.dari <= tenor);
+  if (!periodeFinal.length) {
+    throw new Error(`${label}: total durasi "masa_fixed" tidak mencakup tahun ke-1 dari tenor.`);
+  }
+  periodeFinal[periodeFinal.length - 1].sampai = tenor;
+
+  const akadRaw = (item.akad || 'konvensional').toString().trim().toLowerCase();
+  const akad = ['syariah', 'syariah-efektif'].includes(akadRaw) ? akadRaw : 'konvensional';
+
+  let floatingRate = FLOATING_RATE_DEFAULT;
+  if (item.floating_rate !== undefined && item.floating_rate !== null && item.floating_rate !== '') {
+    const fr = parseFloat(item.floating_rate);
+    if (isNaN(fr) || fr < 0 || fr > 30) throw new Error(`${label}: field "floating_rate" harus berupa angka 0–30.`);
+    floatingRate = fr;
+  }
+
+  const parseOptionalRp = (val, fieldName) => {
+    if (val === undefined || val === null || val === '') return null;
+    const n = parseFloat(val);
+    if (isNaN(n) || n < 0) throw new Error(`${label}: field "${fieldName}" harus berupa angka.`);
+    return n;
+  };
+  const plafonMin = parseOptionalRp(item.plafon_min, 'plafon_min');
+  const plafonMax = parseOptionalRp(item.plafon_max, 'plafon_max');
+  if (plafonMin !== null && plafonMax !== null && plafonMin >= plafonMax) {
+    throw new Error(`${label}: "plafon_min" harus lebih kecil dari "plafon_max".`);
+  }
+
+  return {
+    bankNama,
+    program: { nama: namaProgram, tenor, periode: periodeFinal, floatingRate, akad, plafonMin, plafonMax, tenorMax }
+  };
+}
+
+async function importBankDataJSON() {
+  const textarea = document.getElementById('bulk-import-textarea');
+  const errEl = document.getElementById('bulk-import-modal-err');
+  const summaryEl = document.getElementById('bulk-import-modal-summary');
+  const btn = document.getElementById('btn-bulk-import');
+
+  errEl.style.display = 'none';
+  summaryEl.style.display = 'none';
+
+  const raw = textarea.value.trim();
+  if (!raw) {
+    errEl.textContent = '⚠ Tempelkan data JSON terlebih dahulu.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch (e) {
+    errEl.textContent = '⚠ Format JSON tidak valid: ' + e.message;
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!Array.isArray(data)) {
+    errEl.textContent = '⚠ JSON harus berupa array/list, contoh: [ { ... }, { ... } ]';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!data.length) {
+    errEl.textContent = '⚠ Array JSON kosong, tidak ada data untuk diimport.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Memproses…';
+
+  try {
+    // Salin bank yang sudah ada ke working map (key = nama bank huruf kecil)
+    // supaya program baru bisa dicocokkan ke bank yang tepat tanpa mengubah
+    // array `banks` global sebelum semuanya tervalidasi & tersimpan.
+    const workingBanks = new Map();
+    banks.forEach(b => {
+      workingBanks.set(b.nama.trim().toLowerCase(), {
+        id: b.id, nama: b.nama, programs: [...(b.programs || [])], isNew: false
+      });
+    });
+
+    const touchedKeys = new Set();
+    let countAdded = 0, countUpdated = 0;
+    const bankNamaBaru = new Set();
+
+    // Tahap 1: validasi & konversi SEMUA item dulu. Jika ada satu saja yang
+    // gagal, batalkan seluruh proses (tidak ada tulis-sebagian ke Firestore).
+    data.forEach((item, idx) => {
+      const { bankNama, program } = _bulkImportConvertItem(item, idx);
+      const key = bankNama.toLowerCase();
+      let wb = workingBanks.get(key);
+      if (!wb) {
+        wb = { id: null, nama: bankNama, programs: [], isNew: true };
+        workingBanks.set(key, wb);
+        bankNamaBaru.add(bankNama);
+      }
+      touchedKeys.add(key);
+
+      const existingIdx = wb.programs.findIndex(
+        p => (p.nama || '').trim().toLowerCase() === program.nama.trim().toLowerCase()
+      );
+      if (existingIdx >= 0) {
+        program.id = wb.programs[existingIdx].id;
+        wb.programs[existingIdx] = program;
+        countUpdated++;
+      } else {
+        program.id = getNextProgramId({ programs: wb.programs });
+        wb.programs.push(program);
+        countAdded++;
+      }
+    });
+
+    // Tahap 2: simpan hanya bank yang benar-benar terkena dampak import.
+    for (const key of touchedKeys) {
+      const wb = workingBanks.get(key);
+      const newId = await saveBankToFirestore(wb.isNew ? null : wb.id, wb.nama, wb.programs);
+      if (wb.isNew) wb.id = newId;
+    }
+
+    let ringkasan = `✅ Import selesai — ${countAdded} program baru ditambahkan, ${countUpdated} program diperbarui, di ${touchedKeys.size} bank.`;
+    if (bankNamaBaru.size) {
+      ringkasan += `\n🆕 Bank baru dibuat: ${[...bankNamaBaru].join(', ')}.`;
+    }
+    summaryEl.textContent = ringkasan;
+    summaryEl.style.display = 'block';
+    textarea.value = '';
+    showToast(`${countAdded} program baru & ${countUpdated} program diperbarui berhasil diimport.`, 'success', 'Data Bank Berhasil Diperbarui!');
+    alert('Data Bank Berhasil Diperbarui!\n\n' + ringkasan);
+    setTimeout(() => { closeBulkImportModal(); }, 400);
+  } catch (e) {
+    console.error('importBankDataJSON error:', e);
+    errEl.textContent = '⚠ ' + (e.message || 'Gagal memproses data JSON. Periksa kembali format data Anda.');
+    errEl.style.display = 'block';
+    alert('Import Gagal!\n\n' + errEl.textContent);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '📥 Import Data JSON';
   }
 }
 
