@@ -972,6 +972,78 @@ input[type="range"]::-webkit-slider-thumb:hover {
   white-space: pre-line;
 }
 
+/* ── Import Data Cepat — Review/Edit sebelum disimpan ── */
+.bulk-review-box { max-width: 920px; }
+.rvw-intro { font-size: 12.5px; color: var(--text3); line-height: 1.6; margin-bottom: 14px; }
+.rvw-count-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(37,99,235,0.08); color: var(--accent);
+  border-radius: 999px; padding: 3px 12px; font-size: 12px; font-weight: 700;
+  margin-left: 8px;
+}
+.rvw-list { display: flex; flex-direction: column; gap: 14px; max-height: 52vh; overflow-y: auto; padding: 2px 2px 4px; }
+.rvw-item-card {
+  border: 1.5px solid var(--gray);
+  border-radius: var(--radius2);
+  padding: 16px;
+  background: var(--off);
+}
+.rvw-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.rvw-item-badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+  color: var(--navy); background: var(--white); border: 1.5px solid var(--gray);
+  border-radius: 999px; padding: 3px 12px;
+}
+.rvw-item-remove {
+  border: 1.5px solid rgba(220,38,38,0.3); background: var(--white); color: var(--red);
+  border-radius: var(--radius3); padding: 6px 12px; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.rvw-item-remove:hover { background: rgba(220,38,38,0.06); border-color: var(--red); }
+.rvw-item-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.rvw-item-grid .field { gap: 4px; }
+.rvw-item-grid .field.full { grid-column: 1 / -1; }
+.rvw-item-grid label { font-size: 9.5px; letter-spacing: 1.2px; }
+.rvw-item-grid input, .rvw-item-grid select {
+  width: 100%; background: var(--white); border: 1.5px solid var(--gray);
+  border-radius: var(--radius3); color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; font-weight: 500; padding: 9px 11px; transition: border-color 0.2s;
+}
+.rvw-item-grid input:focus, .rvw-item-grid select:focus { outline: none; border-color: var(--accent); }
+@media (max-width: 720px) { .rvw-item-grid { grid-template-columns: repeat(2, 1fr); } }
+.rvw-skema-block { margin-top: 14px; padding-top: 12px; border-top: 1.5px dashed var(--gray); }
+.rvw-skema-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.rvw-skema-head span { font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text3); font-weight: 700; }
+.rvw-skema-add {
+  border: 1.5px dashed var(--gray2); background: transparent; color: var(--accent);
+  border-radius: var(--radius3); padding: 5px 11px; font-size: 12px; font-weight: 600; cursor: pointer;
+}
+.rvw-skema-add:hover { border-color: var(--accent); background: rgba(37,99,235,0.05); }
+.rvw-skema-rows { display: flex; flex-direction: column; gap: 8px; }
+.rvw-skema-row {
+  display: grid; grid-template-columns: 64px 110px 1fr 1fr 30px; gap: 8px; align-items: center;
+}
+@media (max-width: 720px) { .rvw-skema-row { grid-template-columns: 50px 90px 1fr 1fr 26px; } }
+.rvw-skema-row input, .rvw-skema-row select {
+  width: 100%; background: var(--white); border: 1.5px solid var(--gray);
+  border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500; padding: 7px 8px;
+}
+.rvw-skema-row input:focus, .rvw-skema-row select:focus { outline: none; border-color: var(--accent); }
+.rvw-skema-row input.rvw-bunga:disabled { background: var(--gray); color: var(--text3); }
+.rvw-masa-wrap { display: flex; flex-direction: column; gap: 2px; }
+.rvw-tahun-badge { font-size: 10.5px; font-weight: 700; color: var(--accent); padding-left: 2px; min-height: 13px; }
+.rvw-skema-remove {
+  width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--gray);
+  background: var(--white); color: var(--text3); cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.rvw-skema-remove:hover { border-color: var(--red); color: var(--red); background: rgba(220,38,38,0.05); }
+.rvw-empty-state {
+  text-align: center; padding: 30px 18px; color: var(--text3); font-size: 13px;
+  border: 1.5px dashed var(--gray2); border-radius: var(--radius2);
+}
+
 .bank-empty-tip {
   font-size: 13px;
   color: var(--text3);
@@ -3234,7 +3306,31 @@ body.admin-mode .admin-only { display: revert !important; }
 
     <div class="modal-actions">
       <button class="btn-modal-cancel" onclick="closeBulkImportModal()">Batal</button>
-      <button class="btn-modal-save" id="btn-bulk-import" onclick="importBankDataJSON()">📥 Import Data JSON</button>
+      <button class="btn-modal-save" id="btn-bulk-import" onclick="prepareBulkImportReview()">Lanjutkan &amp; Review Data →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: IMPORT DATA CEPAT — REVIEW & EDIT SEBELUM DISIMPAN -->
+<div class="modal-overlay" id="bulk-review-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="bulk-review-modal-title">
+  <div class="modal-box bulk-review-box">
+    <div class="modal-header">
+      <div class="modal-title" id="bulk-review-modal-title">🔎 Review Data Sebelum Import<span class="rvw-count-badge" id="bulk-review-count-badge">0 program</span></div>
+      <button class="modal-close" onclick="closeBulkReviewModal()" title="Tutup" aria-label="Tutup modal review">×</button>
+    </div>
+
+    <p class="rvw-intro">
+      Periksa &amp; edit setiap program di bawah ini sebelum benar-benar disimpan — mulai dari nama bank, nama program, tenor, akad, sampai skema bunga/margin per tahap. Hapus program yang tidak ingin ikut diimport dengan tombol 🗑️ pada masing-masing kartu. Data baru akan ditulis ke database setelah tombol import di bagian paling bawah ditekan.
+    </p>
+
+    <div class="rvw-list" id="bulk-review-list"></div>
+
+    <p class="modal-error" id="bulk-review-modal-err">⚠ Ada data yang belum valid.</p>
+    <div class="bulk-import-summary" id="bulk-review-modal-summary"></div>
+
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeBulkReviewModal()">← Kembali Edit JSON</button>
+      <button class="btn-modal-save" id="btn-bulk-review-confirm" onclick="confirmBulkImportFromReview()">📥 Import Data Sekarang</button>
     </div>
   </div>
 </div>
@@ -4962,6 +5058,11 @@ function closeBulkImportModal() {
   document.getElementById('bulk-import-modal-overlay').classList.remove('show');
 }
 
+function closeAllBulkImportModals() {
+  document.getElementById('bulk-review-modal-overlay').classList.remove('show');
+  document.getElementById('bulk-import-modal-overlay').classList.remove('show');
+}
+
 // Konversi 1 item JSON dari user menjadi { bankNama, program } sesuai skema internal.
 // Melempar Error dengan pesan yang jelas jika ada field wajib yang tidak valid.
 function _bulkImportConvertItem(item, idx) {
@@ -5059,11 +5160,15 @@ function _bulkImportConvertItem(item, idx) {
   };
 }
 
-async function importBankDataJSON() {
+// Tahap 1: parse & validasi bentuk JSON secara umum (harus array berisi
+// objek, tidak boleh kosong). Validasi detail per-field dilakukan belakangan
+// oleh _bulkImportConvertItem() saat tombol "Import Data Sekarang" di modal
+// review ditekan — supaya admin masih bisa memperbaiki data lewat form
+// editable sebelum benar-benar disimpan ke Firestore.
+function prepareBulkImportReview() {
   const textarea = document.getElementById('bulk-import-textarea');
   const errEl = document.getElementById('bulk-import-modal-err');
   const summaryEl = document.getElementById('bulk-import-modal-summary');
-  const btn = document.getElementById('btn-bulk-import');
 
   errEl.style.display = 'none';
   summaryEl.style.display = 'none';
@@ -5094,6 +5199,220 @@ async function importBankDataJSON() {
     return;
   }
 
+  openBulkReviewModal(data);
+}
+
+// Tahap 2: tampilkan modal review — satu kartu editable per program, dari
+// nama bank sampai skema bunga/margin — supaya admin bisa filter & double
+// check sebelum data benar-benar ditulis ke database.
+function openBulkReviewModal(data) {
+  document.getElementById('bulk-review-list').innerHTML =
+    data.map((item, idx) => renderBulkReviewItem(item, idx)).join('');
+  document.getElementById('bulk-review-modal-err').style.display = 'none';
+  document.getElementById('bulk-review-modal-summary').style.display = 'none';
+  const btn = document.getElementById('btn-bulk-review-confirm');
+  btn.disabled = false;
+  btn.textContent = '📥 Import Data Sekarang';
+  updateBulkReviewCountBadge();
+  document.querySelectorAll('#bulk-review-list .rvw-item-card').forEach(updateBulkReviewTahunRanges);
+  document.getElementById('bulk-import-modal-overlay').classList.remove('show');
+  document.getElementById('bulk-review-modal-overlay').classList.add('show');
+}
+
+// Tombol "← Kembali Edit JSON" / tombol × pada modal review: kembali ke
+// textarea JSON (isinya tidak dihapus) tanpa menyimpan apa pun.
+function closeBulkReviewModal() {
+  document.getElementById('bulk-review-modal-overlay').classList.remove('show');
+  document.getElementById('bulk-import-modal-overlay').classList.add('show');
+}
+
+function renderBulkReviewItem(item, idx) {
+  const bank = escapeAttr(item && item.bank);
+  const nama = escapeAttr(item && item.nama_program);
+  const minTenor = (item && item.min_tenor != null) ? escapeAttr(item.min_tenor) : '';
+  const maxTenor = (item && item.max_tenor != null) ? escapeAttr(item.max_tenor) : '';
+  const akadVal = ['syariah', 'syariah-efektif'].includes((item && item.akad || '').toString().trim().toLowerCase())
+    ? item.akad.toString().trim().toLowerCase() : 'konvensional';
+  const floatingRate = (item && item.floating_rate != null) ? escapeAttr(item.floating_rate) : '';
+  const plafonMin = (item && item.plafon_min != null) ? escapeAttr(item.plafon_min) : '';
+  const plafonMax = (item && item.plafon_max != null) ? escapeAttr(item.plafon_max) : '';
+  const skema = (Array.isArray(item && item.skema) && item.skema.length)
+    ? item.skema : [{ tahap: 1, tipe: 'fixed', bunga: '', masa_fixed: '' }];
+
+  const akadOptions = [
+    ['konvensional', '🏦 Konvensional'],
+    ['syariah', '🕊️ Syariah (Flat)'],
+    ['syariah-efektif', '🕌 Syariah (Efektif)']
+  ].map(([val, label]) => `<option value="${val}" ${akadVal === val ? 'selected' : ''}>${label}</option>`).join('');
+
+  return `
+  <div class="rvw-item-card" data-idx="${idx}">
+    <div class="rvw-item-header">
+      <span class="rvw-item-badge">Program #${idx + 1}</span>
+      <button type="button" class="rvw-item-remove" onclick="removeBulkReviewItem(this)" title="Hapus program ini dari daftar import">🗑️ Hapus Program Ini</button>
+    </div>
+    <div class="rvw-item-grid">
+      <div class="field full"><label>Nama Bank</label><input type="text" class="rvw-bank" value="${bank}"></div>
+      <div class="field full"><label>Nama Program</label><input type="text" class="rvw-nama" value="${nama}"></div>
+      <div class="field"><label>Min Tenor (Thn)</label><input type="number" class="rvw-min-tenor" value="${minTenor}" min="1" max="30"></div>
+      <div class="field"><label>Max Tenor (Thn)</label><input type="number" class="rvw-max-tenor" value="${maxTenor}" min="1" max="30" placeholder="opsional"></div>
+      <div class="field"><label>Akad</label><select class="rvw-akad">${akadOptions}</select></div>
+      <div class="field"><label>Floating Rate (%)</label><input type="number" class="rvw-floating-rate" value="${floatingRate}" step="0.01" placeholder="default 11"></div>
+      <div class="field"><label>Plafon Min (Rp)</label><input type="number" class="rvw-plafon-min" value="${plafonMin}" placeholder="opsional"></div>
+      <div class="field"><label>Plafon Max (Rp)</label><input type="number" class="rvw-plafon-max" value="${plafonMax}" placeholder="opsional"></div>
+    </div>
+    <div class="rvw-skema-block">
+      <div class="rvw-skema-head">
+        <span>Skema Periode Bunga / Margin</span>
+        <button type="button" class="rvw-skema-add" onclick="addBulkReviewSkemaRow(this)">+ Tambah Tahap</button>
+      </div>
+      <div class="rvw-skema-rows">
+        ${skema.map((s, si) => renderBulkReviewSkemaRow(s, si)).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderBulkReviewSkemaRow(s, si) {
+  const tahap = escapeAttr((s && s.tahap != null) ? s.tahap : (si + 1));
+  const isFloating = (s && (s.tipe || '').toString().trim().toLowerCase()) === 'floating';
+  const bunga = (s && s.bunga != null) ? escapeAttr(s.bunga) : '';
+  const masa = (s && s.masa_fixed != null) ? escapeAttr(s.masa_fixed) : '';
+  return `
+  <div class="rvw-skema-row">
+    <input type="number" class="rvw-tahap" value="${tahap}" title="Urutan tahap" oninput="onBulkReviewSkemaFieldChange(this)">
+    <select class="rvw-tipe" onchange="onBulkReviewTipeChange(this)">
+      <option value="fixed" ${!isFloating ? 'selected' : ''}>Fixed</option>
+      <option value="floating" ${isFloating ? 'selected' : ''}>Floating</option>
+    </select>
+    <input type="number" class="rvw-bunga" value="${bunga}" step="0.01" placeholder="Bunga %" ${isFloating ? 'disabled' : ''}>
+    <div class="rvw-masa-wrap">
+      <input type="number" class="rvw-masa" value="${masa}" min="1" placeholder="Masa (Thn)" oninput="onBulkReviewSkemaFieldChange(this)">
+      <span class="rvw-tahun-badge"></span>
+    </div>
+    <button type="button" class="rvw-skema-remove" onclick="removeBulkReviewSkemaRow(this)" title="Hapus tahap ini">✕</button>
+  </div>`;
+}
+
+// Hitung ulang rentang "Thn dari-sampai" untuk tiap baris skema dalam satu
+// kartu program, persis mengikuti logika kumulatif di validasi import asli
+// (lihat cursor/dari/sampai), supaya admin melihat rentang tahun aktualnya
+// alih-alih hanya angka durasi mentah — biar tidak bingung.
+function updateBulkReviewTahunRanges(cardEl) {
+  if (!cardEl) return;
+  const rows = [...cardEl.querySelectorAll('.rvw-skema-row')];
+  const ordered = rows
+    .map(row => ({ row, tahap: parseInt(row.querySelector('.rvw-tahap').value) || 0 }))
+    .sort((a, b) => a.tahap - b.tahap);
+  let cursor = 1;
+  ordered.forEach(({ row }) => {
+    const badge = row.querySelector('.rvw-tahun-badge');
+    const durasi = parseInt(row.querySelector('.rvw-masa').value);
+    if (!durasi || isNaN(durasi) || durasi < 1) {
+      badge.textContent = '';
+      return;
+    }
+    const dari = cursor;
+    const sampai = cursor + durasi - 1;
+    cursor = sampai + 1;
+    badge.textContent = (dari === sampai) ? `Thn ${dari}` : `Thn ${dari}-${sampai}`;
+  });
+}
+
+function onBulkReviewSkemaFieldChange(el) {
+  updateBulkReviewTahunRanges(el.closest('.rvw-item-card'));
+}
+
+function onBulkReviewTipeChange(selectEl) {
+  const bungaInput = selectEl.closest('.rvw-skema-row').querySelector('.rvw-bunga');
+  if (selectEl.value === 'floating') {
+    bungaInput.value = '';
+    bungaInput.disabled = true;
+  } else {
+    bungaInput.disabled = false;
+  }
+}
+
+function addBulkReviewSkemaRow(btnEl) {
+  const cardEl = btnEl.closest('.rvw-item-card');
+  const rowsContainer = cardEl.querySelector('.rvw-skema-rows');
+  const nextTahap = rowsContainer.querySelectorAll('.rvw-skema-row').length + 1;
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = renderBulkReviewSkemaRow({ tahap: nextTahap, tipe: 'fixed', bunga: '', masa_fixed: '' }, nextTahap - 1);
+  rowsContainer.appendChild(wrapper.firstElementChild);
+  updateBulkReviewTahunRanges(cardEl);
+}
+
+function removeBulkReviewSkemaRow(btnEl) {
+  const row = btnEl.closest('.rvw-skema-row');
+  const cardEl = btnEl.closest('.rvw-item-card');
+  const rowsContainer = btnEl.closest('.rvw-skema-rows');
+  if (rowsContainer.querySelectorAll('.rvw-skema-row').length <= 1) {
+    showToast('Minimal harus ada 1 tahap skema bunga/margin per program.', 'warning');
+    return;
+  }
+  row.remove();
+  updateBulkReviewTahunRanges(cardEl);
+}
+
+function removeBulkReviewItem(btnEl) {
+  btnEl.closest('.rvw-item-card').remove();
+  updateBulkReviewCountBadge();
+}
+
+function updateBulkReviewCountBadge() {
+  const list = document.getElementById('bulk-review-list');
+  const count = list.querySelectorAll('.rvw-item-card').length;
+  document.getElementById('bulk-review-count-badge').textContent = `${count} program`;
+  const confirmBtn = document.getElementById('btn-bulk-review-confirm');
+  if (!count) {
+    list.innerHTML = '<div class="rvw-empty-state">Semua program telah dihapus dari daftar review.<br>Tekan "← Kembali Edit JSON" untuk menempelkan data baru.</div>';
+    confirmBtn.disabled = true;
+  } else {
+    confirmBtn.disabled = false;
+  }
+}
+
+// Baca ulang seluruh kartu di modal review menjadi array item mentah
+// (bentuknya sama seperti item JSON asli) sesuai isian/perubahan admin.
+function _readBulkReviewData() {
+  const cards = document.querySelectorAll('#bulk-review-list .rvw-item-card');
+  return [...cards].map(card => ({
+    bank: card.querySelector('.rvw-bank').value,
+    nama_program: card.querySelector('.rvw-nama').value,
+    min_tenor: card.querySelector('.rvw-min-tenor').value,
+    max_tenor: card.querySelector('.rvw-max-tenor').value,
+    akad: card.querySelector('.rvw-akad').value,
+    floating_rate: card.querySelector('.rvw-floating-rate').value,
+    plafon_min: card.querySelector('.rvw-plafon-min').value,
+    plafon_max: card.querySelector('.rvw-plafon-max').value,
+    skema: [...card.querySelectorAll('.rvw-skema-row')].map(row => ({
+      tahap: row.querySelector('.rvw-tahap').value,
+      tipe: row.querySelector('.rvw-tipe').value,
+      bunga: row.querySelector('.rvw-bunga').value,
+      masa_fixed: row.querySelector('.rvw-masa').value
+    }))
+  }));
+}
+
+// Tahap 3: tombol paling bawah di modal review — baru di titik inilah data
+// benar-benar divalidasi ulang (via _bulkImportConvertItem) & ditulis ke
+// Firestore. Logika penyimpanan identik dengan alur bulk-import sebelumnya.
+async function confirmBulkImportFromReview() {
+  const errEl = document.getElementById('bulk-review-modal-err');
+  const summaryEl = document.getElementById('bulk-review-modal-summary');
+  const btn = document.getElementById('btn-bulk-review-confirm');
+
+  errEl.style.display = 'none';
+  summaryEl.style.display = 'none';
+
+  const data = _readBulkReviewData();
+  if (!data.length) {
+    errEl.textContent = '⚠ Tidak ada program tersisa untuk diimport.';
+    errEl.style.display = 'block';
+    return;
+  }
+
   btn.disabled = true;
   btn.textContent = 'Memproses…';
 
@@ -5112,8 +5431,8 @@ async function importBankDataJSON() {
     let countAdded = 0, countUpdated = 0;
     const bankNamaBaru = new Set();
 
-    // Tahap 1: validasi & konversi SEMUA item dulu. Jika ada satu saja yang
-    // gagal, batalkan seluruh proses (tidak ada tulis-sebagian ke Firestore).
+    // Validasi & konversi SEMUA item dulu. Jika ada satu saja yang gagal,
+    // batalkan seluruh proses (tidak ada tulis-sebagian ke Firestore).
     data.forEach((item, idx) => {
       const { bankNama, program } = _bulkImportConvertItem(item, idx);
       const key = bankNama.toLowerCase();
@@ -5139,7 +5458,7 @@ async function importBankDataJSON() {
       }
     });
 
-    // Tahap 2: simpan hanya bank yang benar-benar terkena dampak import.
+    // Simpan hanya bank yang benar-benar terkena dampak import.
     for (const key of touchedKeys) {
       const wb = workingBanks.get(key);
       const newId = await saveBankToFirestore(wb.isNew ? null : wb.id, wb.nama, wb.programs);
@@ -5152,18 +5471,18 @@ async function importBankDataJSON() {
     }
     summaryEl.textContent = ringkasan;
     summaryEl.style.display = 'block';
-    textarea.value = '';
+    document.getElementById('bulk-import-textarea').value = '';
     showToast(`${countAdded} program baru & ${countUpdated} program diperbarui berhasil diimport.`, 'success', 'Data Bank Berhasil Diperbarui!');
     alert('Data Bank Berhasil Diperbarui!\n\n' + ringkasan);
-    setTimeout(() => { closeBulkImportModal(); }, 400);
+    setTimeout(() => { closeAllBulkImportModals(); }, 400);
   } catch (e) {
-    console.error('importBankDataJSON error:', e);
-    errEl.textContent = '⚠ ' + (e.message || 'Gagal memproses data JSON. Periksa kembali format data Anda.');
+    console.error('confirmBulkImportFromReview error:', e);
+    errEl.textContent = '⚠ ' + (e.message || 'Gagal memproses data. Periksa kembali isian pada kartu program di atas.');
     errEl.style.display = 'block';
     alert('Import Gagal!\n\n' + errEl.textContent);
   } finally {
     btn.disabled = false;
-    btn.textContent = '📥 Import Data JSON';
+    btn.textContent = '📥 Import Data Sekarang';
   }
 }
 
