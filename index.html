@@ -973,23 +973,24 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 /* ── Import Data Cepat — pilihan target bank (bank ini / bank baru) ── */
-.bulk-import-mode-toggle { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-.bulk-import-mode-opt {
-  flex: 1; min-width: 220px; display: flex; align-items: flex-start; gap: 10px;
-  border: 1.5px solid var(--gray); border-radius: var(--radius3); padding: 12px 14px;
-  cursor: pointer; background: var(--white); transition: all 0.15s;
+.bulk-mode-box { max-width: 560px; }
+.bulk-mode-intro { font-size: 12.5px; color: var(--text3); line-height: 1.6; margin: -2px 0 16px; }
+.bulk-mode-cards { display: flex; flex-direction: column; gap: 12px; }
+.bulk-mode-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left;
+  width: 100%; border: 1.5px solid var(--gray); border-radius: var(--radius2); padding: 16px 18px;
+  cursor: pointer; background: var(--off); transition: all 0.15s; font-family: 'DM Sans', sans-serif;
 }
-.bulk-import-mode-opt.is-checked { border-color: var(--navy); background: var(--off2); }
-.bulk-import-mode-opt input[type="radio"] { margin-top: 3px; accent-color: var(--navy); cursor: pointer; flex-shrink: 0; }
-.bulk-import-mode-opt input[type="radio"]:disabled { cursor: not-allowed; }
-.bulk-import-mode-opt:has(input:disabled) { opacity: 0.45; cursor: not-allowed; }
-.bulk-import-mode-label { display: flex; flex-direction: column; gap: 3px; }
-.bulk-import-mode-title { font-size: 13px; font-weight: 700; color: var(--text); }
-.bulk-import-mode-desc { font-size: 11.5px; color: var(--text3); line-height: 1.5; }
-.bulk-import-mode-note {
+.bulk-mode-card:hover { border-color: var(--accent); background: rgba(37,99,235,0.045); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(15,28,53,0.08); }
+.bulk-mode-card:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+.bulk-mode-card:disabled:hover { border-color: var(--gray); background: var(--off); }
+.bulk-mode-card-icon { font-size: 21px; line-height: 1; margin-bottom: 2px; }
+.bulk-mode-card-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.bulk-mode-card-desc { font-size: 12px; color: var(--text3); line-height: 1.55; }
+.bulk-mode-note {
   font-size: 12px; color: #b45309; background: rgba(217,119,6,0.08);
   border: 1.5px solid rgba(217,119,6,0.3); border-radius: var(--radius3);
-  padding: 8px 12px; margin: -2px 0 14px; display: none;
+  padding: 8px 12px; margin: 14px 0 0; display: none;
 }
 .rvw-mode-banner {
   font-size: 12.5px; font-weight: 600; color: var(--navy);
@@ -3446,41 +3447,23 @@ body.admin-mode .admin-only { display: revert !important; }
       <button class="modal-close" onclick="closeBulkImportModal()" title="Tutup" aria-label="Tutup modal import">×</button>
     </div>
 
-    <p style="font-size:12.5px; color:var(--text3); line-height:1.6; margin-bottom:12px;">
+    <p style="font-size:12.5px; color:var(--text3); line-height:1.6; margin-bottom:14px;">
       Tempelkan (paste) data program KPR dalam format JSON di bawah ini untuk menambahkan atau memperbarui banyak program sekaligus, tanpa perlu mengisi form satu per satu. Program dengan nama yang sama persis pada bank yang sama akan <b>ditimpa (update)</b>, bukan digandakan.
     </p>
-
-    <div class="bulk-import-mode-toggle" id="bulk-import-mode-toggle">
-      <label class="bulk-import-mode-opt" id="bulk-import-mode-opt-existing">
-        <input type="radio" name="bulk-import-mode" value="existing" id="bulk-import-mode-existing" onchange="onBulkImportModeChange()">
-        <span class="bulk-import-mode-label">
-          <span class="bulk-import-mode-title">📌 Tambah ke Bank Ini</span>
-          <span class="bulk-import-mode-desc" id="bulk-import-mode-existing-desc">Semua program di JSON akan masuk ke bank yang sedang dipilih di halaman utama, apa pun nama yang ditulis di field "bank".</span>
-        </span>
-      </label>
-      <label class="bulk-import-mode-opt" id="bulk-import-mode-opt-new">
-        <input type="radio" name="bulk-import-mode" value="new" id="bulk-import-mode-new" onchange="onBulkImportModeChange()">
-        <span class="bulk-import-mode-label">
-          <span class="bulk-import-mode-title">🆕 Sesuai Field "bank" di JSON</span>
-          <span class="bulk-import-mode-desc">Bank ditentukan dari isi field "bank" tiap item — cocok untuk import banyak bank sekaligus. Bank baru otomatis dibuat jika namanya belum ada.</span>
-        </span>
-      </label>
-    </div>
-    <p class="bulk-import-mode-note" id="bulk-import-mode-note"></p>
 
     <div class="field">
       <label>Data JSON Program</label>
       <textarea id="bulk-import-textarea" class="bulk-import-textarea" spellcheck="false" placeholder='[
   {
-    "bank": "BNI",
+    "nama_bank": "BNI",
     "nama_program": "KPR BNI Griya Berjenjang 10 Tahun",
+    "akad": "konvensional",
     "min_tenor": 10,
     "max_tenor": 10,
-    "akad": "konvensional",
-    "skema": [
-      { "tahap": 1, "tipe": "fixed", "bunga": 3.75, "masa_fixed": 1 },
-      { "tahap": 2, "tipe": "fixed", "bunga": 6.75, "masa_fixed": 2 },
-      { "tahap": 3, "tipe": "floating", "masa_fixed": 7 }
+    "skema_bunga": [
+      { "masa_fixed": 1, "suku_bunga": 3.75 },
+      { "masa_fixed": 2, "suku_bunga": 6.75 },
+      { "masa_fixed": 7, "tipe": "floating" }
     ]
   }
 ]'></textarea>
@@ -3489,19 +3472,18 @@ body.admin-mode .admin-only { display: revert !important; }
     <div class="jenjang-section" style="margin-top:10px; padding:14px 16px; background:var(--off); border:1.5px solid var(--gray); border-radius:var(--radius2);">
       <div style="font-size:10.5px; letter-spacing:1.6px; text-transform:uppercase; color:var(--text3); font-weight:700; margin-bottom:8px;">Keterangan Field</div>
       <p style="font-size:11.5px; color:var(--text3); line-height:1.7; margin:0;">
-        • <b>bank</b> — nama bank (wajib)<br>
+        • <b>nama_bank</b> — nama bank (wajib, alias: <i>bank</i>)<br>
         • <b>nama_program</b> — nama program KPR (wajib)<br>
-        • <b>min_tenor</b> — tenor dasar program dalam tahun, 1–30 (wajib)<br>
-        • <b>max_tenor</b> — tenor maksimum program berlaku (opsional, boleh dikosongkan/sama dengan min_tenor jika tidak ada rentang)<br>
+        • <b>min_tenor</b> — tenor minimum program berlaku, dalam tahun 1–30 (wajib)<br>
+        • <b>max_tenor</b> — tenor maksimum program berlaku (opsional; isi jika program berlaku utk rentang tenor, mis. "All Tenor 1–4 Thn")<br>
         • <b>akad</b> — "konvensional" / "syariah" / "syariah-efektif" (opsional, default "konvensional")<br>
-        • <b>skema</b> — daftar periode bunga berurutan (wajib, minimal 1 tahap):<br>
-        &nbsp;&nbsp;– <b>tahap</b> — urutan periode (angka, dipakai untuk mengurutkan)<br>
-        &nbsp;&nbsp;– <b>tipe</b> — "fixed" atau "floating"<br>
-        &nbsp;&nbsp;– <b>bunga</b> — persen bunga/margin, wajib diisi jika tipe "fixed"<br>
-        &nbsp;&nbsp;– <b>masa_fixed</b> — durasi periode ini dalam tahun<br>
-        • <b>floating_rate</b> — asumsi persen untuk semua periode floating pada program ini (opsional, default 11%)<br>
+        • <b>skema_bunga</b> — daftar periode bunga berurutan (wajib, minimal 1 tahap, alias: <i>skema</i>):<br>
+        &nbsp;&nbsp;– <b>suku_bunga</b> — persen bunga/margin, wajib diisi kecuali tahap ini "floating" (alias: <i>bunga</i>, <i>margin</i>)<br>
+        &nbsp;&nbsp;– <b>masa_fixed</b> — durasi tahap ini dalam tahun<br>
+        &nbsp;&nbsp;– <b>tipe</b> — "fixed" (default jika tidak ditulis) atau "floating"<br>
+        • <b>floating_rate</b> — asumsi persen untuk semua tahap floating pada program ini (opsional, default 11%)<br>
         • <b>plafon_min</b> / <b>plafon_max</b> — syarat plafon dalam Rupiah (opsional)<br>
-        💡 Periode terakhir akan otomatis disesuaikan agar berakhir tepat di tahun ke-<i>min_tenor</i>, mengikuti aturan sistem.
+        💡 Untuk program dengan rentang tenor (ada <i>max_tenor</i>), total durasi <i>masa_fixed</i> sebaiknya mencakup sampai tahun ke-<i>max_tenor</i> supaya rate berlaku penuh di seluruh rentang.
       </p>
     </div>
 
@@ -3510,7 +3492,36 @@ body.admin-mode .admin-only { display: revert !important; }
 
     <div class="modal-actions">
       <button class="btn-modal-cancel" onclick="closeBulkImportModal()">Batal</button>
-      <button class="btn-modal-save" id="btn-bulk-import" onclick="prepareBulkImportReview()">Lanjutkan &amp; Review Data →</button>
+      <button class="btn-modal-save" id="btn-bulk-import" onclick="prepareBulkImportReview()">Import Data →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: IMPORT DATA CEPAT — PILIH TARGET BANK -->
+<div class="modal-overlay" id="bulk-mode-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="bulk-mode-modal-title">
+  <div class="modal-box bulk-mode-box">
+    <div class="modal-header">
+      <div class="modal-title" id="bulk-mode-modal-title">🏦 Import ke Bank Mana?</div>
+      <button class="modal-close" onclick="closeBulkModeModal()" title="Tutup" aria-label="Tutup modal">×</button>
+    </div>
+    <p class="bulk-mode-intro" id="bulk-mode-modal-count"></p>
+
+    <div class="bulk-mode-cards">
+      <button type="button" class="bulk-mode-card" id="bulk-mode-card-existing" onclick="chooseBulkImportMode('existing')">
+        <span class="bulk-mode-card-icon">📌</span>
+        <span class="bulk-mode-card-title" id="bulk-mode-card-existing-title">Tambah ke Bank Ini</span>
+        <span class="bulk-mode-card-desc" id="bulk-mode-card-existing-desc">Semua program di JSON akan masuk ke bank yang sedang dipilih di halaman utama, apa pun nama yang ditulis di field "bank".</span>
+      </button>
+      <button type="button" class="bulk-mode-card" id="bulk-mode-card-new" onclick="chooseBulkImportMode('new')">
+        <span class="bulk-mode-card-icon">🆕</span>
+        <span class="bulk-mode-card-title">Sesuai Field "bank" di JSON</span>
+        <span class="bulk-mode-card-desc">Bank ditentukan dari isi field "bank" tiap item — cocok untuk import banyak bank sekaligus. Bank baru otomatis dibuat jika namanya belum ada.</span>
+      </button>
+    </div>
+    <p class="bulk-mode-note" id="bulk-mode-modal-note"></p>
+
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeBulkModeModal()">← Kembali Edit JSON</button>
     </div>
   </div>
 </div>
@@ -5482,53 +5493,7 @@ async function saveProgram() {
 function openBulkImportModal() {
   document.getElementById('bulk-import-modal-err').style.display = 'none';
   document.getElementById('bulk-import-modal-summary').style.display = 'none';
-
-  // Tentukan bank yang sedang aktif di dropdown "Pilih Bank" untuk opsi
-  // "Tambah ke Bank Ini" — supaya program baru di bank yang sama tidak perlu
-  // bikin bank baru walau nama di JSON sedikit beda dari nama bank tersimpan.
-  const activeBank = getSelectedBank();
-  const existingRadio = document.getElementById('bulk-import-mode-existing');
-  const newRadio = document.getElementById('bulk-import-mode-new');
-  const existingDesc = document.getElementById('bulk-import-mode-existing-desc');
-  const noteEl = document.getElementById('bulk-import-mode-note');
-
-  if (activeBank) {
-    bulkImportModeState.bankId = activeBank.id;
-    bulkImportModeState.bankNama = activeBank.nama;
-    existingRadio.disabled = false;
-    existingDesc.textContent = `Semua program di JSON akan masuk ke bank "${activeBank.nama}" (yang sedang dipilih), apa pun nama yang ditulis di field "bank".`;
-    existingRadio.checked = true;
-    newRadio.checked = false;
-    bulkImportModeState.mode = 'existing';
-    noteEl.style.display = 'none';
-  } else {
-    bulkImportModeState.bankId = null;
-    bulkImportModeState.bankNama = '';
-    existingRadio.disabled = true;
-    existingRadio.checked = false;
-    newRadio.checked = true;
-    bulkImportModeState.mode = 'new';
-    noteEl.textContent = '💡 Pilih bank dulu di dropdown "Pilih Bank" pada halaman utama jika ingin memakai mode "Tambah ke Bank Ini".';
-    noteEl.style.display = 'block';
-  }
-  updateBulkImportModeUI();
-
   document.getElementById('bulk-import-modal-overlay').classList.add('show');
-}
-
-// Dipanggil saat admin mengganti pilihan radio mode target bank di modal
-// Import Data Cepat (tahap 1, sebelum Review).
-function onBulkImportModeChange() {
-  const checked = document.querySelector('input[name="bulk-import-mode"]:checked');
-  bulkImportModeState.mode = checked ? checked.value : 'new';
-  updateBulkImportModeUI();
-}
-
-function updateBulkImportModeUI() {
-  document.querySelectorAll('.bulk-import-mode-opt').forEach(opt => {
-    const input = opt.querySelector('input[type="radio"]');
-    opt.classList.toggle('is-checked', !!(input && input.checked));
-  });
 }
 
 function closeBulkImportModal() {
@@ -5537,7 +5502,65 @@ function closeBulkImportModal() {
 
 function closeAllBulkImportModals() {
   document.getElementById('bulk-review-modal-overlay').classList.remove('show');
+  document.getElementById('bulk-mode-modal-overlay').classList.remove('show');
   document.getElementById('bulk-import-modal-overlay').classList.remove('show');
+}
+
+// Data hasil parse JSON (sudah dinormalisasi), menunggu admin memilih target
+// bank di modal "Import ke Bank Mana?" sebelum lanjut ke modal Review.
+let _pendingBulkImportData = null;
+
+// Tahap 1.5: setelah JSON di textarea berhasil diparse & valid bentuknya,
+// tampilkan modal pilihan target bank (terpisah dari textarea JSON) —
+// supaya modal pertama tetap fokus & ringkas hanya untuk data JSON.
+function openBulkModeModal(data) {
+  _pendingBulkImportData = data;
+
+  const countEl = document.getElementById('bulk-mode-modal-count');
+  countEl.textContent = `${data.length} program siap diimport. Pilih bank tujuannya:`;
+
+  // Tentukan bank yang sedang aktif di dropdown "Pilih Bank" untuk opsi
+  // "Tambah ke Bank Ini" — supaya program baru di bank yang sama tidak perlu
+  // bikin bank baru walau nama di JSON sedikit beda dari nama bank tersimpan.
+  const activeBank = getSelectedBank();
+  const cardExisting = document.getElementById('bulk-mode-card-existing');
+  const descExisting = document.getElementById('bulk-mode-card-existing-desc');
+  const titleExisting = document.getElementById('bulk-mode-card-existing-title');
+  const noteEl = document.getElementById('bulk-mode-modal-note');
+
+  if (activeBank) {
+    bulkImportModeState.bankId = activeBank.id;
+    bulkImportModeState.bankNama = activeBank.nama;
+    cardExisting.disabled = false;
+    titleExisting.textContent = `Tambah ke Bank "${activeBank.nama}"`;
+    descExisting.textContent = `Semua program di JSON akan masuk ke bank "${activeBank.nama}" (yang sedang dipilih di halaman utama), apa pun nama yang ditulis di field "bank".`;
+    noteEl.style.display = 'none';
+  } else {
+    bulkImportModeState.bankId = null;
+    bulkImportModeState.bankNama = '';
+    cardExisting.disabled = true;
+    titleExisting.textContent = 'Tambah ke Bank Ini';
+    descExisting.textContent = 'Pilih bank dulu di dropdown "Pilih Bank" pada halaman utama untuk mengaktifkan opsi ini.';
+    noteEl.textContent = '💡 Pilih bank dulu di dropdown "Pilih Bank" pada halaman utama jika ingin memakai mode "Tambah ke Bank Ini".';
+    noteEl.style.display = 'block';
+  }
+
+  document.getElementById('bulk-import-modal-overlay').classList.remove('show');
+  document.getElementById('bulk-mode-modal-overlay').classList.add('show');
+}
+
+function closeBulkModeModal() {
+  // Kembali ke modal textarea JSON (isinya tidak dihapus), bukan menutup
+  // seluruh alur — supaya admin bisa lanjut edit datanya.
+  document.getElementById('bulk-mode-modal-overlay').classList.remove('show');
+  document.getElementById('bulk-import-modal-overlay').classList.add('show');
+}
+
+// Dipanggil saat admin menekan salah satu kartu pilihan target bank.
+function chooseBulkImportMode(mode) {
+  bulkImportModeState.mode = mode;
+  document.getElementById('bulk-mode-modal-overlay').classList.remove('show');
+  openBulkReviewModal(_pendingBulkImportData || []);
 }
 
 // Konversi 1 item JSON dari user menjadi { bankNama, program } sesuai skema internal.
@@ -5600,14 +5623,18 @@ function _bulkImportConvertItem(item, idx) {
     return { dari, sampai, rate, floating: isFloating };
   });
 
-  // Aturan sistem: periode pertama harus mulai tahun ke-1, periode terakhir
-  // harus berakhir tepat di tahun ke-<tenor>. Sesuaikan otomatis di sini
-  // supaya data hasil import selalu valid tanpa perlu bolak-balik edit manual.
-  const periodeFinal = periode.filter(p => p.dari <= tenor);
+  // Aturan sistem: periode pertama harus mulai tahun ke-1. Periode terakhir
+  // disesuaikan berakhir tepat di tahun ke-<tenorAnchor> — memakai max_tenor
+  // (jika program punya rentang tenor) sebagai batas, BUKAN min_tenor.
+  // BUGFIX: sebelumnya selalu memotong ke min_tenor, sehingga program rentang
+  // (mis. "Fixed All Tenor 1–4 Thn" dgn masa_fixed=4) kepotong jadi cuma 1
+  // tahun & bunga-nya efektif hilang/tidak terpakai untuk tahun ke-2 dst.
+  const tenorAnchor = (tenorMax !== null && tenorMax > tenor) ? tenorMax : tenor;
+  const periodeFinal = periode.filter(p => p.dari <= tenorAnchor);
   if (!periodeFinal.length) {
     throw new Error(`${label}: total durasi "masa_fixed" tidak mencakup tahun ke-1 dari tenor.`);
   }
-  periodeFinal[periodeFinal.length - 1].sampai = tenor;
+  periodeFinal[periodeFinal.length - 1].sampai = tenorAnchor;
 
   const akadRaw = (item.akad || 'konvensional').toString().trim().toLowerCase();
   const akad = ['syariah', 'syariah-efektif'].includes(akadRaw) ? akadRaw : 'konvensional';
@@ -5635,6 +5662,61 @@ function _bulkImportConvertItem(item, idx) {
     bankNama,
     program: { nama: namaProgram, tenor, periode: periodeFinal, floatingRate, akad, plafonMin, plafonMax, tenorMax }
   };
+}
+
+// Peta alias nama field yang umum dipakai (termasuk hasil generate AI) ke
+// nama field resmi yang dipakai di seluruh alur validasi/simpan. Field resmi
+// selalu jadi prioritas jika keduanya ada sekaligus di 1 item.
+const BULK_IMPORT_FIELD_ALIASES = {
+  bank: ['bank', 'nama_bank', 'namaBank'],
+  nama_program: ['nama_program', 'namaProgram', 'program'],
+  min_tenor: ['min_tenor', 'tenor_min', 'minTenor'],
+  max_tenor: ['max_tenor', 'tenor_max', 'maxTenor'],
+  akad: ['akad'],
+  skema: ['skema', 'skema_bunga', 'skemaBunga'],
+  floating_rate: ['floating_rate', 'floatingRate'],
+  plafon_min: ['plafon_min', 'plafonMin'],
+  plafon_max: ['plafon_max', 'plafonMax']
+};
+const BULK_IMPORT_SKEMA_FIELD_ALIASES = {
+  tahap: ['tahap'],
+  tipe: ['tipe'],
+  bunga: ['bunga', 'suku_bunga', 'sukuBunga', 'margin'],
+  masa_fixed: ['masa_fixed', 'masaFixed']
+};
+
+// Ambil nilai pertama yang ada (tidak undefined/null/'') dari daftar alias.
+function _pickBulkImportAlias(obj, aliases) {
+  for (const key of aliases) {
+    if (obj && obj[key] !== undefined && obj[key] !== null && obj[key] !== '') return obj[key];
+  }
+  return undefined;
+}
+
+// Normalisasi 1 item hasil paste JSON: salin nilai dari alias yang dikenali
+// (mis. "nama_bank" → "bank", "skema_bunga" → "skema", "suku_bunga" →
+// "bunga" di dalam tiap baris skema) ke field resmi, TANPA mengubah field
+// resmi yang memang sudah ada di item aslinya. Item lain di luar object
+// dibiarkan apa adanya (validasi detailnya tetap di _bulkImportConvertItem).
+function normalizeBulkImportItem(rawItem) {
+  if (!rawItem || typeof rawItem !== 'object' || Array.isArray(rawItem)) return rawItem;
+  const item = { ...rawItem };
+  Object.entries(BULK_IMPORT_FIELD_ALIASES).forEach(([canon, aliases]) => {
+    const val = _pickBulkImportAlias(rawItem, aliases);
+    if (val !== undefined) item[canon] = val;
+  });
+  if (Array.isArray(item.skema)) {
+    item.skema = item.skema.map(s => {
+      if (!s || typeof s !== 'object' || Array.isArray(s)) return s;
+      const row = { ...s };
+      Object.entries(BULK_IMPORT_SKEMA_FIELD_ALIASES).forEach(([canon, aliases]) => {
+        const val = _pickBulkImportAlias(s, aliases);
+        if (val !== undefined) row[canon] = val;
+      });
+      return row;
+    });
+  }
+  return item;
 }
 
 // Tahap 1: parse & validasi bentuk JSON secara umum (harus array berisi
@@ -5676,7 +5758,13 @@ function prepareBulkImportReview() {
     return;
   }
 
-  openBulkReviewModal(data);
+  // Normalisasi alias nama field (mis. "nama_bank"/"skema_bunga"/"suku_bunga")
+  // supaya tetap terbaca dengan benar di kartu review, sebelum ditampilkan.
+  data = data.map(normalizeBulkImportItem);
+
+  // Tampilkan modal pilihan target bank dulu (terpisah dari textarea JSON),
+  // baru lanjut ke modal Review setelah admin memilih salah satu opsi.
+  openBulkModeModal(data);
 }
 
 // Tahap 2: tampilkan modal review — satu kartu editable per program, dari
@@ -6031,25 +6119,33 @@ function hitungBank(pokok, dp, tenor) {
   const rateWord = isAnySharia ? 'margin' : 'bunga';
 
   const eff = getEffectivePeriode(program);
+  // Tahun terakhir yang benar-benar dicakup skema periode program — bisa lebih
+  // besar dari program.tenor untuk program hasil Import Data Cepat berbentuk
+  // rentang (mis. "Fixed All Tenor 1–4 Thn", program.tenor=1 tapi periode-nya
+  // sengaja didefinisikan sampai tahun ke-4). Dipakai sebagai batas ekstensi
+  // di bawah, BUKAN program.tenor, supaya rate yang sudah didefinisikan tidak
+  // ketiban/dobel dengan ekstensi floating buatan.
+  const periodeMaxDefined = eff.length ? Math.max(...eff.map(p => p.sampai)) : program.tenor;
   // Potong periode sesuai tenor aktual (tidak memperpanjang rate periode
-  // terakhir melebihi tenor dasar program — lihat blok tambahan di bawah).
+  // terakhir melebihi tahun yang sudah didefinisikan skema — lihat blok
+  // tambahan di bawah).
   const jData = eff.map((p) => {
     const sampai = Math.min(p.sampai, tenor);
     const thn = sampai - p.dari + 1;
     return { dari: p.dari, sampai, thn, rate: p.rate, floating: p.floating };
   }).filter(p => p.thn > 0 && p.dari <= tenor);
 
-  // Jika tenor aktual pinjaman melebihi tenor dasar program (mis. program
-  // didefinisikan utk tenor 10 thn tapi user pilih 12 thn & program punya
-  // tenorMax >= 12), tahun-tahun tambahan di luar periode yang didefinisikan
+  // Jika tenor aktual pinjaman melebihi tahun terakhir yang didefinisikan
+  // skema (periodeMaxDefined) — mis. program tenorMax memperbolehkan tenor
+  // lebih panjang dari skema fixed/floating yang ditulis — tahun tambahan
   // TIDAK mewarisi rate periode terakhir — melainkan otomatis memakai
   // Asumsi Floating (%) milik program, sebagai periode baru tersendiri.
-  if (tenor > program.tenor) {
+  if (tenor > periodeMaxDefined) {
     const floatingRateExtra = getProgramFloatingRate(program);
     jData.push({
-      dari: program.tenor + 1,
+      dari: periodeMaxDefined + 1,
       sampai: tenor,
-      thn: tenor - program.tenor,
+      thn: tenor - periodeMaxDefined,
       rate: floatingRateExtra,
       floating: true
     });
@@ -9012,8 +9108,12 @@ function _komparasiGetEff(program, tenor) {
   try {
     const fr = typeof FLOATING_RATE_DEFAULT !== 'undefined' ? FLOATING_RATE_DEFAULT : 11;
     const floatRate = typeof program.floatingRate === 'number' ? program.floatingRate : fr;
-    const baseTenor = Number(program.tenor);
-    const result = (program.periode || [])
+    const periodeArr = program.periode || [];
+    // Tahun terakhir yang benar-benar dicakup skema periode program (lihat
+    // penjelasan yang sama di hitungBank()) — dipakai sbg batas ekstensi,
+    // BUKAN program.tenor, supaya tidak dobel dgn rate yang sudah ada.
+    const periodeMaxDefined = periodeArr.length ? Math.max(...periodeArr.map(p => Number(p.sampai))) : Number(program.tenor);
+    const result = periodeArr
       .map((p) => {
         const sampai = Math.min(Number(p.sampai), tenor);
         const thn = sampai - Number(p.dari) + 1;
@@ -9021,11 +9121,11 @@ function _komparasiGetEff(program, tenor) {
       })
       .filter(p => p.thn > 0 && p.dari <= tenor);
 
-    // Tahun tambahan di luar tenor dasar program (dalam rentang tenorMax)
-    // otomatis memakai Asumsi Floating (%) milik program, bukan mewarisi
-    // rate periode terakhir yang didefinisikan.
-    if (tenor > baseTenor) {
-      result.push({ dari: baseTenor + 1, sampai: tenor, thn: tenor - baseTenor, rate: floatRate, floating: true });
+    // Tahun tambahan di luar tahun terakhir yang didefinisikan skema (dalam
+    // rentang tenorMax) otomatis memakai Asumsi Floating (%) milik program,
+    // bukan mewarisi rate periode terakhir yang didefinisikan.
+    if (tenor > periodeMaxDefined) {
+      result.push({ dari: periodeMaxDefined + 1, sampai: tenor, thn: tenor - periodeMaxDefined, rate: floatRate, floating: true });
     }
     return result;
   } catch(e) { return []; }
