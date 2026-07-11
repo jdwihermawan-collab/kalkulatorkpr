@@ -1306,6 +1306,61 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .program-card.active .program-card-select-btn { background: var(--accent); }
 .program-card:hover .program-card-select-btn { background: var(--navy2); }
 
+/* ── Baris "Pilih Program" + checkbox pilih massal (admin) ── */
+.program-card-select-row { display: flex; align-items: stretch; gap: 6px; margin-top: 4px; }
+.program-card-select-row .program-card-select-btn { margin-top: 0; flex: 1; }
+.program-card-bulk-check {
+  flex-shrink: 0;
+  width: 34px;
+  border-radius: 9px;
+  border: 1.5px solid var(--gray2);
+  background: var(--white);
+  color: var(--text3);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.program-card-bulk-check:hover { border-color: var(--accent); color: var(--accent); }
+.program-card-bulk-check.checked { background: var(--accent); border-color: var(--accent); color: var(--white); }
+.program-card.bulk-selected {
+  box-shadow: 0 0 0 2px var(--accent) inset, 0 6px 18px rgba(37,99,235,0.16);
+  border-color: var(--accent);
+}
+
+/* ── Toolbar aksi massal (muncul saat ≥1 program dipilih, admin only) ── */
+.program-bulk-toolbar {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 12px 16px;
+  background: var(--navy);
+  border-radius: var(--radius2);
+  box-shadow: 0 8px 24px rgba(10,22,40,0.22);
+  flex-wrap: wrap;
+}
+.program-bulk-toolbar.show { display: flex; }
+.program-bulk-toolbar-count { color: var(--white); font-size: 13px; font-weight: 700; margin-right: auto; }
+.program-bulk-toolbar-btns { display: flex; gap: 8px; }
+.program-bulk-toolbar button {
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.program-bulk-toolbar .btn-bulk-cancel { background: rgba(255,255,255,0.12); color: var(--white); }
+.program-bulk-toolbar .btn-bulk-cancel:hover { background: rgba(255,255,255,0.2); }
+.program-bulk-toolbar .btn-bulk-edit { background: var(--accent); color: var(--white); }
+.program-bulk-toolbar .btn-bulk-edit:hover { background: var(--accent2); }
+.program-bulk-toolbar .btn-bulk-delete { background: var(--red); color: var(--white); }
+.program-bulk-toolbar .btn-bulk-delete:hover { background: #b91c1c; }
+
 .program-card-actions { display: flex; gap: 8px; margin-top: 2px; }
 .program-card-actions button {
   flex: 1;
@@ -1323,6 +1378,23 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .program-card-actions button:hover { border-color: var(--navy); color: var(--navy); }
 .program-card-actions .btn-edit-program:hover { border-color: var(--accent); color: var(--accent); background: rgba(37,99,235,0.04); }
 .program-card-actions .btn-delete-program:hover { border-color: var(--red); color: var(--red); background: rgba(220,38,38,0.05); }
+
+/* Tombol "Detail" (tampil untuk semua user, bukan hanya admin) */
+.program-card-detail-wrap { display: flex; margin-top: 2px; }
+.program-card-detail-btn {
+  flex: 1;
+  padding: 7px;
+  border-radius: 8px;
+  border: 1.5px solid var(--gray);
+  background: transparent;
+  color: var(--text2);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.program-card-detail-btn:hover { border-color: var(--navy); color: var(--navy); background: rgba(10,22,40,0.03); }
 
 /* Floating rate badge in program card */
 .program-card-floating-badge {
@@ -1508,6 +1580,54 @@ input[type="range"]::-webkit-slider-thumb:hover {
   border: 1px solid rgba(220,38,38,0.15);
   border-radius: 9px;
   padding: 10px 14px;
+}
+
+/* ══════════════════════════════════════════════════
+   MODAL: Detail Program (read-only, untuk semua user)
+══════════════════════════════════════════════════ */
+.program-detail-box { max-width: 560px; }
+.program-detail-bank-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 4px;
+}
+.program-detail-bank-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--navy2), var(--navy3));
+  color: var(--white); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.program-detail-bank-name { font-size: 12px; color: var(--text3); font-weight: 600; letter-spacing: 0.2px; }
+.program-detail-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 4px; }
+.program-detail-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px; margin-top: 14px;
+}
+.program-detail-stat {
+  background: var(--off); border: 1.5px solid var(--gray); border-radius: var(--radius2);
+  padding: 12px 14px;
+}
+.program-detail-stat-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); font-weight: 700; margin-bottom: 5px; }
+.program-detail-stat-val { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
+.program-detail-periode-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.program-detail-periode-row {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--off); border: 1.5px solid var(--gray); border-radius: var(--radius2);
+  padding: 12px 16px;
+}
+.program-detail-periode-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy2), var(--navy3)); color: var(--white);
+  font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(10,22,40,0.2);
+}
+.program-detail-periode-year { font-size: 12.5px; color: var(--text2); font-weight: 600; flex-shrink: 0; min-width: 110px; }
+.program-detail-periode-rate { margin-left: auto; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); text-align: right; }
+.program-detail-periode-rate.floating { color: #b45309; font-size: 12.5px; }
+.program-detail-note {
+  margin-top: 14px; font-size: 12px; color: var(--text3); line-height: 1.6;
+  background: rgba(37,99,235,0.05); border: 1px solid rgba(37,99,235,0.15);
+  border-radius: var(--radius2); padding: 10px 14px;
 }
 
 /* ══════════════════════════════════════════════════
@@ -2770,6 +2890,16 @@ body.admin-mode .admin-only { display: revert !important; }
         </div>
       </div>
 
+      <!-- Toolbar Aksi Massal (Hapus/Edit Sekaligus) — muncul saat admin memilih ≥1 program -->
+      <div class="program-bulk-toolbar admin-only" id="program-bulk-toolbar">
+        <div class="program-bulk-toolbar-count" id="program-bulk-toolbar-count">0 program dipilih</div>
+        <div class="program-bulk-toolbar-btns">
+          <button type="button" class="btn-bulk-cancel" onclick="clearBulkProgramSelection()">Batal</button>
+          <button type="button" class="btn-bulk-edit" onclick="bulkEditSelectedPrograms()">✎ Edit Sekaligus</button>
+          <button type="button" class="btn-bulk-delete" onclick="bulkDeleteSelectedPrograms()">🗑 Hapus Sekaligus</button>
+        </div>
+      </div>
+
       <!-- Grid Program -->
       <div class="program-grid-wrap" id="program-grid-wrap">
         <div class="program-grid" id="program-grid"></div>
@@ -3248,6 +3378,36 @@ body.admin-mode .admin-only { display: revert !important; }
     <div class="modal-actions">
       <button class="btn-modal-cancel" onclick="closeProgramModal()">Batal</button>
       <button class="btn-modal-save" onclick="saveProgram()">💾 Simpan Program</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DETAIL PROGRAM (read-only, tampil untuk semua user) -->
+<div class="modal-overlay" id="program-detail-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="program-detail-modal-title">
+  <div class="modal-box program-detail-box">
+    <div class="modal-header">
+      <div class="modal-title" id="program-detail-modal-title">Detail Program</div>
+      <button class="modal-close" onclick="closeProgramDetailModal()" title="Tutup" aria-label="Tutup detail program">×</button>
+    </div>
+
+    <div class="program-detail-bank-row">
+      <div class="program-detail-bank-icon" id="program-detail-bank-icon">?</div>
+      <div class="program-detail-bank-name" id="program-detail-bank-name">Nama Bank</div>
+    </div>
+
+    <div class="program-detail-badges" id="program-detail-badges"></div>
+
+    <div class="program-detail-stats" id="program-detail-stats"></div>
+
+    <div class="section-divider" style="margin:20px 0 14px; padding-top:20px;">
+      <div class="section-divider-label" id="program-detail-periode-label">Daftar Periode Bunga</div>
+      <div class="program-detail-periode-list" id="program-detail-periode-list"></div>
+    </div>
+
+    <div class="program-detail-note" id="program-detail-floating-note" style="display:none;"></div>
+
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" style="flex:1;" onclick="closeProgramDetailModal()">Tutup</button>
     </div>
   </div>
 </div>
@@ -3870,6 +4030,12 @@ function setAdminUI(isAdmin) {
   // bisa meng-override ".admin-only { display: none !important }"
   // (pendekatan class toggle lebih andal daripada el.style.setProperty dengan string kosong)
   document.body.classList.toggle('admin-mode', isAdmin);
+
+  // Keluar dari mode admin -> bersihkan seleksi massal & sembunyikan toolbar-nya
+  if (!isAdmin && typeof bulkSelectedPrograms !== 'undefined' && bulkSelectedPrograms.size) {
+    bulkSelectedPrograms.clear();
+    updateBulkToolbar();
+  }
 }
 
 // ─── Observer: pantau perubahan status login ──────
@@ -4111,7 +4277,11 @@ function onBankSelectChange() {
     activeProgram = null;
   }
 
+  // ganti bank -> seleksi massal program dari bank sebelumnya sudah tidak relevan
+  bulkSelectedPrograms.clear();
+
   renderProgramGrid();
+  updateBulkToolbar();
   syncFloatingAssumptionBoxVisibility();
 
   // REVISI: ganti bank membuat hasil simulasi sebelumnya tidak relevan lagi.
@@ -4295,6 +4465,131 @@ function estimateProgramFirstInstallment(program) {
   return cicilan;
 }
 
+// ─── Pilih Program Sekaligus (Bulk Select) — hanya untuk admin ───
+// Menyimpan kombinasi bankId::programId dari program yang sedang dicentang,
+// supaya bisa dihapus atau diedit (via Import Data Cepat) sekaligus.
+const bulkSelectedPrograms = new Set();
+function bulkProgramKey(bankId, programId) { return `${bankId}::${programId}`; }
+
+function toggleProgramBulkSelect(bankId, programId) {
+  const key = bulkProgramKey(bankId, programId);
+  if (bulkSelectedPrograms.has(key)) bulkSelectedPrograms.delete(key);
+  else bulkSelectedPrograms.add(key);
+  renderProgramGrid();
+  updateBulkToolbar();
+}
+
+function clearBulkProgramSelection() {
+  bulkSelectedPrograms.clear();
+  renderProgramGrid();
+  updateBulkToolbar();
+}
+
+function updateBulkToolbar() {
+  const toolbar = document.getElementById('program-bulk-toolbar');
+  const countEl = document.getElementById('program-bulk-toolbar-count');
+  if (!toolbar || !countEl) return;
+  const n = bulkSelectedPrograms.size;
+  toolbar.classList.toggle('show', n > 0);
+  countEl.textContent = `${n} program dipilih`;
+}
+
+// Ambil objek { bankId, bank, program } untuk setiap key yang sedang dicentang.
+// Key yang sudah tidak valid (mis. program terlanjur dihapus admin lain) dilewati.
+function getBulkSelectedProgramObjects() {
+  const result = [];
+  bulkSelectedPrograms.forEach(key => {
+    const [bankId, programIdStr] = key.split('::');
+    const programId = parseInt(programIdStr);
+    const bank = findBankById(String(bankId));
+    const program = bank ? (bank.programs || []).find(p => p.id === programId) : null;
+    if (bank && program) result.push({ bankId: String(bankId), bank, program });
+  });
+  return result;
+}
+
+// Hapus semua program yang sedang dicentang sekaligus, dikelompokkan per bank
+// supaya cukup satu kali simpan per bank ke Firestore.
+async function bulkDeleteSelectedPrograms() {
+  const items = getBulkSelectedProgramObjects();
+  if (!items.length) return;
+
+  const namaList = items.map(it => `• ${it.program.nama} (${it.bank.nama})`).join('\n');
+  const ok = confirm(`Hapus ${items.length} program berikut sekaligus?\n\n${namaList}\n\nTindakan ini tidak dapat dibatalkan.`);
+  if (!ok) return;
+
+  // Kelompokkan program yang dihapus per bank
+  const byBank = new Map(); // bankId -> { bank, idsToDelete: Set }
+  items.forEach(it => {
+    if (!byBank.has(it.bankId)) byBank.set(it.bankId, { bank: it.bank, idsToDelete: new Set() });
+    byBank.get(it.bankId).idsToDelete.add(it.program.id);
+  });
+
+  try {
+    for (const [bankId, entry] of byBank) {
+      const updatedPrograms = entry.bank.programs.filter(p => !entry.idsToDelete.has(p.id));
+      await saveBankToFirestore(bankId, entry.bank.nama, updatedPrograms);
+      if (activeProgram && String(activeProgram.bankId) === String(bankId) && entry.idsToDelete.has(activeProgram.programId)) {
+        activeProgram = null;
+      }
+    }
+    showToast(`${items.length} program berhasil dihapus sekaligus.`, 'warning', 'Program Dihapus');
+  } catch (e) {
+    console.error('bulkDeleteSelectedPrograms error:', e);
+    showToast('Gagal menghapus sebagian/seluruh program. Periksa koneksi internet atau izin Firestore.', 'error', 'Hapus Gagal');
+  } finally {
+    bulkSelectedPrograms.clear();
+    updateBulkToolbar();
+    // onSnapshot Firestore akan memperbarui `banks` & memanggil renderProgramGrid() otomatis
+  }
+}
+
+// Konversi 1 program (skema internal) balik menjadi format JSON "Import Data
+// Cepat" (bank/nama_program/skema/...) — kebalikan dari _bulkImportConvertItem().
+function programToBulkImportJson(bankNama, program) {
+  const skema = (program.periode || []).map((per, idx) => {
+    const item = {
+      tahap: idx + 1,
+      tipe: per.floating ? 'floating' : 'fixed',
+      masa_fixed: (per.sampai - per.dari + 1)
+    };
+    if (!per.floating) item.bunga = Number(per.rate);
+    return item;
+  });
+  const obj = {
+    bank: bankNama,
+    nama_program: program.nama,
+    min_tenor: program.tenor,
+    max_tenor: program.tenorMax != null ? program.tenorMax : program.tenor,
+    akad: program.akad || 'konvensional',
+    skema
+  };
+  if (program.floatingRate != null) obj.floating_rate = Number(program.floatingRate);
+  if (program.plafonMin != null) obj.plafon_min = Number(program.plafonMin);
+  if (program.plafonMax != null) obj.plafon_max = Number(program.plafonMax);
+  return obj;
+}
+
+// Buka modal "Import Data Cepat" dengan JSON dari seluruh program yang sedang
+// dicentang, supaya admin bisa mengedit banyak program sekaligus lewat teks
+// JSON yang sama persis seperti alur import — lalu lanjut ke Review & Simpan.
+// Karena proses simpan mencocokkan berdasarkan nama bank + nama program yang
+// sama persis, program yang sudah ada akan DITIMPA (update), bukan digandakan.
+function bulkEditSelectedPrograms() {
+  const items = getBulkSelectedProgramObjects();
+  if (!items.length) return;
+
+  const jsonData = items.map(it => programToBulkImportJson(it.bank.nama, it.program));
+  document.getElementById('bulk-import-textarea').value = JSON.stringify(jsonData, null, 2);
+
+  bulkSelectedPrograms.clear();
+  updateBulkToolbar();
+  renderProgramGrid();
+
+  openBulkImportModal();
+  showToast(`${items.length} program dimuat ke Import Data Cepat — edit lalu klik "Lanjutkan & Review Data".`, 'info', 'Edit Sekaligus');
+}
+
 // ─── Render Grid Program (card ala marketplace) ───
 function getAllPrograms() {
   const bank = getSelectedBank();
@@ -4310,6 +4605,7 @@ function renderProgramGrid() {
   if (!bank) {
     grid.innerHTML = '';
     searchWrap.style.display = 'none';
+    updateBulkToolbar();
     return;
   }
 
@@ -4391,6 +4687,7 @@ function renderProgramGrid() {
   `;
 
   grid.innerHTML = cardsHtml;
+  updateBulkToolbar();
 }
 
 function renderProgramCardHtml(p, isUnavailable = false) {
@@ -4458,8 +4755,11 @@ function renderProgramCardHtml(p, isUnavailable = false) {
     unavailReasonHtml = `<div class="program-card-unavail-reason">${reasons.join(' · ') || 'Tidak sesuai plafon/tenor saat ini'}</div>`;
   }
 
+  const bulkKey = bulkProgramKey(p.bankId, p.id);
+  const isBulkSelected = bulkSelectedPrograms.has(bulkKey);
+
   return `
-    <div class="program-card ${isActive ? 'active' : ''} ${isUnavailable ? 'plafon-unavailable' : ''}"
+    <div class="program-card ${isActive ? 'active' : ''} ${isUnavailable ? 'plafon-unavailable' : ''} ${isBulkSelected ? 'bulk-selected' : ''}"
       data-bank-id="${safeBankIdAttr}" data-program-id="${p.id}"
       ${isUnavailable ? '' : `onclick="selectProgramCard('${safeBankIdForJs}', ${p.id})"`}>
       <div class="program-card-bank">
@@ -4482,7 +4782,15 @@ function renderProgramCardHtml(p, isUnavailable = false) {
         </div>
       ` : ''}
       ${unavailReasonHtml}
-      <div class="program-card-select-btn">${isUnavailable ? '🚫 Tidak Tersedia' : (isActive ? '✓ Program Terpilih' : 'Pilih Program')}</div>
+      <div class="program-card-select-row">
+        <div class="program-card-select-btn">${isUnavailable ? '🚫 Tidak Tersedia' : (isActive ? '✓ Program Terpilih' : 'Pilih Program')}</div>
+        <button type="button" class="program-card-bulk-check admin-only ${isBulkSelected ? 'checked' : ''}"
+          title="Pilih untuk aksi massal (hapus/edit sekaligus)"
+          onclick="event.stopPropagation(); toggleProgramBulkSelect('${safeBankIdForJs}', ${p.id})">${isBulkSelected ? '✓' : '☐'}</button>
+      </div>
+      <div class="program-card-detail-wrap">
+        <button type="button" class="program-card-detail-btn" onclick="event.stopPropagation(); showProgramDetail('${safeBankIdForJs}', ${p.id})">ℹ️ Detail</button>
+      </div>
       <div class="program-card-actions admin-only">
         <button type="button" class="edit" onclick="event.stopPropagation(); editProgramCard('${safeBankIdForJs}', ${p.id})">✎ Edit</button>
         <button type="button" class="danger" onclick="event.stopPropagation(); deleteProgramCard('${safeBankIdForJs}', ${p.id})">🗑 Hapus</button>
@@ -4554,6 +4862,80 @@ function editProgramCard(bankId, programId) {
   const program = bank ? (bank.programs || []).find(p => p.id === programId) : null;
   if (!bank || !program) return;
   openProgramModalForEdit(bank, program);
+}
+
+// ─── Modal Detail Program (read-only, untuk semua user) ──
+// Mirip struktur data dengan modal Edit, tapi murni tampilan — tidak ada
+// input yang bisa diubah dan tidak menyentuh data program sama sekali.
+function showProgramDetail(bankId, programId) {
+  const bank = findBankById(String(bankId));
+  const program = bank ? (bank.programs || []).find(p => p.id === programId) : null;
+  if (!bank || !program) return;
+
+  const isSyariah = program.akad === 'syariah';
+  const isSyariahEfektif = program.akad === 'syariah-efektif';
+  const isAnySharia = isSyariah || isSyariahEfektif;
+  const rateWord = isAnySharia ? 'Margin' : 'Bunga';
+  const akadBadgeClass = isSyariah ? 'syariah' : isSyariahEfektif ? 'syariah-efektif' : 'konvensional';
+  const akadBadgeLabel = isSyariah ? '🕊️ Syariah (Flat)' : isSyariahEfektif ? '🕌 Syariah (Efektif)' : '🏦 Konvensional';
+  const tenorMax = (program.tenorMax != null && program.tenorMax >= program.tenor) ? program.tenorMax : null;
+  const tenorLabel = tenorMax ? `${program.tenor}–${tenorMax} Tahun` : `${program.tenor} Tahun`;
+  const hasFloating = programHasFloating(program);
+
+  document.getElementById('program-detail-modal-title').textContent = program.nama || 'Detail Program';
+  document.getElementById('program-detail-bank-icon').textContent = (bank.nama || '?').trim().charAt(0).toUpperCase();
+  document.getElementById('program-detail-bank-name').textContent = bank.nama || '';
+
+  document.getElementById('program-detail-badges').innerHTML = `
+    <span class="program-card-akad-badge ${akadBadgeClass}">${akadBadgeLabel}</span>
+    ${hasFloating ? '<span class="program-card-type-badge floating">⚠ Ada Periode Floating</span>' : '<span class="program-card-type-badge fix">📌 Fix Sepenuhnya</span>'}
+  `;
+
+  const plafonTxt = (program.plafonMin != null || program.plafonMax != null)
+    ? [program.plafonMin != null ? `Min ${fmtShort(program.plafonMin)}` : null, program.plafonMax != null ? `Maks ${fmtShort(program.plafonMax)}` : null].filter(Boolean).join(' – ')
+    : 'Tidak ada batasan';
+
+  document.getElementById('program-detail-stats').innerHTML = `
+    <div class="program-detail-stat">
+      <div class="program-detail-stat-label">Tenor</div>
+      <div class="program-detail-stat-val">${tenorLabel}</div>
+    </div>
+    <div class="program-detail-stat">
+      <div class="program-detail-stat-label">Syarat Plafon</div>
+      <div class="program-detail-stat-val">${escapeHtml(plafonTxt)}</div>
+    </div>
+  `;
+
+  document.getElementById('program-detail-periode-label').textContent = `Daftar Periode ${rateWord}`;
+
+  const periodeRows = (program.periode || []).map((p, idx) => {
+    const yearTxt = p.sampai != null && p.sampai !== p.dari ? `Tahun ke-${p.dari}–${p.sampai}` : `Tahun ke-${p.dari}`;
+    const rateTxt = p.floating
+      ? `⚠ Floating`
+      : `${Number(p.rate).toFixed(2)}%`;
+    return `
+      <div class="program-detail-periode-row">
+        <div class="program-detail-periode-num">${idx + 1}</div>
+        <div class="program-detail-periode-year">${yearTxt}</div>
+        <div class="program-detail-periode-rate ${p.floating ? 'floating' : ''}">${rateTxt}</div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('program-detail-periode-list').innerHTML = periodeRows || '<div class="program-detail-periode-row">Belum ada data periode.</div>';
+
+  const floatingNoteEl = document.getElementById('program-detail-floating-note');
+  if (hasFloating) {
+    floatingNoteEl.style.display = 'block';
+    floatingNoteEl.textContent = `💡 Untuk periode floating, program ini menggunakan asumsi ${rateWord.toLowerCase()} sebesar ${getProgramFloatingRate(program)}%.`;
+  } else {
+    floatingNoteEl.style.display = 'none';
+  }
+
+  document.getElementById('program-detail-modal-overlay').classList.add('show');
+}
+
+function closeProgramDetailModal() {
+  document.getElementById('program-detail-modal-overlay').classList.remove('show');
 }
 
 async function deleteProgramCard(bankId, programId) {
