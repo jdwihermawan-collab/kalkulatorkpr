@@ -972,6 +972,32 @@ input[type="range"]::-webkit-slider-thumb:hover {
   white-space: pre-line;
 }
 
+/* ── Import Data Cepat — pilihan target bank (bank ini / bank baru) ── */
+.bulk-import-mode-toggle { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.bulk-import-mode-opt {
+  flex: 1; min-width: 220px; display: flex; align-items: flex-start; gap: 10px;
+  border: 1.5px solid var(--gray); border-radius: var(--radius3); padding: 12px 14px;
+  cursor: pointer; background: var(--white); transition: all 0.15s;
+}
+.bulk-import-mode-opt.is-checked { border-color: var(--navy); background: var(--off2); }
+.bulk-import-mode-opt input[type="radio"] { margin-top: 3px; accent-color: var(--navy); cursor: pointer; flex-shrink: 0; }
+.bulk-import-mode-opt input[type="radio"]:disabled { cursor: not-allowed; }
+.bulk-import-mode-opt:has(input:disabled) { opacity: 0.45; cursor: not-allowed; }
+.bulk-import-mode-label { display: flex; flex-direction: column; gap: 3px; }
+.bulk-import-mode-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.bulk-import-mode-desc { font-size: 11.5px; color: var(--text3); line-height: 1.5; }
+.bulk-import-mode-note {
+  font-size: 12px; color: #b45309; background: rgba(217,119,6,0.08);
+  border: 1.5px solid rgba(217,119,6,0.3); border-radius: var(--radius3);
+  padding: 8px 12px; margin: -2px 0 14px; display: none;
+}
+.rvw-mode-banner {
+  font-size: 12.5px; font-weight: 600; color: var(--navy);
+  background: rgba(37,99,235,0.08); border: 1.5px solid rgba(37,99,235,0.25);
+  border-radius: var(--radius3); padding: 9px 14px; margin: -4px 0 14px; display: none;
+}
+.rvw-bank-locked { background: var(--off2) !important; color: var(--text3); cursor: not-allowed; }
+
 /* ── Import Data Cepat — Review/Edit sebelum disimpan ── */
 .bulk-review-box { max-width: 920px; }
 .rvw-intro { font-size: 12.5px; color: var(--text3); line-height: 1.6; margin-bottom: 14px; }
@@ -3421,8 +3447,26 @@ body.admin-mode .admin-only { display: revert !important; }
     </div>
 
     <p style="font-size:12.5px; color:var(--text3); line-height:1.6; margin-bottom:12px;">
-      Tempelkan (paste) data program KPR dalam format JSON di bawah ini untuk menambahkan atau memperbarui banyak program sekaligus, tanpa perlu mengisi form satu per satu. Bank baru akan otomatis dibuat jika namanya belum ada; program dengan nama yang sama persis pada bank yang sama akan <b>ditimpa (update)</b>, bukan digandakan.
+      Tempelkan (paste) data program KPR dalam format JSON di bawah ini untuk menambahkan atau memperbarui banyak program sekaligus, tanpa perlu mengisi form satu per satu. Program dengan nama yang sama persis pada bank yang sama akan <b>ditimpa (update)</b>, bukan digandakan.
     </p>
+
+    <div class="bulk-import-mode-toggle" id="bulk-import-mode-toggle">
+      <label class="bulk-import-mode-opt" id="bulk-import-mode-opt-existing">
+        <input type="radio" name="bulk-import-mode" value="existing" id="bulk-import-mode-existing" onchange="onBulkImportModeChange()">
+        <span class="bulk-import-mode-label">
+          <span class="bulk-import-mode-title">📌 Tambah ke Bank Ini</span>
+          <span class="bulk-import-mode-desc" id="bulk-import-mode-existing-desc">Semua program di JSON akan masuk ke bank yang sedang dipilih di halaman utama, apa pun nama yang ditulis di field "bank".</span>
+        </span>
+      </label>
+      <label class="bulk-import-mode-opt" id="bulk-import-mode-opt-new">
+        <input type="radio" name="bulk-import-mode" value="new" id="bulk-import-mode-new" onchange="onBulkImportModeChange()">
+        <span class="bulk-import-mode-label">
+          <span class="bulk-import-mode-title">🆕 Sesuai Field "bank" di JSON</span>
+          <span class="bulk-import-mode-desc">Bank ditentukan dari isi field "bank" tiap item — cocok untuk import banyak bank sekaligus. Bank baru otomatis dibuat jika namanya belum ada.</span>
+        </span>
+      </label>
+    </div>
+    <p class="bulk-import-mode-note" id="bulk-import-mode-note"></p>
 
     <div class="field">
       <label>Data JSON Program</label>
@@ -3482,6 +3526,7 @@ body.admin-mode .admin-only { display: revert !important; }
     <p class="rvw-intro">
       Periksa &amp; edit setiap program di bawah ini sebelum benar-benar disimpan — mulai dari nama bank, nama program, tenor, akad, sampai skema bunga/margin per tahap. Hapus program yang tidak ingin ikut diimport dengan tombol 🗑️ pada masing-masing kartu. Data baru akan ditulis ke database setelah tombol import di bagian paling bawah ditekan.
     </p>
+    <p class="rvw-mode-banner" id="bulk-review-mode-banner"></p>
 
     <div class="rvw-list" id="bulk-review-list"></div>
 
@@ -3532,6 +3577,10 @@ let _hitungDebounceTimer = null; // BUG-016: debounce timer for hitung button
 
 // ─── Bank Pilihan: state ──────────────────────────
 let banks = [];                 // array bank dari Firestore 'daftar_bank': [{id, nama, programs:[{id, nama, tenor, periode, floatingRate}]}]
+// Mode target Import Data Cepat: 'existing' = paksa semua program masuk ke
+// bank yang sedang dipilih (bankId/bankNama di bawah), 'new' = tentukan bank
+// dari field "bank" tiap item JSON (perilaku lama, bisa bikin bank baru).
+let bulkImportModeState = { mode: 'new', bankId: null, bankNama: '' };
 let activeProgram = null;       // { bankId, programId } program yang sedang aktif/terpilih
 let bankModalEditId = null;     // null = mode tambah, angka = mode edit (id bank)
 let programModalEditId = null;  // null = mode tambah, angka = mode edit (id program)
@@ -5433,7 +5482,53 @@ async function saveProgram() {
 function openBulkImportModal() {
   document.getElementById('bulk-import-modal-err').style.display = 'none';
   document.getElementById('bulk-import-modal-summary').style.display = 'none';
+
+  // Tentukan bank yang sedang aktif di dropdown "Pilih Bank" untuk opsi
+  // "Tambah ke Bank Ini" — supaya program baru di bank yang sama tidak perlu
+  // bikin bank baru walau nama di JSON sedikit beda dari nama bank tersimpan.
+  const activeBank = getSelectedBank();
+  const existingRadio = document.getElementById('bulk-import-mode-existing');
+  const newRadio = document.getElementById('bulk-import-mode-new');
+  const existingDesc = document.getElementById('bulk-import-mode-existing-desc');
+  const noteEl = document.getElementById('bulk-import-mode-note');
+
+  if (activeBank) {
+    bulkImportModeState.bankId = activeBank.id;
+    bulkImportModeState.bankNama = activeBank.nama;
+    existingRadio.disabled = false;
+    existingDesc.textContent = `Semua program di JSON akan masuk ke bank "${activeBank.nama}" (yang sedang dipilih), apa pun nama yang ditulis di field "bank".`;
+    existingRadio.checked = true;
+    newRadio.checked = false;
+    bulkImportModeState.mode = 'existing';
+    noteEl.style.display = 'none';
+  } else {
+    bulkImportModeState.bankId = null;
+    bulkImportModeState.bankNama = '';
+    existingRadio.disabled = true;
+    existingRadio.checked = false;
+    newRadio.checked = true;
+    bulkImportModeState.mode = 'new';
+    noteEl.textContent = '💡 Pilih bank dulu di dropdown "Pilih Bank" pada halaman utama jika ingin memakai mode "Tambah ke Bank Ini".';
+    noteEl.style.display = 'block';
+  }
+  updateBulkImportModeUI();
+
   document.getElementById('bulk-import-modal-overlay').classList.add('show');
+}
+
+// Dipanggil saat admin mengganti pilihan radio mode target bank di modal
+// Import Data Cepat (tahap 1, sebelum Review).
+function onBulkImportModeChange() {
+  const checked = document.querySelector('input[name="bulk-import-mode"]:checked');
+  bulkImportModeState.mode = checked ? checked.value : 'new';
+  updateBulkImportModeUI();
+}
+
+function updateBulkImportModeUI() {
+  document.querySelectorAll('.bulk-import-mode-opt').forEach(opt => {
+    const input = opt.querySelector('input[type="radio"]');
+    opt.classList.toggle('is-checked', !!(input && input.checked));
+  });
 }
 
 function closeBulkImportModal() {
@@ -5597,8 +5692,40 @@ function openBulkReviewModal(data) {
   btn.textContent = '📥 Import Data Sekarang';
   updateBulkReviewCountBadge();
   document.querySelectorAll('#bulk-review-list .rvw-item-card').forEach(updateBulkReviewTahunRanges);
+  applyBulkReviewModeLock();
   document.getElementById('bulk-import-modal-overlay').classList.remove('show');
   document.getElementById('bulk-review-modal-overlay').classList.add('show');
+}
+
+// Jika mode "Tambah ke Bank Ini" aktif, kunci field "Nama Bank" di setiap
+// kartu review ke nama bank yang sedang dipilih (supaya tidak sengaja
+// diketik beda / typo) dan tampilkan banner penanda di atas daftar review.
+function applyBulkReviewModeLock() {
+  const banner = document.getElementById('bulk-review-mode-banner');
+  // Ambil nama bank TERKINI dari `banks` berdasarkan ID (bukan nama yang
+  // ditangkap saat modal dibuka) — supaya tetap akurat walau nama bank itu
+  // sempat berubah (mis. diedit dari sesi lain) selagi modal ini terbuka.
+  let liveNama = '';
+  if (bulkImportModeState.mode === 'existing' && bulkImportModeState.bankId) {
+    const b = banks.find(x => String(x.id) === String(bulkImportModeState.bankId));
+    liveNama = b ? b.nama : '';
+  }
+  const isExisting = !!liveNama;
+  document.querySelectorAll('#bulk-review-list .rvw-bank').forEach(inp => {
+    inp.readOnly = isExisting;
+    inp.classList.toggle('rvw-bank-locked', isExisting);
+    if (isExisting) inp.value = liveNama;
+  });
+  if (isExisting) {
+    banner.textContent = `📌 Mode "Tambah ke Bank Ini" aktif — semua program di bawah akan diimport ke bank "${liveNama}".`;
+    banner.style.display = 'block';
+  } else if (bulkImportModeState.mode === 'existing' && bulkImportModeState.bankId && !liveNama) {
+    // Bank yang tadinya dipilih sudah tidak ada lagi (kemungkinan terhapus).
+    banner.textContent = `⚠ Bank yang dipilih untuk mode "Tambah ke Bank Ini" sudah tidak ditemukan. Program di bawah akan diimport memakai field "bank" masing-masing seperti mode "Sesuai Field JSON".`;
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
 }
 
 // Tombol "← Kembali Edit JSON" / tombol × pada modal review: kembali ke
@@ -5813,16 +5940,28 @@ async function confirmBulkImportFromReview() {
     let countAdded = 0, countUpdated = 0;
     const bankNamaBaru = new Set();
 
+    // Mode "Tambah ke Bank Ini": paksa semua item masuk ke bank yang sedang
+    // dipilih. Nama bank diambil LANGSUNG dari `banks` (fresh, via bankId),
+    // bukan dari teks yang ditangkap saat modal dibuka — supaya tetap benar
+    // walau nama bank sempat berubah di tengah proses, dan tidak pernah
+    // salah bikin bank baru gara-gara beda huruf besar/kecil atau spasi.
+    // Mode "new" tetap pakai field "bank" asli dari tiap item.
+    const forcedBank = (bulkImportModeState.mode === 'existing' && bulkImportModeState.bankId)
+      ? banks.find(b => String(b.id) === String(bulkImportModeState.bankId))
+      : null;
+    const isForcedExisting = !!forcedBank;
+
     // Validasi & konversi SEMUA item dulu. Jika ada satu saja yang gagal,
     // batalkan seluruh proses (tidak ada tulis-sebagian ke Firestore).
     data.forEach((item, idx) => {
       const { bankNama, program } = _bulkImportConvertItem(item, idx);
-      const key = bankNama.toLowerCase();
+      const targetBankNama = isForcedExisting ? forcedBank.nama : bankNama;
+      const key = targetBankNama.toLowerCase();
       let wb = workingBanks.get(key);
       if (!wb) {
-        wb = { id: null, nama: bankNama, programs: [], isNew: true };
+        wb = { id: null, nama: targetBankNama, programs: [], isNew: true };
         workingBanks.set(key, wb);
-        bankNamaBaru.add(bankNama);
+        bankNamaBaru.add(targetBankNama);
       }
       touchedKeys.add(key);
 
