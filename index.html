@@ -8068,6 +8068,7 @@ async function generatePDF() {
 
     // Disclaimer floating + keterangan akad syariah (jika ada) digabung dalam satu blok teks
     const discParts = [];
+    discParts.push('* Angsuran di atas adalah simulasi yang dibuat oleh developer, bukan angka resmi dari bank. Jumlah angsuran aktual dapat berubah menyesuaikan kebijakan bank saat akad serta SP3K resmi yang diterbitkan.');
     if (s.floatingDisclaimer) {
       // Hapus semua karakter non-ASCII/emoji (termasuk ⚠) sebelum dikirim ke jsPDF.
       // Emoji multi-byte merusak kalkulasi lebar karakter Helvetica → teks overflow margin.
