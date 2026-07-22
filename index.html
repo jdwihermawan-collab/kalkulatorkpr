@@ -7834,7 +7834,7 @@ const WA_NUMBER_PDF = WA_NUMBER;      // alias for PDF generation
 // Disclaimer/catatan kaki PDF — satu teks yang sama untuk seluruh jenis bank
 // (Konvensional maupun Syariah/Syariah Efektif), sesuai permintaan terbaru.
 function getPdfDisclaimer(akad) {
-  return 'Simulasi ini dibuat untuk tujuan estimasi perencanaan keuangan dan bukan merupakan persetujuan kredit/pembiayaan. Angka angsuran, margin/suku bunga, biaya administrasi, serta biaya pihak ketiga dapat berubah sesuai kebijakan bank, hasil analisa kredit/pembiayaan, dan SP3K resmi yang diterbitkan bank.';
+  return 'Angka-angka di simulasi ini hanya perkiraan untuk membantu Anda merencanakan keuangan, dan belum berarti pengajuan kredit/pembiayaan Anda disetujui. Jumlah angsuran, suku bunga/margin, biaya administrasi, dan biaya lainnya dapat berbeda tergantung kebijakan bank serta hasil analisa dan SP3K resmi yang diterbitkan bank.';
 }
 
 function formatTanggalPDF() {
@@ -8256,7 +8256,7 @@ async function generatePDF() {
     y = boxY + boxH + 8;
 
     // ── DISCLAIMER (dinamis: teks berbeda untuk bank Konvensional vs Syariah) ──
-    doc.setFont('helvetica', 'italic');
+    doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
     doc.setTextColor(100, 116, 139); // abu-abu kebiruan (slate) — warna disclaimer standar, clean & muted
 
@@ -8264,7 +8264,8 @@ async function generatePDF() {
     // dan lebar mengikuti contentW (margin kiri-kanan) supaya simetris & tidak keluar margin.
     const disclaimerWrapped = doc.splitTextToSize(getPdfDisclaimer(s.akad), contentW);
     const disclaimerLineH = 3.6;
-    const disclaimerBlockH = disclaimerWrapped.length * disclaimerLineH;
+    // +1 baris untuk heading "Note :" di atas teks disclaimer
+    const disclaimerBlockH = (disclaimerWrapped.length + 1) * disclaimerLineH;
 
     // Jika sisa halaman tidak cukup untuk garis pemisah + seluruh blok teks disclaimer,
     // pindah ke halaman baru dulu supaya teks tidak terpotong di tepi bawah halaman.
@@ -8278,8 +8279,10 @@ async function generatePDF() {
     doc.line(marginL, y, pageW - marginR, y);
     y += 5;
 
+    doc.text('Note :', marginL, y);
+    y += disclaimerLineH;
     doc.text(disclaimerWrapped, marginL, y);
-    y += disclaimerBlockH + 8;
+    y += disclaimerWrapped.length * disclaimerLineH + 8;
 
     // ── LOGO HOLDING — paling bawah halaman terakhir, center, elegan ──
     try {
