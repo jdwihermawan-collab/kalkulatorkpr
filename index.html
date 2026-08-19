@@ -2868,7 +2868,7 @@ body.admin-mode .admin-only { display: revert !important; }
         <div class="slider-number-row">
           <input type="range" id="bunga-slider" min="1" max="20" step="0.1" value="6.75" oninput="syncBungaFromSlider()">
           <div class="inline-num-wrap">
-            <input type="number" id="bunga-input" value="6.75" min="1" max="20" step="0.1" oninput="syncBungaFromInput()">
+            <input type="number" id="bunga-input" value="6.75" min="1" max="20" step="0.1" oninput="syncBungaFromInput()" onblur="syncBungaFromInputBlur()">
             <span class="inline-unit">%</span>
           </div>
         </div>
@@ -3775,10 +3775,25 @@ function syncBungaFromSlider() {
   invalidateSimulasi();
 }
 function syncBungaFromInput() {
+  // BUGFIX: sebelumnya fungsi ini memaksa reformat (toFixed) field di setiap
+  // keystroke (oninput), sehingga user tidak bisa menghapus & mengetik ulang
+  // angka manual (mis. ketik "20" jadi kepotong "2.00"). Sekarang saat masih
+  // mengetik, field dibiarkan apa adanya — slider tetap disinkron live jika
+  // nilainya valid — dan reformat/clamp baru dilakukan saat blur.
   let v = parseFloat(document.getElementById('bunga-input').value);
   if (isNaN(v)) return;
+  const clamped = Math.min(20, Math.max(1, v));
+  document.getElementById('bunga-slider').value = clamped;
+  invalidateSimulasi();
+}
+function syncBungaFromInputBlur() {
+  // Dipanggil saat field kehilangan fokus: baru di sini nilai dirapikan
+  // (clamp + toFixed), supaya tidak mengganggu proses mengetik.
+  const el = document.getElementById('bunga-input');
+  let v = parseFloat(el.value);
+  if (isNaN(v)) v = parseFloat(document.getElementById('bunga-slider').value) || 1;
   v = Math.min(20, Math.max(1, v));
-  document.getElementById('bunga-input').value = v.toFixed(2); // BUG-009: update field if clamped
+  el.value = v.toFixed(2);
   document.getElementById('bunga-slider').value = v;
   invalidateSimulasi();
 }
