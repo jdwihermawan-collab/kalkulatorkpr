@@ -8257,17 +8257,60 @@ async function generatePDF() {
     doc.setTextColor(110, 115, 135);
     doc.text('Property Consultant  \u2014  PT Podo Rukun Jaya Properti', textX, boxY + 26);
 
-    // Baris 4 — WhatsApp (bold, hijau)
+    // Baris 4 — WhatsApp (bold, hijau) — dibuat clickable, langsung membuka chat WA saat diklik di PDF
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9.5);
     doc.setTextColor(green[0], green[1], green[2]);
-    doc.text('WA: ' + currentMktWaDisplay, textX, boxY + 34);
+    const waLinkText = 'WA: ' + currentMktWaDisplay;
+    doc.textWithLink(waLinkText, textX, boxY + 34, { url: `https://wa.me/${currentMktWaNumber}` });
+    // Perluas area klik sedikit ke atas/bawah teks (bukan cuma garis baseline) agar mudah ditap di PDF viewer
+    const waLinkW = doc.getTextWidth(waLinkText);
+    doc.link(textX, boxY + 34 - 3.5, waLinkW, 4.5, { url: `https://wa.me/${currentMktWaNumber}` });
 
-    // Baris 5 — Keterangan scan (kecil, abu terang)
+    // Baris 5 — Keterangan singkat (kecil, abu terang)
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7);
     doc.setTextColor(160, 165, 180);
-    doc.text('Scan QR untuk langsung terhubung via WhatsApp', textX, boxY + 40);
+    doc.text('Scan QR atau tap tombol di bawahnya untuk chat langsung', textX, boxY + 40);
+
+    // ── Tombol "Tap untuk Chat" — di bawah QR code, bentuk pill penuh (rounded) agar terasa
+    //    lebih halus & modern, bukan kotak kaku. Ikon panah kecil menegaskan aksi klik. ──
+    const waBtnH   = 5.5;
+    const waBtnGap = 1.75; // jarak dari tepi QR ke tombol & dari tombol ke tepi bawah box
+    const waBtnY   = qrY + qrSize + waBtnGap;
+    const waBtnR   = waBtnH / 2; // radius penuh setengah tinggi -> bentuk pill, bukan kotak
+
+    // Warna hijau sedikit lebih lembut (dicampur putih tipis) supaya tidak terlalu "berat"/mencolok
+    const btnGreen = [
+      Math.round(green[0] + (255 - green[0]) * 0.08),
+      Math.round(green[1] + (255 - green[1]) * 0.08),
+      Math.round(green[2] + (255 - green[2]) * 0.08)
+    ];
+    doc.setFillColor(btnGreen[0], btnGreen[1], btnGreen[2]);
+    doc.roundedRect(qrX, waBtnY, qrSize, waBtnH, waBtnR, waBtnR, 'F');
+
+    // Label pakai sentence case (bukan huruf kapital semua) — kesannya lebih santai & tidak kaku
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(6.5);
+    doc.setTextColor(255, 255, 255);
+    const waBtnLabel  = 'Tap untuk Chat';
+    const waBtnLabelW = doc.getTextWidth(waBtnLabel);
+    const waBtnCx     = qrX + qrSize / 2;
+    const waBtnCy     = waBtnY + waBtnH / 2;
+    // Geser label sedikit ke kiri supaya ada ruang untuk ikon panah kecil di sisi kanan
+    const waBtnTextX  = waBtnCx - 1.6;
+    doc.text(waBtnLabel, waBtnTextX, waBtnCy + 1.3, { align: 'center' });
+
+    // Ikon panah kecil (bentuk segitiga halus) sebagai penanda visual "klik untuk lanjut"
+    const arrX = waBtnTextX + waBtnLabelW / 2 + 2.6;
+    const arrY = waBtnCy;
+    doc.setFillColor(255, 255, 255);
+    doc.triangle(arrX, arrY - 1, arrX, arrY + 1, arrX + 1.4, arrY, 'F');
+
+    doc.link(qrX, waBtnY, qrSize, waBtnH, { url: `https://wa.me/${currentMktWaNumber}` });
+
+    // QR code juga dibuat clickable menuju link WA yang sama
+    doc.link(qrX, qrY, qrSize, qrSize, { url: `https://wa.me/${currentMktWaNumber}` });
 
     y = boxY + boxH + 8;
 
